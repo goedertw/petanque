@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "EWmk/ytXFIw=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\milan\\Desktop\\PetanquePw2\\ProjectWerk2\\ReactApp1\\ReactApp1.Server\\ReactApp1.Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\milan\\.nuget\\packages\\microsoft.aspnetcore.spaproxy\\8.0.14\\microsoft.aspnetcore.spaproxy.8.0.14.nupkg.sha512"
+  ],
+  "logs": []
+}
