@@ -23,7 +23,7 @@ namespace Petanque.Services {
         }
 
         public DagKlassementResponseContract? GetById(int id) {
-            throw new NotImplementedException();
+            return MapToContract(context.Dagklassements.Find(id));
         }
 
         private static DagKlassementResponseContract MapToContract(Dagklassement entity) {
