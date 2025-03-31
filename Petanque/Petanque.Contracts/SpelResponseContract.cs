@@ -20,6 +20,5 @@ namespace Petanque.Contracts
 
         public int ScoreB { get; set; }
 
-        public virtual SpeeldagResponseContract? Speeldag { get; set; }
     }
 }

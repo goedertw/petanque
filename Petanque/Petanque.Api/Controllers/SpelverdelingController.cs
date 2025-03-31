@@ -10,7 +10,7 @@ public class SpelverdelingController(ISpelverdelingService service) : Controller
     [HttpGet("{id}")]
     public ActionResult<PlayerResponseContract> Get([FromRoute] int id)
     {
-        var spelverdeling = service.GetSpelverdelingById(id);
+        var spelverdeling = service.GetById(id);
         if (spelverdeling is null) return NotFound();
         return Ok(spelverdeling);
     }
