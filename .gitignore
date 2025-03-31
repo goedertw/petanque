@@ -11,5 +11,7 @@
 /Petanque/Petanque.Storage/bin/Debug/
 /Petanque/Petanque.Services/bin/Debug/
 /Petanque/Petanque.Contracts/bin/Debug/
+.vs
+/Petanque/.vs/
 
 /Petanque/.vs/Petanque/FileContentIndex
