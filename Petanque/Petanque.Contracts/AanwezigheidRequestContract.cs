@@ -13,6 +13,5 @@ namespace Petanque.Contracts
         public int? SpelerId { get; set; }
 
         public int SpelerVolgnr { get; set; }
-
     }
 }

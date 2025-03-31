@@ -13,7 +13,7 @@ public class PlayerController(IPlayerService service) : Controller
         {
             var customer = service.GetById(id);
             if (customer is null) return NotFound();
-            return Ok();
+            return Ok(customer);
         }
 
         [HttpPost]

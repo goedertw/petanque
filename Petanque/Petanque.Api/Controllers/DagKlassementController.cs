@@ -11,7 +11,7 @@ namespace Petanque.Api.Controllers {
         public ActionResult<DagKlassementResponseContract> Get([FromRoute] int id) {
             var dagklassement = service.GetById(id);
             if (dagklassement is null) return NotFound();
-            return Ok();
+            return Ok(dagklassement);
         }
 
         [HttpPost]
