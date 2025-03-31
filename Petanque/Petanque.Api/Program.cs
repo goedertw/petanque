@@ -16,6 +16,7 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
 
 var app = builder.Build();
+//dit is een test voor een branche
 
 app.MapControllers();
 app.UseHttpsRedirection();
