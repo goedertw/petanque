@@ -4,3 +4,6 @@
 
 /Petanque/.idea/.idea.Petanque/.idea
 /Petanque/Petanque.Api/obj
+/Petanque/Petanque.Storage/bin/Debug/net8.0
+/Petanque/Petanque.Storage/obj
+/Petanque/Petanque.Api/bin/Debug/net8.0
