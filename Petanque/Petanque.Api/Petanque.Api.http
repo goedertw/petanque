@@ -1,0 +1,6 @@
+@Petanque.Api_HostAddress = http://localhost:5251
+
+GET {{Petanque.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

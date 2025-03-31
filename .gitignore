@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Petanque/.idea/.idea.Petanque/.idea
+/Petanque/Petanque.Api/obj
