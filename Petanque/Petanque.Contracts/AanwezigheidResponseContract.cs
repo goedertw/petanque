@@ -15,9 +15,5 @@ namespace Petanque.Contracts
         public int? SpelerId { get; set; }
 
         public int SpelerVolgnr { get; set; }
-
-        public virtual SpeeldagResponseContract? Speeldag { get; set; }
-
-        public virtual PlayerResponseContract? Speler { get; set; }
     }
 }
