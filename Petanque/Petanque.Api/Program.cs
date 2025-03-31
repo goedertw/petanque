@@ -16,6 +16,8 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
 builder.Services.AddScoped<ISpelverdelingService, SpelverdelingService>();
 builder.Services.AddScoped<IAanwezigheidService, AanwezigheidService>();
+builder.Services.AddScoped<ISpeeldagService, SpeeldagService>();
+
 
 var app = builder.Build();
 
