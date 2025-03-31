@@ -13,6 +13,7 @@ builder.Services.AddDbContext<Id312896PetanqueContext>(options =>
     options.UseMySql(connectionString, serverVersion));
 
 builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
 
 var app = builder.Build();
 
