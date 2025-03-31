@@ -1,8 +1,15 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
+
 /Petanque/.idea/
 /Petanque/Petanque.Api/obj/
+/Petanque/Petanque.Storage/obj/
+/Petanque/Petanque.Services/obj/
+/Petanque/Petanque.Contracts/obj/
+/Petanque/Petanque.Api/bin/Debug/
 /Petanque/Petanque.Storage/bin/Debug/
+/Petanque/Petanque.Services/bin/Debug/
+/Petanque/Petanque.Contracts/bin/Debug/
 
 /Petanque/.vs/Petanque/FileContentIndex
