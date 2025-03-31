@@ -1,0 +1,12 @@
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\bin\Debug\net8.0\Petanque.Contracts.deps.json
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\bin\Debug\net8.0\Petanque.Contracts.dll
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\bin\Debug\net8.0\Petanque.Contracts.pdb
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\Petanque.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\Petanque.Contracts.AssemblyInfoInputs.cache
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\Petanque.Contracts.AssemblyInfo.cs
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\Petanque.Contracts.csproj.CoreCompileInputs.cache
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\Petanque.Contracts.sourcelink.json
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\Petanque.Contracts.dll
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\refint\Petanque.Contracts.dll
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\Petanque.Contracts.pdb
+C:\Users\milan\Desktop\petanque\ProjectWerk2\ProjectWerk2\Petanque\Petanque.Contracts\obj\Debug\net8.0\ref\Petanque.Contracts.dll

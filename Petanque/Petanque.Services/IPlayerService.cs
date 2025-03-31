@@ -1,4 +1,6 @@
-﻿namespace Petanque.Services;
+﻿using Petanque.Contracts;
+
+namespace Petanque.Services;
 
 public interface IPlayerService
 {

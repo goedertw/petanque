@@ -53,7 +53,6 @@ public partial class Id312896PetanqueContext : DbContext
             entity.HasIndex(e => e.SpelerId, "spelerId");
 
             entity.Property(e => e.AanwezigheidId)
-                .ValueGeneratedNever()
                 .HasColumnType("int(11)")
                 .HasColumnName("aanwezigheidId");
             entity.Property(e => e.SpeeldagId)
@@ -86,7 +85,6 @@ public partial class Id312896PetanqueContext : DbContext
             entity.HasIndex(e => e.SpelerId, "spelerId");
 
             entity.Property(e => e.DagklassementId)
-                .ValueGeneratedNever()
                 .HasColumnType("int(11)")
                 .HasColumnName("dagklassementId");
             entity.Property(e => e.Hoofdpunten)
@@ -118,7 +116,6 @@ public partial class Id312896PetanqueContext : DbContext
             entity.ToTable("Seizoen");
 
             entity.Property(e => e.SeizoensId)
-                .ValueGeneratedNever()
                 .HasColumnType("int(11)")
                 .HasColumnName("seizoensId");
             entity.Property(e => e.Einddatum).HasColumnName("einddatum");
@@ -136,7 +133,6 @@ public partial class Id312896PetanqueContext : DbContext
             entity.HasIndex(e => e.SpelerId, "spelerId");
 
             entity.Property(e => e.SeizoensklassementId)
-                .ValueGeneratedNever()
                 .HasColumnType("int(11)")
                 .HasColumnName("seizoensklassementId");
             entity.Property(e => e.Hoofdpunten)
@@ -170,7 +166,6 @@ public partial class Id312896PetanqueContext : DbContext
             entity.HasIndex(e => e.SeizoensId, "seizoensId");
 
             entity.Property(e => e.SpeeldagId)
-                .ValueGeneratedNever()
                 .HasColumnType("int(11)")
                 .HasColumnName("speeldagId");
             entity.Property(e => e.Datum).HasColumnName("datum");
@@ -192,7 +187,6 @@ public partial class Id312896PetanqueContext : DbContext
             entity.HasIndex(e => e.SpeeldagId, "speeldagId");
 
             entity.Property(e => e.SpelId)
-                .ValueGeneratedNever()
                 .HasColumnType("int(11)")
                 .HasColumnName("spelId");
             entity.Property(e => e.ScoreA)
@@ -223,7 +217,6 @@ public partial class Id312896PetanqueContext : DbContext
             entity.ToTable("Speler");
 
             entity.Property(e => e.SpelerId)
-                .ValueGeneratedNever()
                 .HasColumnType("int(11)")
                 .HasColumnName("spelerId");
             entity.Property(e => e.Naam)
@@ -241,7 +234,6 @@ public partial class Id312896PetanqueContext : DbContext
             entity.ToTable("Spelverdeling");
 
             entity.Property(e => e.SpelverdelingsId)
-                .ValueGeneratedNever()
                 .HasColumnType("int(11)")
                 .HasColumnName("spelverdelingsId");
             entity.Property(e => e.SpelId)

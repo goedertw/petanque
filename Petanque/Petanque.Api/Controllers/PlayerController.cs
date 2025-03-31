@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Petanque.Contracts;
+using Petanque.Services;
 
 namespace Petanque.Api.Controllers;
 

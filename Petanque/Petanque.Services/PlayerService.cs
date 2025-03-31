@@ -1,4 +1,7 @@
-﻿namespace Petanque.Services;
+﻿using Petanque.Contracts;
+using Petanque.Storage;
+
+namespace Petanque.Services;
 
 public class PlayerService(Id312896PetanqueContext context) : IPlayerService
 {
@@ -7,10 +10,7 @@ public class PlayerService(Id312896PetanqueContext context) : IPlayerService
         var entity = new Speler()
         {
             Voornaam = request.Voornaam,
-            Naam = request.Naam,
-            Aanwezigheids = (ICollection<Aanwezigheid>)request.Aanwezigheids,
-            Dagklassements = (ICollection<Dagklassement>)request.Dagklassements,
-            Seizoensklassements = (ICollection<Seizoensklassement>)request.Seizoensklassements
+            Naam = request.Naam
         };
 
         context.Spelers.Add(entity);
@@ -31,11 +31,7 @@ public class PlayerService(Id312896PetanqueContext context) : IPlayerService
         {
             SpelerId = entity.SpelerId,
             Voornaam = entity.Voornaam,
-            Naam = entity.Naam,
-            Aanwezigheids = (ICollection<AanwezigheidResponseContract>)entity.Aanwezigheids,
-            Dagklassements = (ICollection<DagKlassementResponseContract>)entity.Dagklassements,
-            Seizoensklassements = (ICollection<SeizoensKlassementResponseContract>)entity.Seizoensklassements
-
+            Naam = entity.Naam
         };
     }
 }

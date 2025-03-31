@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\Petanque\\Petanque.Storage\\Petanque.Storage.csproj": {}
+    "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\ProjectWerk2\\Petanque\\Petanque.Storage\\Petanque.Storage.csproj": {}
   },
   "projects": {
-    "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\Petanque\\Petanque.Storage\\Petanque.Storage.csproj": {
+    "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\ProjectWerk2\\Petanque\\Petanque.Storage\\Petanque.Storage.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\Petanque\\Petanque.Storage\\Petanque.Storage.csproj",
+        "projectUniqueName": "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\ProjectWerk2\\Petanque\\Petanque.Storage\\Petanque.Storage.csproj",
         "projectName": "Petanque.Storage",
-        "projectPath": "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\Petanque\\Petanque.Storage\\Petanque.Storage.csproj",
+        "projectPath": "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\ProjectWerk2\\Petanque\\Petanque.Storage\\Petanque.Storage.csproj",
         "packagesPath": "C:\\Users\\milan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\Petanque\\Petanque.Storage\\obj\\",
+        "outputPath": "C:\\Users\\milan\\Desktop\\petanque\\ProjectWerk2\\ProjectWerk2\\Petanque\\Petanque.Storage\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

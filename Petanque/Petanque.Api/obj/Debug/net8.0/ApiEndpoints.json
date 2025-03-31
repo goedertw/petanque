@@ -1,17 +1,51 @@
 [
   {
-    "ContainingType": "Program\u002B\u003C\u003Ec__DisplayClass0_0",
-    "Method": "\u003C\u003CMain\u003E$\u003Eb__0",
-    "RelativePath": "weatherforecast",
-    "HttpMethod": "GET",
-    "IsController": false,
+    "ContainingType": "Petanque.Api.Controllers.PlayerController",
+    "Method": "Create",
+    "RelativePath": "api/players",
+    "HttpMethod": "POST",
+    "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Petanque.Contracts.PlayerRequestContract",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": [
       {
-        "Type": "WeatherForecast[]",
+        "Type": "Petanque.Contracts.PlayerResponseContract",
         "MediaTypes": [
-          "application/json"
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Petanque.Api.Controllers.PlayerController",
+    "Method": "Get",
+    "RelativePath": "api/players/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Petanque.Contracts.PlayerResponseContract",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
         ],
         "StatusCode": 200
       }

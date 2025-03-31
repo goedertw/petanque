@@ -6,4 +6,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Petanque.Contracts\Petanque.Contracts.csproj" />
+      <ProjectReference Include="..\Petanque.Services\Petanque.Services.csproj" />
+      <ProjectReference Include="..\Petanque.Storage\Petanque.Storage.csproj" />
+    </ItemGroup>
+
 </Project>

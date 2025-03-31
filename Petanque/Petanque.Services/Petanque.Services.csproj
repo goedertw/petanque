@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Petanque.Contracts\Petanque.Contracts.csproj" />
+      <ProjectReference Include="..\Petanque.Storage\Petanque.Storage.csproj" />
+    </ItemGroup>
+
 </Project>
