@@ -16,6 +16,5 @@ namespace Petanque.Contracts
 
         public int PlusMinPunten { get; set; }
 
-       
     }
 }
