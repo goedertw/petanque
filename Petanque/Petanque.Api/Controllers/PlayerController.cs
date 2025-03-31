@@ -14,6 +14,7 @@ public class PlayerController(IPlayerService service) : Controller
             var customer = service.GetById(id);
             if (customer is null) return NotFound();
             return Ok(customer);
+            return Ok(customer);
             var player = service.GetById(id);
             if (player is null) return NotFound();
             return Ok(player);
