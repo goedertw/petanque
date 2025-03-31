@@ -14,6 +14,8 @@ builder.Services.AddDbContext<Id312896PetanqueContext>(options =>
 
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
+builder.Services.AddScoped<ISpelverdelingService, SpelverdelingService>();
+
 
 var app = builder.Build();
 //dit is een test voor een branche
