@@ -1,10 +1,14 @@
-ReactApp1/ReactApp1.Server/bin/Debug/
-ReactApp1/ReactApp1.Server/obj/Debug/
-ReactApp1/.vs/ReactApp1/FileContentIndex/0be87bf2-d539-4e61-a062-291bf82c2669.vsidx
-ReactApp1/.vs/ReactApp1/FileContentIndex/7a721af8-09bd-48ef-9404-0357537a554c.vsidx
-/ReactApp1/reactapp1.client/obj
-/ReactApp1/Petanque.Storage/obj/Debug/net8.0
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/ReactApp1/Petanque.Contracts/obj/Debug/net8.0
+/ReactApp1/Petanque.Services/obj
 /ReactApp1/Petanque.Storage/bin/Debug/net8.0
 /ReactApp1/Petanque.Storage/obj
+/ReactApp1/reactapp1.client/obj
+/ReactApp1/ReactApp1.Server/bin/Debug/net8.0
+/ReactApp1/ReactApp1.Server/obj/Debug/net8.0/ref
+/ReactApp1/ReactApp1.Server/obj/Debug/net8.0/refint/ReactApp1.Server.dll
+/ReactApp1/ReactApp1.Server/obj/Debug/net8.0/staticwebassets
 /ReactApp1/Petanque.Contracts/obj
-/ReactApp1/Petanque.Services/obj

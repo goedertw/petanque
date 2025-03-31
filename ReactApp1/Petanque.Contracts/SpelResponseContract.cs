@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Petanque.Contracts
 {
-    class SpelResponseContract
+    public class SpelResponseContract
     {
         public int SpelId { get; set; }
 

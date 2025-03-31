@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Petanque.Contracts
 {
-    class SeizoenRequestContract
+    public class SeizoenRequestContract
     {
 
         public DateOnly Startdatum { get; set; }

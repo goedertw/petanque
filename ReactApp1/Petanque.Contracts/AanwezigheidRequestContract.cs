@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Petanque.Contracts
 {
-    class AanwezigheidRequestContract
+    public class AanwezigheidRequestContract
     {
         public int? SpeeldagId { get; set; }
 
