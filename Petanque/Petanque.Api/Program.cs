@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Petanque.Services;
 using Petanque.Storage;
@@ -16,6 +15,7 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
 builder.Services.AddScoped<ISpelverdelingService, SpelverdelingService>();
 builder.Services.AddScoped<IAanwezigheidService, AanwezigheidService>();
+builder.Services.AddScoped<IScoreService, ScoreService>();
 
 
 var app = builder.Build();
