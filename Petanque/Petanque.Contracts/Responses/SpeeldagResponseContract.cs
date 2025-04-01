@@ -14,12 +14,12 @@ namespace Petanque.Contracts.Responses
 
         public int? SeizoensId { get; set; }
 
-        public virtual ICollection<AanwezigheidResponseContract> Aanwezigheids { get; set; } = new List<AanwezigheidResponseContract>();
+        public virtual ICollection<AanwezigheidResponseContract> Aanwezigheden { get; set; } = new List<AanwezigheidResponseContract>();
 
-        public virtual ICollection<DagKlassementResponseContract> Dagklassements { get; set; } = new List<DagKlassementResponseContract>();
+        //public virtual ICollection<DagKlassementResponseContract> Dagklassements { get; set; } = new List<DagKlassementResponseContract>();
 
-        public virtual SeizoenResponseContract? Seizoens { get; set; }
+        public virtual SeizoenResponseContract? Seizoenen { get; set; }
 
-        public virtual ICollection<SpelResponseContract> Spels { get; set; } = new List<SpelResponseContract>();
+        public virtual ICollection<SpelResponseContract> Spellen { get; set; } = new List<SpelResponseContract>();
     }
 }

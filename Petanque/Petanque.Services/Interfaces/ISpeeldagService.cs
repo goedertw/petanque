@@ -6,4 +6,5 @@ using Petanque.Contracts.Responses;
 public interface ISpeeldagService
 {
     SpeeldagResponseContract Create(SpeeldagRequestContract request);
+    SpeeldagResponseContract GetById(int id);
 }
