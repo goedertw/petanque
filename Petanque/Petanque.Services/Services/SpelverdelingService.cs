@@ -1,7 +1,8 @@
-﻿using Petanque.Contracts;
+﻿using Petanque.Contracts.Responses;
+using Petanque.Services.Interfaces;
 using Petanque.Storage;
 
-namespace Petanque.Services;
+namespace Petanque.Services.Services;
 
 public class SpelverdelingService(Id312896PetanqueContext context) : ISpelverdelingService
 {

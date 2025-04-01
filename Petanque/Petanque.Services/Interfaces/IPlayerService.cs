@@ -1,6 +1,7 @@
-﻿using Petanque.Contracts;
+﻿using Petanque.Contracts.Requests;
+using Petanque.Contracts.Responses;
 
-namespace Petanque.Services;
+namespace Petanque.Services.Interfaces;
 
 public interface IPlayerService
 {

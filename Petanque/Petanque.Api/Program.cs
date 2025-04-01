@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Petanque.Services;
+using Petanque.Services.Interfaces;
+using Petanque.Services.Services;
 using Petanque.Storage;
 
 var builder = WebApplication.CreateBuilder(args);

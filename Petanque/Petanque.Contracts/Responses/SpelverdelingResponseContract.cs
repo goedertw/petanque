@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Petanque.Contracts
+namespace Petanque.Contracts.Responses
 {
     public class SpelverdelingResponseContract
     {

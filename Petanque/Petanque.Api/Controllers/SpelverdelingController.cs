@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Petanque.Contracts;
-using Petanque.Services;
+using Petanque.Contracts.Responses;
+using Petanque.Services.Interfaces;
 
 namespace Petanque.Api.Controllers;
 [ApiController]
-[Route("api/spelverdeling")]
+[Route("api/spelverdelingen")]
 public class SpelverdelingController(ISpelverdelingService service) : Controller
 {
     [HttpGet("{id}")]

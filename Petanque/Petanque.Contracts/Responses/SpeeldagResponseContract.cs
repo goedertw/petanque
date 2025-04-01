@@ -4,20 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Petanque.Contracts
+namespace Petanque.Contracts.Responses
 {
-    public class PlayerResponseContract
+    public class SpeeldagResponseContract
     {
-        public int SpelerId { get; set; }
+        public int SpeeldagId { get; set; }
 
-        public string Voornaam { get; set; } = null!;
+        public DateOnly Datum { get; set; }
 
-        public string Naam { get; set; } = null!;
+        public int? SeizoensId { get; set; }
 
         public virtual ICollection<AanwezigheidResponseContract> Aanwezigheids { get; set; } = new List<AanwezigheidResponseContract>();
 
         public virtual ICollection<DagKlassementResponseContract> Dagklassements { get; set; } = new List<DagKlassementResponseContract>();
 
-        public virtual ICollection<SeizoensKlassementResponseContract> Seizoensklassements { get; set; } = new List<SeizoensKlassementResponseContract>();
+        public virtual SeizoenResponseContract? Seizoens { get; set; }
+
+        public virtual ICollection<SpelResponseContract> Spels { get; set; } = new List<SpelResponseContract>();
     }
 }

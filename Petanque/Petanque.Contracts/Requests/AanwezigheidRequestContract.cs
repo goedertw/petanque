@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Petanque.Contracts
+namespace Petanque.Contracts.Requests
 {
-    public class AanwezigheidResponseContract
+    public class AanwezigheidRequestContract
     {
-        public int AanwezigheidId { get; set; }
-
         public int? SpeeldagId { get; set; }
 
         public int? SpelerId { get; set; }

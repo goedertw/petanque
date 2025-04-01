@@ -1,7 +1,9 @@
-﻿using Petanque.Contracts;
+﻿using Petanque.Contracts.Requests;
+using Petanque.Contracts.Responses;
+using Petanque.Services.Interfaces;
 using Petanque.Storage;
 
-namespace Petanque.Services;
+namespace Petanque.Services.Services;
 
 public class PlayerService(Id312896PetanqueContext context) : IPlayerService
 {

@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Petanque.Contracts
+namespace Petanque.Contracts.Requests
 {
-    public class SeizoensKlassementResponseContract
+    public class SeizoensKlassementRequestContract
     {
-        public int SeizoensklassementId { get; set; }
-
         public int? SpelerId { get; set; }
 
         public int? SeizoensId { get; set; }
@@ -18,8 +16,6 @@ namespace Petanque.Contracts
 
         public int PlusMinPunten { get; set; }
 
-        public virtual SeizoenResponseContract? Seizoens { get; set; }
-
-        public virtual PlayerResponseContract? Speler { get; set; }
+        
     }
 }

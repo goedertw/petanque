@@ -1,6 +1,6 @@
-﻿using Petanque.Contracts;
+﻿using Petanque.Contracts.Responses;
 
-namespace Petanque.Services;
+namespace Petanque.Services.Interfaces;
 
 public interface ISpelverdelingService
 {
