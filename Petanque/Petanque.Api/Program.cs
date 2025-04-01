@@ -16,7 +16,7 @@ builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
 builder.Services.AddScoped<ISpelverdelingService, SpelverdelingService>();
 builder.Services.AddScoped<IAanwezigheidService, AanwezigheidService>();
 builder.Services.AddScoped<IScoreService, ScoreService>();
-
+builder.Services.AddScoped<ISpeeldagService, SpeeldagService>();
 
 var app = builder.Build();
 
