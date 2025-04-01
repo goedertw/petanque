@@ -1,4 +1,5 @@
-﻿using Petanque.Contracts.Requests;
+﻿using Microsoft.EntityFrameworkCore;
+using Petanque.Contracts.Requests;
 using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
 using Petanque.Storage;
@@ -20,14 +21,51 @@ public class SpeeldagService(Id312896PetanqueContext context) : ISpeeldagService
 
         return MapToContract(speeldag);
     }
-    
-    private SpeeldagResponseContract MapToContract(Speeldag speeldag)
+
+    public SpeeldagResponseContract GetById(int id)
+    {
+        var entity = context.Speeldags
+                            .Include(s => s.Aanwezigheids)
+                            .Include(s => s.Seizoens)
+                            .Include(s => s.Spels)
+                            .FirstOrDefault(s => s.SpeeldagId == id);
+        if (entity == null)
+        {
+            return null;
+        }
+        return MapToContract(entity);
+    }
+
+    private SpeeldagResponseContract MapToContract(Speeldag entity)
     {
         return new SpeeldagResponseContract
         {
-            SpeeldagId = speeldag.SpeeldagId,
-            Datum = speeldag.Datum,
-            SeizoensId = speeldag.SeizoensId,
+            SpeeldagId = entity.SpeeldagId,
+            Datum = entity.Datum,
+            SeizoensId = entity.SeizoensId,
+            Aanwezigheden = entity.Aanwezigheids.Select(a => new AanwezigheidResponseContract
+            {
+                AanwezigheidId = a.AanwezigheidId,
+                SpelerId = a.SpelerId,
+                SpeeldagId = a.SpeeldagId,
+                SpelerVolgnr = a.SpelerVolgnr
+            }).ToList(),
+            Seizoenen = entity.Seizoens != null ? new SeizoenResponseContract
+            {
+               SeizoensId = entity.Seizoens.SeizoensId,
+               Startdatum = entity.Seizoens.Startdatum,
+               Einddatum = entity.Seizoens.Einddatum,
+
+            } : null,
+            Spellen = entity.Spels.Select(s => new SpelResponseContract
+            {
+                SpelId = s.SpelId,
+                SpeeldagId= s.SpeeldagId,
+                SpelerVolgnr = s.SpelerVolgnr,
+                Terrein = s.Terrein,
+                ScoreA = s.ScoreA,
+                ScoreB = s.ScoreB
+            }).ToList()
         };
     }
 }

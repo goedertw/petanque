@@ -14,7 +14,7 @@ namespace Petanque.Contracts.Responses
 
         public DateOnly Einddatum { get; set; }
 
-        public virtual ICollection<SeizoensKlassementResponseContract> Seizoensklassements { get; set; } = new List<SeizoensKlassementResponseContract>();
+        //public virtual ICollection<SeizoensKlassementResponseContract> Seizoensklassements { get; set; } = new List<SeizoensKlassementResponseContract>();
 
         public virtual ICollection<SpeeldagResponseContract> Speeldags { get; set; } = new List<SpeeldagResponseContract>();
     }
