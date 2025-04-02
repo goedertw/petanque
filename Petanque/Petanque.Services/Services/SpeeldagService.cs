@@ -25,7 +25,6 @@ public class SpeeldagService(Id312896PetanqueContext context) : ISpeeldagService
     public SpeeldagResponseContract GetById(int id)
     {
         var entity = context.Speeldags
-                            .Include(s => s.Aanwezigheids)
                             .Include(s => s.Seizoens)
                             .Include(s => s.Spels)
                             .FirstOrDefault(s => s.SpeeldagId == id);
@@ -42,14 +41,6 @@ public class SpeeldagService(Id312896PetanqueContext context) : ISpeeldagService
         {
             SpeeldagId = entity.SpeeldagId,
             Datum = entity.Datum,
-            SeizoensId = entity.SeizoensId,
-            Aanwezigheden = entity.Aanwezigheids.Select(a => new AanwezigheidResponseContract
-            {
-                AanwezigheidId = a.AanwezigheidId,
-                SpelerId = a.SpelerId,
-                SpeeldagId = a.SpeeldagId,
-                SpelerVolgnr = a.SpelerVolgnr
-            }).ToList(),
             Seizoenen = entity.Seizoens != null ? new SeizoenResponseContract
             {
                SeizoensId = entity.Seizoens.SeizoensId,
