@@ -24,4 +24,9 @@ public class PlayerController(IPlayerService service) : Controller
             var created = service.Create(request);
             return CreatedAtAction(nameof(Get), new { id = created.SpelerId }, created);
         }
+        [HttpGet]
+        public ActionResult<IEnumerable<PlayerResponseContract>> GetAll()
+        {
+            return Ok(service.GetAll());
+        }
 }
