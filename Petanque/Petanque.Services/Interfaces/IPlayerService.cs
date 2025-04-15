@@ -7,4 +7,5 @@ public interface IPlayerService
 {
     PlayerResponseContract? GetById(int id);
     PlayerResponseContract Create(PlayerRequestContract request);
+    IEnumerable<PlayerResponseContract> GetAll();
 }

@@ -26,6 +26,10 @@ public class PlayerService(Id312896PetanqueContext context) : IPlayerService
         var entity = context.Spelers.Find(id);
         return entity is null ? null : MapToContract(entity);
     }
+    public IEnumerable<PlayerResponseContract> GetAll()
+    {
+        return context.Spelers.Select(a => MapToContract(a)).ToList();
+    }
 
     private static PlayerResponseContract MapToContract(Speler entity)
     {
