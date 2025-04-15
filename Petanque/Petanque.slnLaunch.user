@@ -3,12 +3,13 @@
     "Name": "New Profile",
     "Projects": [
       {
-        "Name": "Petanque.Api\\Petanque.Api.csproj",
+        "Path": "PetanqueFrontend\\petanquefrontend.esproj",
         "Action": "Start"
       },
       {
-        "Name": "PetanqueFrontend\\petanquefrontend.esproj",
-        "Action": "Start"
+        "Path": "Petanque.Api\\Petanque.Api.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
       }
     ]
   }
