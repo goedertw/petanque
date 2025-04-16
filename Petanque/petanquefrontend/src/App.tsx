@@ -1,6 +1,4 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'
-import SecondPage from './pages/SecondPage'
-import { Routes, Route, useNavigate } from 'react-router-dom'
 import SecondPage from './assets/pages/aanwezigheidspagina.tsx'
 
 function App() {
@@ -17,5 +15,4 @@ function App() {
     )
 }
 
-export default App
 export default App
