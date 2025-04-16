@@ -24,8 +24,15 @@ namespace Petanque.Services.Services {
             return MapToContract(entity);
         }
 
-        public DagKlassementResponseContract? GetById(int id) {
-            return MapToContract(context.Dagklassements.Find(id));
+        public IEnumerable<DagKlassementResponseContract>? GetById(int id) {
+            var dagklassementen = context.Dagklassements
+            .Where(d => d.SpeeldagId == id)
+            .ToList();
+
+            return dagklassementen
+                .Select(MapToContract)
+                .Where(contract => contract != null)
+                .ToList()!;
         }
 
         private static DagKlassementResponseContract MapToContract(Dagklassement entity) {
