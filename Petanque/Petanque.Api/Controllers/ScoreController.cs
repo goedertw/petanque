@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Petanque.Contracts;
-using Petanque.Services;
+using Petanque.Contracts.Requests;
+using Petanque.Contracts.Responses;
+using Petanque.Services.Interfaces;
 
 namespace Petanque.Api.Controllers;
 
@@ -11,9 +12,9 @@ public class ScoreController(IScoreService service) : Controller
     [HttpGet("{id}")]
     public ActionResult<SpelResponseContract> Get([FromRoute] int id)
     {
-        var player = service.GetById(id);
-        if (player is null) return NotFound();
-        return Ok(player);
+        var spel = service.GetById(id);
+        if (spel is null) return NotFound();
+        return Ok(spel);
     }
 
     [HttpPost]
