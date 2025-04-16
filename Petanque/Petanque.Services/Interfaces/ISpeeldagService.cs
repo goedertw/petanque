@@ -7,4 +7,5 @@ public interface ISpeeldagService
 {
     SpeeldagResponseContract Create(SpeeldagRequestContract request);
     SpeeldagResponseContract GetById(int id);
+    IEnumerable<SpeeldagResponseContract> GetAll();
 }
