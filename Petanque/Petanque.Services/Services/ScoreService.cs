@@ -45,10 +45,7 @@ namespace Petanque.Services.Services
             {
                 SpelId = entity.SpelId,
                 SpeeldagId = entity.SpeeldagId,
-                Terrein = entity.Terrein,
-                SpelerVolgnr = entity.SpelerVolgnr,
-                ScoreA = entity.ScoreA,
-                ScoreB = entity.ScoreB
+                Terrein = entity.Terrein
             };
         }
     }
