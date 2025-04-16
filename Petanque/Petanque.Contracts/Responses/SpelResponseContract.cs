@@ -14,11 +14,7 @@ namespace Petanque.Contracts.Responses
 
         public string Terrein { get; set; } = null!;
 
-        public int SpelerVolgnr { get; set; }
-
-        public int ScoreA { get; set; }
-
-        public int ScoreB { get; set; }
+        public virtual ICollection<SpelerScoresResponseContract> SpelerScores { get; set; } = new List<SpelerScoresResponseContract>();
 
     }
 }
