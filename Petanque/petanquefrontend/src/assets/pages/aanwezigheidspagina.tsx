@@ -92,30 +92,35 @@ function Aanwezigheidspagina() {
             return;
         }
 
+        // Controleer of de speler al aanwezig is, om dubbele toevoegingen te voorkomen
+        const spelerAanwezig = aanwezigheden.find(
+            (aanwezigheid) => aanwezigheid.spelerId === spelerId && aanwezigheid.speeldagId === geselecteerdeSpeeldag
+        );
+
+        if (spelerAanwezig) {
+            return; // Speler is al aanwezig, doe verder niets
+        }
+
         const spelerVolgnr = 1;
 
-        fetch("https://localhost:7241/api/aanwezigheden", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                SpeeldagId: geselecteerdeSpeeldag,
-                SpelerId: spelerId,
-                SpelerVolgnr: spelerVolgnr,
-            }),
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error("Fout bij bevestigen");
-                return res.json();
-            })
-            .then(() => {
-                setAanwezigheden((prev) => [
-                    ...prev,
-                    { spelerId, speeldagId: geselecteerdeSpeeldag, spelerVolgnr: 1 },
-                ]);
-            })
-            .catch(() => {
-                setError("Fout bij bevestigen");
-            });
+        // Update de aanwezigheden state direct zonder opnieuw de server aan te roepen
+        const nieuweAanwezigheid: Aanwezigheid = {
+            aanwezigheidId: Date.now(), // Tijdelijk ID gebruiken
+            speeldagId: geselecteerdeSpeeldag,
+            spelerId,
+            spelerVolgnr,
+        };
+
+        setAanwezigheden((prev) => [...prev, nieuweAanwezigheid]);
+
+        // Toon direct bevestiging in de UI (markeer de speler als aanwezig)
+        setSpelers((prev) =>
+            prev.map((speler) =>
+                speler.spelerId === spelerId
+                    ? { ...speler, aanwezig: true } // Markeer de speler als aanwezig
+                    : speler
+            )
+        );
     };
 
     // Hulpfunctie om te checken of de geselecteerde speeldag in het verleden ligt
@@ -147,7 +152,7 @@ function Aanwezigheidspagina() {
     return (
         <div className="p-6">
             <h1 className="text-3xl font-bold text-white bg-blue-600 p-4 rounded-xl text-center mb-8 shadow-lg">
-                Overzicht Aanwezigheden
+                Aanwezigheid Overzicht
             </h1>
 
             {/* Speeldag Dropdown */}
@@ -191,12 +196,16 @@ function Aanwezigheidspagina() {
                             </div>
                             <div className="mt-auto">
                                 {speeldagIsVandaag ? (
-                                    <button
-                                        onClick={() => bevestigAanwezigheid(speler.spelerId)}
-                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl w-full transition"
-                                    >
-                                        Bevestig aanwezigheid
-                                    </button>
+                                    !spelerAanwezig ? (
+                                        <button
+                                            onClick={() => bevestigAanwezigheid(speler.spelerId)}
+                                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl w-full transition"
+                                        >
+                                            Bevestig aanwezigheid
+                                        </button>
+                                    ) : (
+                                        <p className="text-green-500 font-semibold">Aanwezig</p>
+                                    )
                                 ) : speeldagInVerleden ? (
                                     <p className="text-sm text-gray-500">
                                         {spelerAanwezig ? "Was aanwezig" : "Was niet aanwezig"}
