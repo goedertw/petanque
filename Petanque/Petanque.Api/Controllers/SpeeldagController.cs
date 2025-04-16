@@ -27,4 +27,9 @@ public class SpeeldagController(ISpeeldagService service) : Controller
         if (speeldag is null) return NotFound();
         return Ok(speeldag);
     }
+    [HttpGet]
+    public ActionResult<IEnumerable<SpeeldagResponseContract>> GetAll()
+    {
+        return Ok(service.GetAll());
+    }
 }

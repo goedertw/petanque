@@ -35,6 +35,16 @@ public class SpeeldagService(Id312896PetanqueContext context) : ISpeeldagService
         return MapToContract(entity);
     }
 
+    public IEnumerable<SpeeldagResponseContract> GetAll()
+    {
+        return context.Speeldags
+        .Include(s => s.Seizoens)
+        .Include(s => s.Spels)
+        .AsEnumerable() 
+        .Select(a => MapToContract(a))
+        .ToList();
+    }
+
     private SpeeldagResponseContract MapToContract(Speeldag entity)
     {
         return new SpeeldagResponseContract
