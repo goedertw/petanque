@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Petanque.Contracts;
-using Petanque.Services;
+using Petanque.Contracts.Requests;
+using Petanque.Contracts.Responses;
+using Petanque.Services.Interfaces;
 
 namespace Petanque.Api.Controllers
 {
@@ -12,9 +13,9 @@ namespace Petanque.Api.Controllers
         [HttpGet("{id}")]
         public ActionResult<AanwezigheidResponseContract> Get([FromRoute] int id)
         {
-            var dagklassement = service.GetById(id);
-            if (dagklassement is null) return NotFound();
-            return Ok(dagklassement);
+            var aanwezigheid = service.GetById(id);
+            if (aanwezigheid is null) return NotFound();
+            return Ok(aanwezigheid);
         }
 
         [HttpPost]

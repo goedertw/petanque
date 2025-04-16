@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "PetanqueFrontend\\petanquefrontend.esproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Petanque.Api\\Petanque.Api.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      }
+    ]
+  }
+]

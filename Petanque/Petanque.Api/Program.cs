@@ -1,9 +1,17 @@
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Petanque.Services;
+using Petanque.Services.Interfaces;
+using Petanque.Services.Services;
 using Petanque.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy.WithOrigins("*")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
 
 builder.Services.AddControllers();
 
@@ -16,8 +24,12 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
 builder.Services.AddScoped<ISpelverdelingService, SpelverdelingService>();
 builder.Services.AddScoped<IAanwezigheidService, AanwezigheidService>();
+builder.Services.AddScoped<IScoreService, ScoreService>();
+builder.Services.AddScoped<ISpeeldagService, SpeeldagService>();
 
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 app.MapControllers();
 app.UseHttpsRedirection();

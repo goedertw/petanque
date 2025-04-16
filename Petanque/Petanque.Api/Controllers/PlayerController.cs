@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Petanque.Contracts;
-using Petanque.Services;
+using Petanque.Contracts.Requests;
+using Petanque.Contracts.Responses;
+using Petanque.Services.Interfaces;
 
 namespace Petanque.Api.Controllers;
 
@@ -11,10 +12,6 @@ public class PlayerController(IPlayerService service) : Controller
         [HttpGet("{id}")]
         public ActionResult<PlayerResponseContract> Get([FromRoute] int id)
         {
-            var customer = service.GetById(id);
-            if (customer is null) return NotFound();
-            return Ok(customer);
-            return Ok(customer);
             var player = service.GetById(id);
             if (player is null) return NotFound();
             return Ok(player);
@@ -26,5 +23,10 @@ public class PlayerController(IPlayerService service) : Controller
         {
             var created = service.Create(request);
             return CreatedAtAction(nameof(Get), new { id = created.SpelerId }, created);
+        }
+        [HttpGet]
+        public ActionResult<IEnumerable<PlayerResponseContract>> GetAll()
+        {
+            return Ok(service.GetAll());
         }
 }
