@@ -1,5 +1,5 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'
-import SecondPage from './pages/SecondPage'
+import SecondPage from './assets/pages/aanwezigheidspagina.tsx'
 
 function App() {
     const navigate = useNavigate()
