@@ -9,7 +9,7 @@ namespace Petanque.Api.Controllers {
     [ApiController]
     public class DagKlassementController(IDagKlassementService service) : ControllerBase {
         [HttpGet("{id}")]
-        public ActionResult<DagKlassementResponseContract> Get([FromRoute] int id) {
+        public ActionResult<IEnumerable<DagKlassementResponseContract>> Get([FromRoute] int id) {
             var dagklassement = service.GetById(id);
             if (dagklassement is null) return NotFound();
             return Ok(dagklassement);
