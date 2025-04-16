@@ -13,9 +13,10 @@ interface Speeldag {
 }
 
 interface Aanwezigheid {
-    spelerId: number;
+    aanwezigheidId: number;
     speeldagId: number;
-    aanwezig: boolean;
+    spelerId: number;
+    spelerVolgnr: number;
 }
 
 function Aanwezigheidspagina() {
@@ -26,17 +27,17 @@ function Aanwezigheidspagina() {
     const [error, setError] = useState<string | null>(null);
     const [aanwezigheden, setAanwezigheden] = useState<Aanwezigheid[]>([]);
 
-    // Functie om de aanwezigheden op te halen voor een specifieke speeldag
-    const loadAanwezigheden = (speeldagId: number) => {
-        setLoading(true); // Zet loading weer aan als we de data ophalen
-        fetch(`https://localhost:7241/api/aanwezigheden?speeldagId=${speeldagId}`)
+    // Functie om de aanwezigheden op te halen voor de geselecteerde speeldag
+    const loadAanwezigheden = () => {
+        setLoading(true);
+        fetch("https://localhost:7241/api/aanwezigheden")
             .then((res) => {
                 if (!res.ok) throw new Error("Fout bij ophalen aanwezigheden");
                 return res.json();
             })
             .then((data: Aanwezigheid[]) => {
                 setAanwezigheden(data);
-                setLoading(false); // Zet loading uit als de data binnen is
+                setLoading(false);
             })
             .catch((err) => {
                 setError(err.message);
@@ -70,8 +71,9 @@ function Aanwezigheidspagina() {
                 setSpeeldagen(data);
                 if (data.length > 0) {
                     const eersteSpeeldagId = data[0].speeldagId;
-                    setGeselecteerdeSpeeldag(eersteSpeeldagId); // Zet de eerste speeldag als standaard
-                    loadAanwezigheden(eersteSpeeldagId); // Haal de aanwezigheden op voor de eerste speeldag
+                    setGeselecteerdeSpeeldag(eersteSpeeldagId);
+                    // Laad de aanwezigheden voor de eerste speeldag
+                    loadAanwezigheden();
                 }
             })
             .catch((err) => setError(err.message));
@@ -80,7 +82,7 @@ function Aanwezigheidspagina() {
     // Als de geselecteerde speeldag verandert, laad de aanwezigheden opnieuw
     useEffect(() => {
         if (geselecteerdeSpeeldag) {
-            loadAanwezigheden(geselecteerdeSpeeldag);
+            loadAanwezigheden();
         }
     }, [geselecteerdeSpeeldag]); // Trigger opnieuw wanneer de speeldag verandert
 
@@ -108,7 +110,7 @@ function Aanwezigheidspagina() {
             .then(() => {
                 setAanwezigheden((prev) => [
                     ...prev,
-                    { spelerId, speeldagId: geselecteerdeSpeeldag, aanwezig: true },
+                    { spelerId, speeldagId: geselecteerdeSpeeldag, spelerVolgnr: 1 },
                 ]);
             })
             .catch(() => {
@@ -116,13 +118,36 @@ function Aanwezigheidspagina() {
             });
     };
 
+    // Hulpfunctie om te checken of de geselecteerde speeldag in het verleden ligt
+    const isSpeeldagInVerleden = (speeldagDatum: string) => {
+        const speeldagDate = new Date(speeldagDatum);
+        const today = new Date();
+        return speeldagDate < today;
+    };
+
+    // Hulpfunctie om te checken of de geselecteerde speeldag vandaag is
+    const isSpeeldagVandaag = (speeldagDatum: string) => {
+        const speeldagDate = new Date(speeldagDatum);
+        const today = new Date();
+        return (
+            speeldagDate.getFullYear() === today.getFullYear() &&
+            speeldagDate.getMonth() === today.getMonth() &&
+            speeldagDate.getDate() === today.getDate()
+        );
+    };
+
     if (loading) return <p className="text-center mt-10">Bezig met laden...</p>;
     if (error) return <p className="text-center text-red-600 mt-10">Fout: {error}</p>;
+
+    // Filter de aanwezigheden op basis van de geselecteerde speeldag
+    const filteredAanwezigheden = aanwezigheden.filter(
+        (aanwezigheid) => aanwezigheid.speeldagId === geselecteerdeSpeeldag
+    );
 
     return (
         <div className="p-6">
             <h1 className="text-3xl font-bold text-white bg-blue-600 p-4 rounded-xl text-center mb-8 shadow-lg">
-                Aanwezigheid Overzicht
+                Overzicht Aanwezigheden
             </h1>
 
             {/* Speeldag Dropdown */}
@@ -144,9 +169,15 @@ function Aanwezigheidspagina() {
             {/* Spelers Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                 {spelers.map((speler) => {
-                    const spelerAanwezig = aanwezigheden.find(
+                    const spelerAanwezig = filteredAanwezigheden.find(
                         (aanwezigheid) => aanwezigheid.spelerId === speler.spelerId
                     );
+                    const speeldagDatum = speeldagen.find(
+                        (dag) => dag.speeldagId === geselecteerdeSpeeldag
+                    )?.datum;
+
+                    const speeldagInVerleden = speeldagDatum && isSpeeldagInVerleden(speeldagDatum);
+                    const speeldagIsVandaag = speeldagDatum && isSpeeldagVandaag(speeldagDatum);
 
                     return (
                         <div
@@ -157,11 +188,19 @@ function Aanwezigheidspagina() {
                                 <h2 className="text-xl font-semibold text-gray-800 mb-1">
                                     {speler.voornaam} {speler.naam}
                                 </h2>
-                                <ul className="text-sm text-gray-700 mb-4"></ul>
                             </div>
                             <div className="mt-auto">
-                                {spelerAanwezig ? (
-                                    <p className="text-green-500 font-semibold">Aanwezig</p>
+                                {speeldagIsVandaag ? (
+                                    <button
+                                        onClick={() => bevestigAanwezigheid(speler.spelerId)}
+                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl w-full transition"
+                                    >
+                                        Bevestig aanwezigheid
+                                    </button>
+                                ) : speeldagInVerleden ? (
+                                    <p className="text-sm text-gray-500">
+                                        {spelerAanwezig ? "Was aanwezig" : "Was niet aanwezig"}
+                                    </p>
                                 ) : (
                                     <button
                                         onClick={() => bevestigAanwezigheid(speler.spelerId)}
