@@ -7,29 +7,42 @@ namespace Petanque.Services.Services;
 
 public class SpelverdelingService(Id312896PetanqueContext context) : ISpelverdelingService
 {
-    public SpelverdelingResponseContract GetById(int id)
+    public IEnumerable<SpelverdelingResponseContract> GetById(int speeldagId)
     {
-        var spelverdeling = context.Spelverdelings
-            .FirstOrDefault(sv => sv.SpelverdelingsId == id);
+        // Haal alle spellen op van de speeldag
+        var spellen = context.Spels
+            .Where(sp => sp.SpeeldagId == speeldagId)
+            .ToList();
 
-        if (spelverdeling == null)
-            return null;
+        if (!spellen.Any())
+            return Enumerable.Empty<SpelverdelingResponseContract>();
 
-        var spel = context.Spels
-            .FirstOrDefault(sp => sp.SpelId == spelverdeling.SpelId);
+        // Haal alle spelverdelingen voor deze spellen op
+        var spelIds = spellen.Select(s => s.SpelId).ToList();
 
-        var speeldagId = spel?.SpeeldagId;
+        var spelverdelingen = context.Spelverdelings
+            .Where(sv => spelIds.Contains(sv.SpelId ?? 0))
+            .ToList();
 
-        var aanwezigheid = context.Aanwezigheids
+        // Haal aanwezigheid + speler info op
+        var aanwezigheden = context.Aanwezigheids
             .Include(a => a.Speler)
-            .FirstOrDefault(a =>
-                a.SpeeldagId == speeldagId &&
-                a.SpelerVolgnr == spelverdeling.SpelerVolgnr);
+            .Where(a => a.SpeeldagId == speeldagId)
+            .ToList();
 
-        return MapToContract(spelverdeling, aanwezigheid?.Speler);
+        return spelverdelingen.Select(sv =>
+        {
+            var speler = aanwezigheden
+                .FirstOrDefault(a => a.SpelerVolgnr == sv.SpelerVolgnr)
+                ?.Speler;
+
+            var spel = spellen.FirstOrDefault(sp => sp.SpelId == sv.SpelId);
+
+            return MapToContract(sv, speler, spel);
+        }).ToList();
     }
 
-    private static SpelverdelingResponseContract MapToContract(Spelverdeling entity, Speler? speler)
+    private static SpelverdelingResponseContract MapToContract(Spelverdeling entity, Speler? speler, Spel? spel)
     {
         return new SpelverdelingResponseContract
         {
@@ -43,6 +56,12 @@ public class SpelverdelingService(Id312896PetanqueContext context) : ISpelverdel
                 SpelerId = speler.SpelerId,
                 Voornaam = speler.Voornaam,
                 Naam = speler.Naam
+            },
+            Spel = spel == null ? null : new SpelResponseContract
+            {
+                SpelId = spel.SpelId,
+                SpeeldagId = spel.SpeeldagId,
+                Terrein = spel.Terrein
             }
         };
     }
