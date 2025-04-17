@@ -64,6 +64,7 @@ const MatchScoreCard: React.FC = () => {
 
     // Fetch speeldagen
     useEffect(() => {
+        // Fetch speeldagen from backend
         fetch("https://localhost:7241/api/speeldagen")
             .then((res) => res.json())
             .then((data: Speeldag[]) => {
@@ -201,28 +202,35 @@ const MatchScoreCard: React.FC = () => {
                             <h3 className="font-medium text-lg text-right text-red-600">Team B</h3>
                             <div className="space-y-2 w-full">
                                 {game.teamB.players.map((name, i) => (
-                                    <input
-                                        key={i}
-                                        type="text"
-                                        value={name}
+                                            <input
+                                                key={i}
+                                                type="text"
+                                                value={name}
                                         onChange={(e) => handleNameChange(gameIndex, "teamB", i, e.target.value)}
-                                        placeholder={`Speler ${i + 1}`}
+                                                placeholder={`Speler ${i + 1}`}
                                         className="border-b w-full px-2 py-1 mb-2 rounded-lg"
-                                    />
-                                ))}
-                            </div>
+                                            />
+                                        ))}
+                                    </div>
 
                             <div className="mt-4">
-                                <label className="block text-sm mb-1">Aantal punten:</label>
-                                <input
-                                    type="number"
+                                        <label className="block text-sm mb-1">Aantal punten:</label>
+                                        <input
+                                            type="number"
                                     value={game.teamB.points}
-                                    min={0}
+                                            min={0}
                                     onChange={(e) => handlePointsChange(gameIndex, "teamB", e.target.value)}
                                     className="border px-2 py-1 w-24 rounded-lg"
-                                />
-                            </div>
-                        </div>
+                                        />
+                                    </div>
+
+                                    <div className="mt-2 text-sm font-medium">
+                                        Aantal (X): <span className="font-bold">{score}</span>
+                                        <span className="ml-4">{difference >= 0 ? "+" : ""}{difference}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             ))}
