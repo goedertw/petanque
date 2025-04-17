@@ -1,6 +1,7 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import SecondPage from './assets/pages/aanwezigheidspagina.tsx'
 import ThirdPage from './assets/pages/spelerpagina.tsx'
+import FourthPage from './assets/pages/scorebladpagina.tsx'
 
 function App() {
     const navigate = useNavigate();
@@ -24,6 +25,12 @@ function App() {
                         >
                             Speler Pagina
                         </button>
+                        <button
+                            onClick={() => navigate('/scoreblad')}
+                            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+                        >
+                            Score Bladeren
+                        </button>
                     </nav>
                 </div>
             </header>
@@ -33,6 +40,7 @@ function App() {
                 <Routes>
                     <Route path="/aanwezigheden" element={<SecondPage />} />
                     <Route path="/spelers" element={<ThirdPage />} />
+                    <Route path="/scoreblad" element={<FourthPage />} />
                 </Routes>
             </main>
 

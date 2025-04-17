@@ -1,4 +1,5 @@
-﻿using Petanque.Contracts.Responses;
+﻿using Microsoft.EntityFrameworkCore;
+using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
 using Petanque.Storage;
 
@@ -8,7 +9,10 @@ public class SpelverdelingService(Id312896PetanqueContext context) : ISpelverdel
 {
     public SpelverdelingResponseContract GetById(int id)
     {
-        var entity = context.Spelverdelings.Find(id);
+        var entity = context.Spelverdelings
+                   .Include(s => s.Speler)
+                   .FirstOrDefault(s => s.SpelverdelingsId == id);
+
         return entity is null ? null : MapToContract(entity);
     }
     
@@ -21,6 +25,11 @@ public class SpelverdelingService(Id312896PetanqueContext context) : ISpelverdel
             Team = entity.Team,
             SpelerPositie = entity.SpelerPositie,
             SpelerVolgnr = entity.SpelerVolgnr,
+            Speler = new PlayerResponseContract {
+                SpelerId = entity.Speler.SpelerId,
+                Voornaam = entity.Speler.Voornaam,
+                Naam = entity.speler.Naam
+            }
         };
     }
 }
