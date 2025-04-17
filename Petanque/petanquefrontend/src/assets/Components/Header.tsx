@@ -2,6 +2,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import SecondPage from '../pages/aanwezigheidspagina.tsx'
 import ThirdPage from '../pages/spelerpagina.tsx'
 import HomePage from '../pages/HomePagina.tsx'
+import ScorePagina from '../pages/scorebladpagina.tsx'
 
 function Header() {
     const navigate = useNavigate();
@@ -30,6 +31,12 @@ function Header() {
                         >
                             Home Pagina
                         </button>
+                        <button
+                            onClick={() => navigate('/scorebladeren')}
+                            className="bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 transition"
+                        >
+                            scores
+                        </button>
                     </nav>
                 </div>
             </header>
@@ -38,6 +45,7 @@ function Header() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/aanwezigheden" element={<SecondPage />} />
                     <Route path="/spelers" element={<ThirdPage />} />
+                    <Route path="/scorebladeren" element={<ScorePagina />} />
                 </Routes>
             </main>
         </div>
