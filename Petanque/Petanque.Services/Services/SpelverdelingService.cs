@@ -9,14 +9,27 @@ public class SpelverdelingService(Id312896PetanqueContext context) : ISpelverdel
 {
     public SpelverdelingResponseContract GetById(int id)
     {
-        var entity = context.Spelverdelings
-                   .Include(s => s.Speler)
-                   .FirstOrDefault(s => s.SpelverdelingsId == id);
+        var spelverdeling = context.Spelverdelings
+            .FirstOrDefault(sv => sv.SpelverdelingsId == id);
 
-        return entity is null ? null : MapToContract(entity);
+        if (spelverdeling == null)
+            return null;
+
+        var spel = context.Spels
+            .FirstOrDefault(sp => sp.SpelId == spelverdeling.SpelId);
+
+        var speeldagId = spel?.SpeeldagId;
+
+        var aanwezigheid = context.Aanwezigheids
+            .Include(a => a.Speler)
+            .FirstOrDefault(a =>
+                a.SpeeldagId == speeldagId &&
+                a.SpelerVolgnr == spelverdeling.SpelerVolgnr);
+
+        return MapToContract(spelverdeling, aanwezigheid?.Speler);
     }
-    
-    private static SpelverdelingResponseContract MapToContract(Spelverdeling entity) 
+
+    private static SpelverdelingResponseContract MapToContract(Spelverdeling entity, Speler? speler)
     {
         return new SpelverdelingResponseContract
         {
@@ -25,10 +38,11 @@ public class SpelverdelingService(Id312896PetanqueContext context) : ISpelverdel
             Team = entity.Team,
             SpelerPositie = entity.SpelerPositie,
             SpelerVolgnr = entity.SpelerVolgnr,
-            Speler = new PlayerResponseContract {
-                SpelerId = entity.Speler.SpelerId,
-                Voornaam = entity.Speler.Voornaam,
-                Naam = entity.speler.Naam
+            Speler = speler == null ? null : new PlayerResponseContract
+            {
+                SpelerId = speler.SpelerId,
+                Voornaam = speler.Voornaam,
+                Naam = speler.Naam
             }
         };
     }
