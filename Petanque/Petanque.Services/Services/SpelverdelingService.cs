@@ -1,4 +1,5 @@
-﻿using Petanque.Contracts.Responses;
+﻿using Microsoft.EntityFrameworkCore;
+using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
 using Petanque.Storage;
 using System.Linq;
