@@ -181,13 +181,14 @@ const MatchScoreCard: React.FC = () => {
                                     />
                                 ))}
                             </div>
-
+                            {/*fixen da aanal punten niet boven 13 kunnen muss ook het plus min systeem integreren*/ }
                             <div className="mt-4">
                                 <label className="block text-sm mb-1">Aantal punten:</label>
                                 <input
                                     type="number"
                                     value={game.teamA.points}
                                     min={0}
+                                    max={13}
                                     onChange={(e) => handlePointsChange(gameIndex, "teamA", e.target.value)}
                                     className="border px-2 py-1 w-24 rounded-lg"
                                 />
