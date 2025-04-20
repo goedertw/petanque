@@ -13,5 +13,6 @@ namespace Petanque.Services.Interfaces
         AanwezigheidResponseContract? GetById(int id);
         AanwezigheidResponseContract Create(AanwezigheidRequestContract request);
         IEnumerable<AanwezigheidResponseContract> GetAll();
+        IEnumerable<AanwezigheidResponseContract> GetAanwezighedenOpSpeeldag(int id);
     }
 }

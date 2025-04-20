@@ -1,150 +1,125 @@
 ﻿using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
 using Petanque.Storage;
-using static Petanque.Contracts.Responses.SpelverdelingSpellenResponseContract;
+using System.Linq;
 
-namespace Petanque.Services.Services;
-
-public class SpelverdelingService(Id312896PetanqueContext context) : ISpelverdelingService
+namespace Petanque.Services.Services
 {
-    private readonly Random _random = new();
-
-    public SpelverdelingResponseContract GetById(int id)
+    public class SpelverdelingService : ISpelverdelingService
     {
-        var entity = context.Spelverdelings.Find(id);
-        return entity is null ? null : MapToContract(entity);
-    }
+        private readonly Random _random = new();
+        private readonly Id312896PetanqueContext _context;
 
-    private static SpelverdelingResponseContract MapToContract(Spelverdeling entity)
-    {
-        return new SpelverdelingResponseContract
+        public SpelverdelingService(Id312896PetanqueContext context) => _context = context;
+
+        public SpelverdelingResponseContract GetById(int id)
         {
-            SpelverdelingsId = entity.SpelverdelingsId,
-            SpelId = entity.SpelId,
-            Team = entity.Team,
-            SpelerPositie = entity.SpelerPositie,
-            SpelerVolgnr = entity.SpelerVolgnr,
-        };
-    }
-
-    public List<SpelverdelingSpellenResponseContract.SpelVerdelingRonde> GenereerVerdeling(List<string> spelers, int aantalRondes, int aantalSpeelterreinen)
-    {
-        var rondes = new List<SpelverdelingSpellenResponseContract.SpelVerdelingRonde>();
-        var samenspeelTracker = spelers.ToDictionary(s => s, s => new HashSet<string>());
-
-        for (int rondeNr = 1; rondeNr <= aantalRondes; rondeNr++)
-        {
-            var speelveldVerdelingen = new List<SpelverdelingSpellenResponseContract.SpeelveldVerdeling>();
-            var shuffledSpelers = spelers.OrderBy(_ => _random.Next()).ToList();
-            int totalSpelers = shuffledSpelers.Count;
-            int spelersPerVeld = (int)Math.Floor(totalSpelers / (double)aantalSpeelterreinen);
-
-            
-            var fieldAssignments = new List<List<string>>();
-            int index = 0;
-            for (int i = 0; i < aantalSpeelterreinen; i++)
-            {
-                int count = spelersPerVeld + (i < totalSpelers % aantalSpeelterreinen ? 1 : 0);
-                var subset = shuffledSpelers.Skip(index).Take(count).ToList();
-                fieldAssignments.Add(subset);
-                index += count;
-            }
-
-            for (int veldNr = 1; veldNr <= fieldAssignments.Count; veldNr++)
-            {
-                var subset = fieldAssignments[veldNr - 1];
-
-                
-                var teamSplits = GetTeamSplits(subset)
-                    .OrderBy(s => Math.Abs(s.team1.Count - s.team2.Count)) 
-                    .ThenBy(s => CalculateTeamScore(s.team1, samenspeelTracker) + CalculateTeamScore(s.team2, samenspeelTracker))
-                    .ToList();
-
-                if (!teamSplits.Any()) continue;
-
-                var (bestTeam1, bestTeam2) = teamSplits.First();
-
-                foreach (var speler in bestTeam1)
-                    foreach (var teammate in bestTeam1.Where(x => x != speler))
-                        samenspeelTracker[speler].Add(teammate);
-
-                foreach (var speler in bestTeam2)
-                    foreach (var teammate in bestTeam2.Where(x => x != speler))
-                        samenspeelTracker[speler].Add(teammate);
-
-                speelveldVerdelingen.Add(new SpelverdelingSpellenResponseContract.SpeelveldVerdeling
-                {
-                    SpeelveldNr = veldNr,
-                    Team1 = bestTeam1,
-                    Team2 = bestTeam2
-                });
-            }
-
-            rondes.Add(new SpelverdelingSpellenResponseContract.SpelVerdelingRonde
-            {
-                RondeNr = rondeNr,
-                Speelvelden = speelveldVerdelingen
-            });
+            var entity = _context.Spelverdelings.Find(id);
+            return entity is null ? null : MapToContract(entity);
         }
 
-        return rondes;
-    }
-
-
-    private static List<(List<string> team1, List<string> team2)> GetTeamSplits(List<string> spelers)
-    {
-        var result = new List<(List<string>, List<string>)>();
-        int n = spelers.Count;
-
-        if (n < 4) return result;
-
-        for (int i = 1; i < n; i++)
+        public IEnumerable<SpelverdelingResponseContract> MaakVerdeling(IEnumerable<AanwezigheidResponseContract> aanwezigheden)
         {
-            var team1Combos = Combinations(spelers, i);
-            foreach (var t1 in team1Combos)
+            Console.WriteLine("Aanwezigheden:");
+            foreach (var a in aanwezigheden)
             {
-                var t2 = spelers.Except(t1).ToList();
-                if (t1.Count >= 2 && t2.Count >= 2)
+                Console.WriteLine($"SpelerVolgnr: {a.SpelerVolgnr}");
+            }
+
+            if (aanwezigheden == null || !aanwezigheden.Any())
+                return Enumerable.Empty<SpelverdelingResponseContract>();
+
+            const int spellenPerSpeler = 3;
+            var spelverdelingen = new List<Spelverdeling>();
+
+            var spelerTelling = new Dictionary<int, int>();
+
+            foreach (var aanwezigheid in aanwezigheden)
+            {
+                if (!spelerTelling.ContainsKey(aanwezigheid.SpelerVolgnr))
                 {
-                    result.Add((t1, t2));
+                    spelerTelling[aanwezigheid.SpelerVolgnr] = 0;
                 }
             }
-        }
 
-        return result;
-    }
-
-    private static int CalculateTeamScore(List<string> team, Dictionary<string, HashSet<string>> tracker)
-    {
-        int score = 0;
-        foreach (var speler in team)
-        {
-            score += team.Where(teammate => teammate != speler && tracker[speler].Contains(teammate)).Count();
-        }
-        return score;
-    }
-
-    private static List<List<T>> Combinations<T>(List<T> list, int k)
-    {
-        var result = new List<List<T>>();
-
-        void Combine(int start, List<T> current)
-        {
-            if (current.Count == k)
+            Console.WriteLine("Initiale speler telling:");
+            foreach (var kvp in spelerTelling)
             {
-                result.Add(new List<T>(current));
-                return;
+                Console.WriteLine($"Speler {kvp.Key} heeft {kvp.Value} spellen gespeeld.");
             }
 
-            for (int i = start; i < list.Count; i++)
+            int spelId = 1;
+
+            while (spelerTelling.Any(kvp => kvp.Value < spellenPerSpeler))
             {
-                current.Add(list[i]);
-                Combine(i + 1, current);
-                current.RemoveAt(current.Count - 1);
+                Console.WriteLine("Start nieuwe ronde...");
+
+                var beschikbareSpelers = spelerTelling
+                    .Where(kvp => kvp.Value < spellenPerSpeler)
+                    .OrderBy(_ => _random.Next())
+                    .ToList();
+
+                Console.WriteLine("Beschikbare spelers voor deze ronde:");
+                foreach (var speler in beschikbareSpelers)
+                {
+                    Console.WriteLine($"Speler {speler.Key} geselecteerd.");
+                }
+
+                if (beschikbareSpelers.Count < 4)
+                {
+                    Console.WriteLine("Niet genoeg spelers om een team te maken. De ronde stopt.");
+                    break; 
+                }
+
+                var teamA = beschikbareSpelers.Take(2).ToList();
+                var teamB = beschikbareSpelers.Skip(2).Take(2).ToList(); 
+
+                int positie = 1;
+                foreach (var speler in teamA)
+                {
+                    spelverdelingen.Add(new Spelverdeling
+                    {
+                        SpelId = spelId,
+                        Team = "Team A",
+                        SpelerPositie = $"P{positie++}",
+                        SpelerVolgnr = speler.Key
+                    });
+                    spelerTelling[speler.Key]++;
+                }
+
+                positie = 1;
+                foreach (var speler in teamB)
+                {
+                    spelverdelingen.Add(new Spelverdeling
+                    {
+                        SpelId = spelId,
+                        Team = "Team B",
+                        SpelerPositie = $"P{positie++}",
+                        SpelerVolgnr = speler.Key
+                    });
+                    spelerTelling[speler.Key]++;
+                }
+
+                spelId++;
             }
+
+            _context.Spelverdelings.AddRange(spelverdelingen);
+            _context.SaveChanges();
+
+            var responses = spelverdelingen.Select(MapToContract).ToList();
+            return responses;
         }
 
-        Combine(0, new List<T>());
-        return result;
+        private static SpelverdelingResponseContract MapToContract(Spelverdeling entity)
+        {
+            return new SpelverdelingResponseContract
+            {
+                SpelverdelingsId = entity.SpelverdelingsId,
+                SpelId = entity.SpelId,
+                Team = entity.Team,
+                SpelerPositie = entity.SpelerPositie,
+                SpelerVolgnr = entity.SpelerVolgnr
+            };
+        }
     }
 }
