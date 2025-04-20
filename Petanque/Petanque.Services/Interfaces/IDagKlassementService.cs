@@ -7,8 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Petanque.Services.Interfaces {
-    public interface IDagKlassementService {
+    public interface IDagKlassementService 
+    {
         IEnumerable<DagKlassementResponseContract>? GetById(int id);
         DagKlassementResponseContract Create(DagKlassementRequestContract request);
+        IEnumerable<DagKlassementResponseContract> CreateDagKlassementen(SpeeldagResponseContract spelerscores, int id);
     }
 }
