@@ -45,5 +45,10 @@ namespace Petanque.Services.Services
                 SpelerVolgnr = entity.SpelerVolgnr
             };
         }
+
+        public IEnumerable<AanwezigheidResponseContract> GetAanwezighedenOpSpeeldag(int id)
+        {
+            return context.Aanwezigheids.Select(a => MapToContract(a)).ToList().Where(s => s.SpeeldagId == id);
+        }
     }
 }
