@@ -2,6 +2,6 @@
 
 public interface ISpelverdelingService
 {
-    SpelverdelingResponseContract GetById(int id);
-    IEnumerable<SpelverdelingResponseContract> MaakVerdeling(IEnumerable<AanwezigheidResponseContract> aanwezigheden);
+    IEnumerable<SpelverdelingResponseContract> GetById(int id);
+    IEnumerable<SpelverdelingResponseContract> MaakVerdeling(IEnumerable<AanwezigheidResponseContract> aanwezigheden, int id);
 }
