@@ -10,8 +10,6 @@ namespace Petanque.Contracts.Responses
 {
     public class SpelverdelingResponseContract
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SpelverdelingsId { get; set; }
 
         public int? SpelId { get; set; }
@@ -21,6 +19,10 @@ namespace Petanque.Contracts.Responses
         public string SpelerPositie { get; set; } = null!;
 
         public int SpelerVolgnr { get; set; }
+
+        public PlayerResponseContract Speler { get; set; }
+
+        public SpelResponseContract Spel { get; set; }
 
     }
 }

@@ -2,7 +2,6 @@
 using Petanque.Contracts.Requests;
 using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
-using static Petanque.Contracts.Responses.SpelverdelingSpellenResponseContract;
 
 namespace Petanque.Api.Controllers;
 [ApiController]
@@ -25,6 +24,6 @@ public class SpelverdelingController(ISpelverdelingService service, IAanwezighei
         if (aanwezigheden == null || !aanwezigheden.Any())
             return BadRequest("Geen aanwezige spelers gevonden.");
 
-        return Ok(service.MaakVerdeling(aanwezigheden));
+        return Ok(service.MaakVerdeling(aanwezigheden, id));
     }
 }
