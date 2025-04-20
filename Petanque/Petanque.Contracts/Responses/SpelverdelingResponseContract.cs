@@ -17,5 +17,9 @@ namespace Petanque.Contracts.Responses
         public string SpelerPositie { get; set; } = null!;
 
         public int SpelerVolgnr { get; set; }
+
+        public PlayerResponseContract Speler { get; set; }
+
+        public SpelResponseContract Spel { get; set; }
     }
 }

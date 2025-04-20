@@ -4,5 +4,5 @@ namespace Petanque.Services.Interfaces;
 
 public interface ISpelverdelingService
 {
-    SpelverdelingResponseContract GetById(int id);
+    IEnumerable<SpelverdelingResponseContract> GetById(int id);
 }

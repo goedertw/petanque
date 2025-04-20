@@ -53,20 +53,24 @@ public class SpeeldagService(Id312896PetanqueContext context) : ISpeeldagService
             Datum = entity.Datum,
             Seizoenen = entity.Seizoens != null ? new SeizoenResponseContract
             {
-               SeizoensId = entity.Seizoens.SeizoensId,
-               Startdatum = entity.Seizoens.Startdatum,
-               Einddatum = entity.Seizoens.Einddatum,
-
+                SeizoensId = entity.Seizoens.SeizoensId,
+                Startdatum = entity.Seizoens.Startdatum,
+                Einddatum = entity.Seizoens.Einddatum,
             } : null,
             Spellen = entity.Spels.Select(s => new SpelResponseContract
             {
                 SpelId = s.SpelId,
-                SpeeldagId= s.SpeeldagId,
-                SpelerVolgnr = s.SpelerVolgnr,
+                SpeeldagId = s.SpeeldagId,
                 Terrein = s.Terrein,
-                ScoreA = s.ScoreA,
-                ScoreB = s.ScoreB
+                SpelerScores = entity.Spels.Select(ss => new SpelerScoresResponseContract
+                {
+                    SpelerVolgNr = ss.SpelerVolgnr,
+                    ScoreA = ss.ScoreA,
+                    ScoreB = ss.ScoreB
+                }).ToList()
             }).ToList()
         };
     }
+
+
 }
