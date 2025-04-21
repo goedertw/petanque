@@ -15,11 +15,12 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+// Verbinding met de MySQL database
 var connectionString = builder.Configuration.GetConnectionString("LocalMySQL");
-var serverVersion = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
 builder.Services.AddDbContext<Id312896PetanqueContext>(options =>
-    options.UseMySql(connectionString, serverVersion));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+// Services toevoegen
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
 builder.Services.AddScoped<ISpelverdelingService, SpelverdelingService>();
