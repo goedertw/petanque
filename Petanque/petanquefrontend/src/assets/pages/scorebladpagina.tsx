@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 const apiUrl = import.meta.env.VITE_API_URL;
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
 // Interfaces
 interface Speler {
     spelerId: number;
@@ -95,7 +93,7 @@ const MatchScoreCard: React.FC = () => {
                     const spelerNaam = `${entry.speler.voornaam} ${entry.speler.naam}`;
 
                     // Controleer of het terrein overeenkomt met het geselecteerde terrein
-                    if (terreinLabel === `Terrein ${terrein}`) {
+                    if (terreinLabel.trim().toLowerCase() === `terrein ${terrein}`.toLowerCase()) {
                         if (!spelMap[spelId]) {
                             spelMap[spelId] = {
                                 spelId,
@@ -181,22 +179,20 @@ const MatchScoreCard: React.FC = () => {
         if (!selectedSpeeldag) return;
 
         Promise.all(
-<<<<<<< HEAD
-            spelResultaten.map((spel) =>
-                fetch(`${apiUrl}/scores`, {
-                    method: "POST",
-=======
-            games.map((game) =>
-                fetch(`${apiUrl}/scores`/*/${game.spelId}`*/, {
+
+
+
+                 spelResultaten.map((spel) =>
+                    fetch(`${apiUrl}/scores`/*/${game.spelId}`*/, {
                     method: "PUT",
->>>>>>> master
+
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         speeldagId: selectedSpeeldag,
-                        terrein: game.terrein,
+                        terrein: spel.terrein,
                         spelerVolgnr: 1, // You can remove this if unused
-                        scoreA: game.teamA.points,
-                        scoreB: game.teamB.points
+                        scoreA: spel.teamA.points,
+                        scoreB: spel.teamB.points
                     }),
                 }).then((res) => {
                     if (!res.ok) throw new Error("Fout bij opslaan van score");
