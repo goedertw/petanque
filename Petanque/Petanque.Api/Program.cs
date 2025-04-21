@@ -1,9 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using Petanque.Services;
 using Petanque.Services.Interfaces;
 using Petanque.Services.Services;
 using Petanque.Storage;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community; // Deze regel kan nu mogelijk niet werken als 'LicenseType' niet bestaat
+
 
 builder.Services.AddCors(options =>
 {
@@ -27,6 +32,8 @@ builder.Services.AddScoped<ISpelverdelingService, SpelverdelingService>();
 builder.Services.AddScoped<IAanwezigheidService, AanwezigheidService>();
 builder.Services.AddScoped<IScoreService, ScoreService>();
 builder.Services.AddScoped<ISpeeldagService, SpeeldagService>();
+builder.Services.AddScoped<IDagKlassementPDFService, DagKlassementPDFService>();
+
 
 var app = builder.Build();
 

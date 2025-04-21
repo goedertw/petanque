@@ -11,4 +11,8 @@
       <ProjectReference Include="..\Petanque.Storage\Petanque.Storage.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="QuestPDF" Version="2025.4.0" />
+    </ItemGroup>
+
 </Project>
