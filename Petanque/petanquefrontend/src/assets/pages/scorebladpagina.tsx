@@ -128,6 +128,86 @@ const MatchScoreCard: React.FC = () => {
         setGames(updatedGames);
     };
 
+    /*dit is als je saved per player (in meeste gevallen dus een spel 4 keer opslaan door de 4 spelers)
+    
+    const handleSave = () => {
+        if (!selectedSpeeldag) return;
+
+        const spelResultaten: SpelRequestContract[] = [];
+
+        games.forEach((game) => {
+            ["teamA", "teamB"].forEach((teamKey) => {
+                const team = game[teamKey as "teamA" | "teamB"];
+                const scoreA = teamKey === "teamA" ? game.teamA.points : game.teamB.points;
+                const scoreB = teamKey === "teamA" ? game.teamB.points : game.teamA.points;
+                const terreinNaam = game.terrein;
+
+                team.players.forEach((_, spelerIndex) => {
+                    spelResultaten.push({
+                        speeldagId: selectedSpeeldag,
+                        terrein: terreinNaam,
+                        spelerVolgnr: spelerIndex + 1,
+                        scoreA,
+                        scoreB
+                    });
+                });
+            });
+        });
+
+        // Verstuur elke score apart naar de backend
+        Promise.all(
+            spelResultaten.map((spel) =>
+                fetch("https://localhost:7241/api/scores", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(spel),
+                }).then((res) => {
+                    if (!res.ok) throw new Error("Fout bij opslaan van score");
+                })
+            )
+        )
+            .then(() => {
+                alert("Alle scores succesvol opgeslagen!");
+            })
+            .catch((err) => {
+                console.error("Fout bij opslaan:", err);
+                alert("Er ging iets mis bij het opslaan.");
+            });
+    };*/
+
+    const handleSave = () => {
+        if (!selectedSpeeldag) return;
+
+        const spelResultaten: SpelRequestContract[] = games.map((game) => ({
+            speeldagId: selectedSpeeldag,
+            terrein: game.terrein,
+            spelerVolgnr: 1, // Or any default/fixed value or remove if not needed
+            scoreA: game.teamA.points,
+            scoreB: game.teamB.points
+        }));
+
+        Promise.all(
+            spelResultaten.map((spel) =>
+                fetch("https://localhost:7241/api/scores", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(spel),
+                }).then((res) => {
+                    if (!res.ok) throw new Error("Fout bij opslaan van score");
+                })
+            )
+        )
+            .then(() => {
+                alert("Alle scores succesvol opgeslagen!");
+            })
+            .catch((err) => {
+                console.error("Fout bij opslaan:", err);
+                alert("Er ging iets mis bij het opslaan.");
+            });
+    };
+
+
+
     return (
         <div className="p-6 max-w-6xl mx-auto text-sm">
             <div className="mb-4">
@@ -141,8 +221,7 @@ const MatchScoreCard: React.FC = () => {
                             min={1}
                             onChange={(e) => setTerrein(Math.max(1, parseInt(e.target.value) || 1))}
                             placeholder="Nr"
-                            className="border rounded px-2 py-1 w-16"
-                        />
+                            className="border rounded px-2 py-1 w-16"/>
                     </span>
                     <span className="flex items-center gap-2">
                         <label className="text-sm font-medium">Speeldag:</label>
@@ -192,7 +271,15 @@ const MatchScoreCard: React.FC = () => {
                                     onChange={(e) => handlePointsChange(gameIndex, "teamA", e.target.value)}
                                     className="border px-2 py-1 w-24 rounded-lg"
                                 />
+                                <div className="mt-2 text-sm font-medium">
+                                    Aantal: <span className="font-bold">{game.teamA.points}</span>
+                                    <span className="ml-4">
+                                        {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
+                                        {game.teamA.points - game.teamB.points}
+                                    </span>
+                                </div>
                             </div>
+
                         </div>
 
                         <div className="w-1 bg-gray-300 h-48 my-auto"></div> {/* Verticale scheidingslijn */}
@@ -218,15 +305,33 @@ const MatchScoreCard: React.FC = () => {
                                     type="number"
                                     value={game.teamB.points}
                                     min={0}
+                                    max={13}
                                     onChange={(e) => handlePointsChange(gameIndex, "teamB", e.target.value)}
                                     className="border px-2 py-1 w-24 rounded-lg"
                                 />
+                                <div className="mt-2 text-sm font-medium">
+                                    Aantal: <span className="font-bold">{game.teamB.points}</span>
+                                    <span className="ml-4">
+                                        {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
+                                        {game.teamB.points - game.teamA.points}
+                                    </span>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
             ))}
+
+            <div>
+                <button
+                    onClick={handleSave}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    Opslaan
+                </button>
+            </div>
         </div>
+
     );
 };
 
