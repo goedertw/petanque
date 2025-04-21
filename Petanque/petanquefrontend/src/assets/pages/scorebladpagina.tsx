@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 const apiUrl = import.meta.env.VITE_API_URL;
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
 // Interfaces
 interface Speler {
     spelerId: number;
@@ -181,15 +179,9 @@ const MatchScoreCard: React.FC = () => {
         if (!selectedSpeeldag) return;
 
         Promise.all(
-<<<<<<< HEAD
-            spelResultaten.map((spel) =>
-                fetch(`${apiUrl}/scores`, {
-                    method: "POST",
-=======
             games.map((game) =>
                 fetch(`${apiUrl}/scores`/*/${game.spelId}`*/, {
                     method: "PUT",
->>>>>>> master
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         speeldagId: selectedSpeeldag,
