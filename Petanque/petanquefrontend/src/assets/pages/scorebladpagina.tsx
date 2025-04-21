@@ -214,43 +214,45 @@ const MatchScoreCard: React.FC = () => {
     return (
         <div className="p-6 max-w-6xl mx-auto text-sm">
             <div className="mb-4">
-                <h1 className="text-xl font-bold text-center">VL@S - Wervik/Geluwe</h1>
+                <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg">
+                    VL@S - Wervik/Geluwe
+                </h1>
                 <div className="flex justify-between mt-2 text-sm items-center">
+            <span className="flex items-center gap-2">
+                <span className="bg-[#fbd46d] px-2 py-1 rounded">TERREIN</span>
+                <input
+                    type="number"
+                    value={terrein}
+                    min={1}
+                    onChange={(e) => setTerrein(Math.max(1, parseInt(e.target.value) || 1))}
+                    placeholder="Nr"
+                    className="border border-[#74747c] p-2 rounded w-16"/>
+            </span>
                     <span className="flex items-center gap-2">
-                        <span className="bg-orange-200 px-2 py-1 rounded">TERREIN</span>
-                        <input
-                            type="number"
-                            value={terrein}
-                            min={1}
-                            onChange={(e) => setTerrein(Math.max(1, parseInt(e.target.value) || 1))}
-                            placeholder="Nr"
-                            className="border rounded px-2 py-1 w-16"/>
-                    </span>
-                    <span className="flex items-center gap-2">
-                        <label className="text-sm font-medium">Speeldag:</label>
-                        <select
-                            value={selectedSpeeldag ?? ""}
-                            onChange={(e) => setSelectedSpeeldag(parseInt(e.target.value))}
-                            className="border rounded px-2 py-1"
-                        >
-                            {speeldagen.map((dag) => (
-                                <option key={dag.speeldagId} value={dag.speeldagId}>
-                                    {new Date(dag.datum).toLocaleDateString()}
-                                </option>
-                            ))}
-                        </select>
-                    </span>
+                <label className="text-sm font-medium text-[#44444c]">Speeldag:</label>
+                <select
+                    value={selectedSpeeldag ?? ""}
+                    onChange={(e) => setSelectedSpeeldag(parseInt(e.target.value))}
+                    className="border rounded px-2 py-1 border-[#74747c]"
+                >
+                    {speeldagen.map((dag) => (
+                        <option key={dag.speeldagId} value={dag.speeldagId}>
+                            {new Date(dag.datum).toLocaleDateString()}
+                        </option>
+                    ))}
+                </select>
+            </span>
                 </div>
             </div>
 
             {games.map((game, gameIndex) => (
                 <div key={gameIndex} className="border rounded-xl p-6 mb-6 bg-white shadow-lg space-y-4">
-                    <h2 className="text-lg font-semibold bg-yellow-300 inline-block px-3 py-1 rounded-full">
+                    <h2 className="text-lg font-semibold bg-[#ccac4c] text-white inline-block px-3 py-1 rounded-full">
                         SPEL {gameIndex + 1}
                     </h2>
                     <div className="flex justify-between items-center space-x-6">
                         <div className="w-full flex flex-col items-start">
-                            <h3 className="font-medium text-lg text-left text-blue-600">Team A</h3>
+                            <h3 className="font-medium text-lg text-left text-[#3c444c]">Team A</h3>
                             <div className="space-y-2 w-full">
                                 {game.teamA.players.map((name, i) => (
                                     <input
@@ -259,36 +261,34 @@ const MatchScoreCard: React.FC = () => {
                                         value={name}
                                         onChange={(e) => handleNameChange(gameIndex, "teamA", i, e.target.value)}
                                         placeholder={`Speler ${i + 1}`}
-                                        className="border-b w-full px-2 py-1 mb-2 rounded-lg"
+                                        className="border-b w-full px-2 py-1 mb-2 rounded-lg border-[#74747c]"
                                     />
                                 ))}
                             </div>
-                            {/*fixen da aanal punten niet boven 13 kunnen muss ook het plus min systeem integreren*/ }
                             <div className="mt-4">
-                                <label className="block text-sm mb-1">Aantal punten:</label>
+                                <label className="block text-sm mb-1 text-[#44444c]">Aantal punten:</label>
                                 <input
                                     type="number"
                                     value={game.teamA.points}
                                     min={0}
                                     max={13}
                                     onChange={(e) => handlePointsChange(gameIndex, "teamA", e.target.value)}
-                                    className="border px-2 py-1 w-24 rounded-lg"
+                                    className="border px-2 py-1 w-24 rounded-lg border-[#74747c]"
                                 />
-                                <div className="mt-2 text-sm font-medium">
+                                <div className="mt-2 text-sm font-medium text-[#44444c]">
                                     Aantal: <span className="font-bold">{game.teamA.points}</span>
                                     <span className="ml-4">
-                                        {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
+                                {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
                                         {game.teamA.points - game.teamB.points}
-                                    </span>
+                            </span>
                                 </div>
                             </div>
-
                         </div>
 
                         <div className="w-1 bg-gray-300 h-48 my-auto"></div> {/* Verticale scheidingslijn */}
 
                         <div className="w-full flex flex-col items-end">
-                            <h3 className="font-medium text-lg text-right text-red-600">Team B</h3>
+                            <h3 className="font-medium text-lg text-right text-[#3c444c]">Team B</h3>
                             <div className="space-y-2 w-full">
                                 {game.teamB.players.map((name, i) => (
                                     <input
@@ -297,27 +297,27 @@ const MatchScoreCard: React.FC = () => {
                                         value={name}
                                         onChange={(e) => handleNameChange(gameIndex, "teamB", i, e.target.value)}
                                         placeholder={`Speler ${i + 1}`}
-                                        className="border-b w-full px-2 py-1 mb-2 rounded-lg"
+                                        className="border-b w-full px-2 py-1 mb-2 rounded-lg border-[#74747c]"
                                     />
                                 ))}
                             </div>
 
                             <div className="mt-4">
-                                <label className="block text-sm mb-1">Aantal punten:</label>
+                                <label className="block text-sm mb-1 text-[#44444c]">Aantal punten:</label>
                                 <input
                                     type="number"
                                     value={game.teamB.points}
                                     min={0}
                                     max={13}
                                     onChange={(e) => handlePointsChange(gameIndex, "teamB", e.target.value)}
-                                    className="border px-2 py-1 w-24 rounded-lg"
+                                    className="border px-2 py-1 w-24 rounded-lg border-[#74747c]"
                                 />
-                                <div className="mt-2 text-sm font-medium">
+                                <div className="mt-2 text-sm font-medium text-[#44444c]">
                                     Aantal: <span className="font-bold">{game.teamB.points}</span>
                                     <span className="ml-4">
-                                        {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
+                                {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
                                         {game.teamB.points - game.teamA.points}
-                                    </span>
+                            </span>
                                 </div>
                             </div>
 
@@ -329,11 +329,12 @@ const MatchScoreCard: React.FC = () => {
             <div>
                 <button
                     onClick={handleSave}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    className="bg-[#3c444c] text-white px-4 py-2 rounded hover:bg-[#2f373f] transition cursor-pointer">
                     Opslaan
                 </button>
             </div>
         </div>
+
 
     );
 };
