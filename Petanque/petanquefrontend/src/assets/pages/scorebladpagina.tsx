@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 // Interfaces
 interface Speler {
     spelerId: number;
@@ -64,7 +66,7 @@ const MatchScoreCard: React.FC = () => {
 
     // Fetch speeldagen
     useEffect(() => {
-        fetch("https://localhost:7241/api/speeldagen")
+        fetch(`${apiUrl}/speeldagen`)
             .then((res) => res.json())
             .then((data: Speeldag[]) => {
                 setSpeeldagen(data);
@@ -80,11 +82,10 @@ const MatchScoreCard: React.FC = () => {
         if (selectedSpeeldag === null) return;
 
         // Haal spelverdelingen op, en filter op het geselecteerde terrein
-        fetch(`https://localhost:7241/api/spelverdelingen/${selectedSpeeldag}`)
+        fetch(`${apiUrl}/spelverdelingen/${selectedSpeeldag}`)
             .then((res) => res.json())
             .then((data: SpelverdelingResponseContract[]) => {
                 const spelMap: Record<number, Game> = {};
-
                 // Loop door de spelverdelingen en groepeer spelers per team
                 data.forEach((entry) => {
                     const terreinLabel = entry.spel.terrein;
@@ -157,7 +158,7 @@ const MatchScoreCard: React.FC = () => {
         // Verstuur elke score apart naar de backend
         Promise.all(
             spelResultaten.map((spel) =>
-                fetch("https://localhost:7241/api/scores", {
+                fetch(`${apiUrl}/scores`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(spel),
@@ -188,7 +189,7 @@ const MatchScoreCard: React.FC = () => {
 
         Promise.all(
             spelResultaten.map((spel) =>
-                fetch("https://localhost:7241/api/scores", {
+                fetch(`${apiUrl}/scores`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(spel),
