@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -179,33 +180,38 @@ const MatchScoreCard: React.FC = () => {
     const handleSave = () => {
         if (!selectedSpeeldag) return;
 
-        const spelResultaten: SpelRequestContract[] = games.map((game) => ({
-            speeldagId: selectedSpeeldag,
-            terrein: game.terrein,
-            spelerVolgnr: 1, // Or any default/fixed value or remove if not needed
-            scoreA: game.teamA.points,
-            scoreB: game.teamB.points
-        }));
-
         Promise.all(
+<<<<<<< HEAD
             spelResultaten.map((spel) =>
                 fetch(`${apiUrl}/scores`, {
                     method: "POST",
+=======
+            games.map((game) =>
+                fetch(`${apiUrl}/scores`/*/${game.spelId}`*/, {
+                    method: "PUT",
+>>>>>>> master
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(spel),
+                    body: JSON.stringify({
+                        speeldagId: selectedSpeeldag,
+                        terrein: game.terrein,
+                        spelerVolgnr: 1, // You can remove this if unused
+                        scoreA: game.teamA.points,
+                        scoreB: game.teamB.points
+                    }),
                 }).then((res) => {
                     if (!res.ok) throw new Error("Fout bij opslaan van score");
                 })
             )
         )
             .then(() => {
-                alert("Alle scores succesvol opgeslagen!");
+                alert("Scores succesvol geüpdatet!");
             })
             .catch((err) => {
                 console.error("Fout bij opslaan:", err);
                 alert("Er ging iets mis bij het opslaan.");
             });
     };
+
 
 
 
