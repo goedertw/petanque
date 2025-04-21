@@ -13,7 +13,6 @@ namespace Petanque.Contracts.Responses
         public DateOnly Datum { get; set; }
 
         public virtual SeizoenResponseContract? Seizoenen { get; set; }
-
-        public virtual ICollection<SpelResponseContract> Spellen { get; set; } = new List<SpelResponseContract>();
+        public List<SpelResponseContract> Spel { get; set; }
     }
 }

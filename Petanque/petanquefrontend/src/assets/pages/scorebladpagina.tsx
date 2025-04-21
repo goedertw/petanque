@@ -182,9 +182,11 @@ const MatchScoreCard: React.FC = () => {
 
 
 
+
                  spelResultaten.map((spel) =>
                     fetch(`${apiUrl}/scores`/*/${game.spelId}`*/, {
                     method: "PUT",
+
 
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
