@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,5 +23,6 @@ namespace Petanque.Contracts.Responses
         public PlayerResponseContract Speler { get; set; }
 
         public SpelResponseContract Spel { get; set; }
+
     }
 }

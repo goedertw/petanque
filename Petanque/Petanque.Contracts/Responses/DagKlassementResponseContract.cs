@@ -17,9 +17,5 @@ namespace Petanque.Contracts.Responses
         public int Hoofdpunten { get; set; }
 
         public int PlusMinPunten { get; set; }
-
-        public virtual SpeeldagResponseContract? Speeldag { get; set; }
-
-        public virtual PlayerResponseContract? Speler { get; set; }
     }
 }

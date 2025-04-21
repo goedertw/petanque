@@ -27,7 +27,6 @@ function Aanwezigheidspagina() {
     const [error, setError] = useState<string | null>(null);
     const [aanwezigheden, setAanwezigheden] = useState<Aanwezigheid[]>([]);
 
-    // Functie om de aanwezigheden op te halen voor de geselecteerde speeldag
     const loadAanwezigheden = () => {
         setLoading(true);
         fetch("https://localhost:7241/api/aanwezigheden")
@@ -45,7 +44,6 @@ function Aanwezigheidspagina() {
             });
     };
 
-    // Fetch spelers
     useEffect(() => {
         fetch("https://localhost:7241/api/players")
             .then((res) => {
@@ -60,7 +58,6 @@ function Aanwezigheidspagina() {
             });
     }, []);
 
-    // Fetch speeldagen
     useEffect(() => {
         fetch("https://localhost:7241/api/speeldagen")
             .then((res) => {
@@ -72,19 +69,17 @@ function Aanwezigheidspagina() {
                 if (data.length > 0) {
                     const eersteSpeeldagId = data[0].speeldagId;
                     setGeselecteerdeSpeeldag(eersteSpeeldagId);
-                    // Laad de aanwezigheden voor de eerste speeldag
                     loadAanwezigheden();
                 }
             })
             .catch((err) => setError(err.message));
     }, []);
 
-    // Als de geselecteerde speeldag verandert, laad de aanwezigheden opnieuw
     useEffect(() => {
         if (geselecteerdeSpeeldag) {
             loadAanwezigheden();
         }
-    }, [geselecteerdeSpeeldag]); // Trigger opnieuw wanneer de speeldag verandert
+    }, [geselecteerdeSpeeldag]);
 
     const bevestigAanwezigheid = (spelerId: number) => {
         if (!geselecteerdeSpeeldag) {
@@ -92,45 +87,46 @@ function Aanwezigheidspagina() {
             return;
         }
 
-        // Controleer of de speler al aanwezig is, om dubbele toevoegingen te voorkomen
         const spelerAanwezig = aanwezigheden.find(
             (aanwezigheid) => aanwezigheid.spelerId === spelerId && aanwezigheid.speeldagId === geselecteerdeSpeeldag
         );
 
-        if (spelerAanwezig) {
-            return; // Speler is al aanwezig, doe verder niets
-        }
+        if (spelerAanwezig) return;
 
-        const spelerVolgnr = 1;
+        const spelerVolgnr =
+            aanwezigheden.filter((a) => a.speeldagId === geselecteerdeSpeeldag).length + 1;
 
-        // Update de aanwezigheden state direct zonder opnieuw de server aan te roepen
-        const nieuweAanwezigheid: Aanwezigheid = {
-            aanwezigheidId: Date.now(), // Tijdelijk ID gebruiken
+        const nieuweAanwezigheid: Omit<Aanwezigheid, "aanwezigheidId"> = {
             speeldagId: geselecteerdeSpeeldag,
             spelerId,
             spelerVolgnr,
         };
 
-        setAanwezigheden((prev) => [...prev, nieuweAanwezigheid]);
-
-        // Toon direct bevestiging in de UI (markeer de speler als aanwezig)
-        setSpelers((prev) =>
-            prev.map((speler) =>
-                speler.spelerId === spelerId
-                    ? { ...speler, aanwezig: true } // Markeer de speler als aanwezig
-                    : speler
-            )
-        );
+        fetch("https://localhost:7241/api/aanwezigheden", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(nieuweAanwezigheid),
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error("Fout bij versturen van aanwezigheid");
+                return res.json();
+            })
+            .then((data: Aanwezigheid) => {
+                setAanwezigheden((prev) => [...prev, data]);
+            })
+            .catch((err) => {
+                setError(err.message);
+            });
     };
 
-    // Hulpfunctie om te checken of de geselecteerde speeldag in het verleden ligt
     const isSpeeldagInVerleden = (speeldagDatum: string) => {
         const speeldagDate = new Date(speeldagDatum);
         const today = new Date();
         return speeldagDate < today;
     };
 
-    // Hulpfunctie om te checken of de geselecteerde speeldag vandaag is
     const isSpeeldagVandaag = (speeldagDatum: string) => {
         const speeldagDate = new Date(speeldagDatum);
         const today = new Date();
@@ -144,7 +140,6 @@ function Aanwezigheidspagina() {
     if (loading) return <p className="text-center mt-10">Bezig met laden...</p>;
     if (error) return <p className="text-center text-red-600 mt-10">Fout: {error}</p>;
 
-    // Filter de aanwezigheden op basis van de geselecteerde speeldag
     const filteredAanwezigheden = aanwezigheden.filter(
         (aanwezigheid) => aanwezigheid.speeldagId === geselecteerdeSpeeldag
     );
@@ -152,10 +147,9 @@ function Aanwezigheidspagina() {
     return (
         <div className="p-6">
             <h1 className="text-3xl font-bold text-white bg-blue-600 p-4 rounded-xl text-center mb-8 shadow-lg">
-                Aanwezigheid Overzicht
+                Overzicht Aanwezigheden
             </h1>
 
-            {/* Speeldag Dropdown */}
             <div className="mb-8 flex flex-col sm:flex-row items-center gap-4">
                 <label className="text-lg font-medium">Kies een speeldag:</label>
                 <select
@@ -171,7 +165,6 @@ function Aanwezigheidspagina() {
                 </select>
             </div>
 
-            {/* Spelers Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                 {spelers.map((speler) => {
                     const spelerAanwezig = filteredAanwezigheden.find(
