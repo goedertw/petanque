@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+const apiUrl = import.meta.env.VITE_API_URL;
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 // Interfaces
 interface Speler {
@@ -64,7 +67,7 @@ const MatchScoreCard: React.FC = () => {
 
     // Fetch speeldagen
     useEffect(() => {
-        fetch("https://localhost:7241/api/speeldagen")
+        fetch(`${apiUrl}/speeldagen`)
             .then((res) => res.json())
             .then((data: Speeldag[]) => {
                 setSpeeldagen(data);
@@ -80,11 +83,10 @@ const MatchScoreCard: React.FC = () => {
         if (selectedSpeeldag === null) return;
 
         // Haal spelverdelingen op, en filter op het geselecteerde terrein
-        fetch(`https://localhost:7241/api/spelverdelingen/${selectedSpeeldag}`)
+        fetch(`${apiUrl}/spelverdelingen/${selectedSpeeldag}`)
             .then((res) => res.json())
             .then((data: SpelverdelingResponseContract[]) => {
                 const spelMap: Record<number, Game> = {};
-
                 // Loop door de spelverdelingen en groepeer spelers per team
                 data.forEach((entry) => {
                     const terreinLabel = entry.spel.terrein;
@@ -157,7 +159,7 @@ const MatchScoreCard: React.FC = () => {
         // Verstuur elke score apart naar de backend
         Promise.all(
             spelResultaten.map((spel) =>
-                fetch("https://localhost:7241/api/scores", {
+                fetch(`${apiUrl}/scores`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(spel),
@@ -178,33 +180,38 @@ const MatchScoreCard: React.FC = () => {
     const handleSave = () => {
         if (!selectedSpeeldag) return;
 
-        const spelResultaten: SpelRequestContract[] = games.map((game) => ({
-            speeldagId: selectedSpeeldag,
-            terrein: game.terrein,
-            spelerVolgnr: 1, // Or any default/fixed value or remove if not needed
-            scoreA: game.teamA.points,
-            scoreB: game.teamB.points
-        }));
-
         Promise.all(
+<<<<<<< HEAD
             spelResultaten.map((spel) =>
-                fetch("https://localhost:7241/api/scores", {
+                fetch(`${apiUrl}/scores`, {
                     method: "POST",
+=======
+            games.map((game) =>
+                fetch(`${apiUrl}/scores`/*/${game.spelId}`*/, {
+                    method: "PUT",
+>>>>>>> master
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(spel),
+                    body: JSON.stringify({
+                        speeldagId: selectedSpeeldag,
+                        terrein: game.terrein,
+                        spelerVolgnr: 1, // You can remove this if unused
+                        scoreA: game.teamA.points,
+                        scoreB: game.teamB.points
+                    }),
                 }).then((res) => {
                     if (!res.ok) throw new Error("Fout bij opslaan van score");
                 })
             )
         )
             .then(() => {
-                alert("Alle scores succesvol opgeslagen!");
+                alert("Scores succesvol geüpdatet!");
             })
             .catch((err) => {
                 console.error("Fout bij opslaan:", err);
                 alert("Er ging iets mis bij het opslaan.");
             });
     };
+
 
 
 

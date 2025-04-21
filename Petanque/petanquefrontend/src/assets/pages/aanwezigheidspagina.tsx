@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import '../../index.css';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 interface Speler {
     spelerId: number;
@@ -29,7 +30,7 @@ function Aanwezigheidspagina() {
 
     const loadAanwezigheden = () => {
         setLoading(true);
-        fetch("https://localhost:7241/api/aanwezigheden")
+        fetch(`${apiUrl}/aanwezigheden`)
             .then((res) => {
                 if (!res.ok) throw new Error("Fout bij ophalen aanwezigheden");
                 return res.json();
@@ -45,7 +46,7 @@ function Aanwezigheidspagina() {
     };
 
     useEffect(() => {
-        fetch("https://localhost:7241/api/players")
+        fetch(`${apiUrl}/players`)
             .then((res) => {
                 if (!res.ok) throw new Error("Netwerkfout bij spelers");
                 return res.json();
@@ -59,7 +60,7 @@ function Aanwezigheidspagina() {
     }, []);
 
     useEffect(() => {
-        fetch("https://localhost:7241/api/speeldagen")
+        fetch(`${apiUrl}/speeldagen`)
             .then((res) => {
                 if (!res.ok) throw new Error("Netwerkfout bij speeldagen");
                 return res.json();
@@ -102,7 +103,7 @@ function Aanwezigheidspagina() {
             spelerVolgnr,
         };
 
-        fetch("https://localhost:7241/api/aanwezigheden", {
+        fetch(`${apiUrl}/aanwezigheden`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

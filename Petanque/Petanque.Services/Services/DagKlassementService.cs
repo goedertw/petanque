@@ -35,49 +35,82 @@ namespace Petanque.Services.Services {
                 .Where(contract => contract != null)
                 .ToList()!;
         }
-        public IEnumerable<DagKlassementResponseContract> CreateDagKlassementen(SpeeldagResponseContract spelerscores, int id)
+        public IEnumerable<DagKlassementResponseContract> CreateDagKlassementen(SpeeldagResponseContract speeldagData, int id)
         {
-            var speeldagId = spelerscores.SpeeldagId;
+            var speeldagId = speeldagData.SpeeldagId;
 
-            // Mapping SpelerVolgnr -> SpelerId
             var spelersInSpeeldag = context.Aanwezigheids
                 .Where(x => x.SpeeldagId == speeldagId)
                 .ToDictionary(x => x.SpelerVolgnr, x => x.SpelerId);
 
-            // Dictionary om cumulatieve scores op te slaan per SpelerVolgNr
-            var spelerScoreTeller = new Dictionary<int, int>();
+            var scorePerSpeler = new Dictionary<int, int>();
+            var winsPerSpeler = new Dictionary<int, int>();
 
-            foreach (var spel in spelerscores.Spellen)
+            foreach (var spel in speeldagData.Spel)
             {
-                foreach (var score in spel.SpelerScores)
+                if (spel?.Spelverdelingen == null || spel.Spelverdelingen.Count == 0)
+                    continue;
+
+                var teamA = spel.Spelverdelingen
+                    .Where(v => v.Team == "Team A")
+                    .Select(v => v.SpelerVolgnr)
+                    .ToList();
+
+                var teamB = spel.Spelverdelingen
+                    .Where(v => v.Team == "Team B")
+                    .Select(v => v.SpelerVolgnr)
+                    .ToList();
+
+                if (teamA.Count == 0 || teamB.Count == 0)
+                    continue;
+
+                var scoreA = spel.ScoreA;
+                var scoreB = spel.ScoreB;
+                var scoreVerschil = scoreA - scoreB;
+
+                // Punten toekennen
+                foreach (var speler in teamA)
                 {
-                    if (!spelerScoreTeller.ContainsKey(score.SpelerVolgNr))
-                        spelerScoreTeller[score.SpelerVolgNr] = 0;
+                    if (!scorePerSpeler.ContainsKey(speler)) scorePerSpeler[speler] = 0;
+                    scorePerSpeler[speler] += scoreVerschil;
 
-                    spelerScoreTeller[score.SpelerVolgNr] += score.ScoreA - score.ScoreB;
-                }
-            }
-
-            var klassementen = new List<DagKlassementResponseContract>();
-
-            foreach (var kvp in spelerScoreTeller)
-            {
-                var spelerVolgnr = kvp.Key;
-                var plusMin = kvp.Value;
-
-                if (spelersInSpeeldag.TryGetValue(spelerVolgnr, out var spelerId))
-                {
-                    klassementen.Add(new DagKlassementResponseContract
+                    if (scoreA > scoreB) // Team A wint
                     {
-                        SpeeldagId = speeldagId,
-                        SpelerId = spelerId,
-                        Hoofdpunten = 1, // altijd 1
-                        PlusMinPunten = plusMin
-                    });
+                        if (!winsPerSpeler.ContainsKey(speler)) winsPerSpeler[speler] = 0;
+                        winsPerSpeler[speler]++;
+                    }
+                }
+
+                foreach (var speler in teamB)
+                {
+                    if (!scorePerSpeler.ContainsKey(speler)) scorePerSpeler[speler] = 0;
+                    scorePerSpeler[speler] -= scoreVerschil;
+
+                    if (scoreB > scoreA) // Team B wint
+                    {
+                        if (!winsPerSpeler.ContainsKey(speler)) winsPerSpeler[speler] = 0;
+                        winsPerSpeler[speler]++;
+                    }
                 }
             }
 
-            var klassementEntities = klassementen.Select(k => new Dagklassement
+            var dagKlassementen = new List<DagKlassementResponseContract>();
+
+            foreach (var (spelerVolgNr, spelerId) in spelersInSpeeldag)
+            {
+                var plusMin = scorePerSpeler.TryGetValue(spelerVolgNr, out var punten) ? punten : 0;
+                var gewonnenSpellen = winsPerSpeler.TryGetValue(spelerVolgNr, out var wins) ? wins : 0;
+
+                dagKlassementen.Add(new DagKlassementResponseContract
+                {
+                    SpeeldagId = speeldagId,
+                    SpelerId = spelerId,
+                    Hoofdpunten = 1 + gewonnenSpellen,
+                    PlusMinPunten = plusMin
+                });
+            }
+
+            var entities = dagKlassementen.Select(k => new Dagklassement
             {
                 SpeeldagId = k.SpeeldagId,
                 SpelerId = k.SpelerId,
@@ -85,10 +118,10 @@ namespace Petanque.Services.Services {
                 PlusMinPunten = k.PlusMinPunten
             }).ToList();
 
-            context.AddRange(klassementEntities);
+            context.AddRange(entities);
             context.SaveChanges();
 
-            return klassementen;
+            return dagKlassementen;
         }
 
         private static DagKlassementResponseContract MapToContract(Dagklassement entity) {

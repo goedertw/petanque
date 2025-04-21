@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 interface Speler {
     spelerId: number;
@@ -16,7 +17,7 @@ function SpelerPagina() {
 
     const fetchAllPlayers = () => {
         setLoading(true);
-        fetch('https://localhost:7241/api/players')
+        fetch(`${apiUrl}/players`)
             .then(res => res.json())
             .then(data => {
                 setSpelers(data);
@@ -35,7 +36,7 @@ function SpelerPagina() {
     const handleSearch = () => {
         if (!searchId) return;
         setLoading(true);
-        fetch(`https://localhost:7241/api/players/${searchId}`)
+        fetch(`${apiUrl}/players/${searchId}`)
             .then(res => {
                 if (!res.ok) throw new Error('Speler niet gevonden');
                 return res.json();
@@ -53,7 +54,7 @@ function SpelerPagina() {
     const handleCreatePlayer = () => {
         if (!newVoornaam || !newNaam) return;
 
-        fetch('https://localhost:7241/api/players', {
+        fetch(`${apiUrl}/players`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
