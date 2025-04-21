@@ -11,6 +11,7 @@ namespace Petanque.Services.Interfaces
     public interface IScoreService
     {
         SpelResponseContract? GetById(int id);
-        SpelResponseContract Create(SpelRequestContract request);
+        void UpdateScore(int spelId, int scoreA, int scoreB);
+
     }
 }
