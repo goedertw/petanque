@@ -17,11 +17,13 @@ public class ScoreController(IScoreService service) : Controller
         return Ok(spel);
     }
 
-    [HttpPost]
-    public ActionResult<SpelResponseContract> Create(
-        [FromBody] SpelRequestContract request)
-    {
-        var created = service.Create(request);
-        return CreatedAtAction(nameof(Get), new { id = created.SpelId }, created);
+    [HttpPut("{id}")]
+    public IActionResult UpdateScore(int id, [FromBody] SpelRequestContract request) {
+        try {
+            service.UpdateScore(id, request.ScoreA, request.ScoreB);
+            return NoContent();
+        } catch (Exception ex) {
+            return NotFound(ex.Message);
+        }
     }
 }

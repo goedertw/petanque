@@ -2,7 +2,6 @@
 using Petanque.Contracts.Requests;
 using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
-using static Petanque.Contracts.Responses.SpelverdelingSpellenResponseContract;
 
 namespace Petanque.Api.Controllers;
 [ApiController]
@@ -10,7 +9,7 @@ namespace Petanque.Api.Controllers;
 public class SpelverdelingController(ISpelverdelingService service, IAanwezigheidService Aservice) : Controller
 {
     [HttpGet("{id}")]
-    public ActionResult<PlayerResponseContract> Get([FromRoute] int id)
+    public ActionResult<IEnumerable<PlayerResponseContract>> Get([FromRoute] int id)
     {
         var spelverdeling = service.GetById(id);
         if (spelverdeling is null) return NotFound();
@@ -25,6 +24,6 @@ public class SpelverdelingController(ISpelverdelingService service, IAanwezighei
         if (aanwezigheden == null || !aanwezigheden.Any())
             return BadRequest("Geen aanwezige spelers gevonden.");
 
-        return Ok(service.MaakVerdeling(aanwezigheden));
+        return Ok(service.MaakVerdeling(aanwezigheden, id));
     }
 }

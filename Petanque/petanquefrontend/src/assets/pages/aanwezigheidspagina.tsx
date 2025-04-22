@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import '../../index.css';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 interface Speler {
     spelerId: number;
@@ -27,10 +28,9 @@ function Aanwezigheidspagina() {
     const [error, setError] = useState<string | null>(null);
     const [aanwezigheden, setAanwezigheden] = useState<Aanwezigheid[]>([]);
 
-    // Functie om de aanwezigheden op te halen voor de geselecteerde speeldag
     const loadAanwezigheden = () => {
         setLoading(true);
-        fetch("https://localhost:7241/api/aanwezigheden")
+        fetch(`${apiUrl}/aanwezigheden`)
             .then((res) => {
                 if (!res.ok) throw new Error("Fout bij ophalen aanwezigheden");
                 return res.json();
@@ -45,9 +45,8 @@ function Aanwezigheidspagina() {
             });
     };
 
-    // Fetch spelers
     useEffect(() => {
-        fetch("https://localhost:7241/api/players")
+        fetch(`${apiUrl}/players`)
             .then((res) => {
                 if (!res.ok) throw new Error("Netwerkfout bij spelers");
                 return res.json();
@@ -60,9 +59,8 @@ function Aanwezigheidspagina() {
             });
     }, []);
 
-    // Fetch speeldagen
     useEffect(() => {
-        fetch("https://localhost:7241/api/speeldagen")
+        fetch(`${apiUrl}/speeldagen`)
             .then((res) => {
                 if (!res.ok) throw new Error("Netwerkfout bij speeldagen");
                 return res.json();
@@ -72,19 +70,17 @@ function Aanwezigheidspagina() {
                 if (data.length > 0) {
                     const eersteSpeeldagId = data[0].speeldagId;
                     setGeselecteerdeSpeeldag(eersteSpeeldagId);
-                    // Laad de aanwezigheden voor de eerste speeldag
                     loadAanwezigheden();
                 }
             })
             .catch((err) => setError(err.message));
     }, []);
 
-    // Als de geselecteerde speeldag verandert, laad de aanwezigheden opnieuw
     useEffect(() => {
         if (geselecteerdeSpeeldag) {
             loadAanwezigheden();
         }
-    }, [geselecteerdeSpeeldag]); // Trigger opnieuw wanneer de speeldag verandert
+    }, [geselecteerdeSpeeldag]);
 
     const bevestigAanwezigheid = (spelerId: number) => {
         if (!geselecteerdeSpeeldag) {
@@ -92,45 +88,46 @@ function Aanwezigheidspagina() {
             return;
         }
 
-        // Controleer of de speler al aanwezig is, om dubbele toevoegingen te voorkomen
         const spelerAanwezig = aanwezigheden.find(
             (aanwezigheid) => aanwezigheid.spelerId === spelerId && aanwezigheid.speeldagId === geselecteerdeSpeeldag
         );
 
-        if (spelerAanwezig) {
-            return; // Speler is al aanwezig, doe verder niets
-        }
+        if (spelerAanwezig) return;
 
-        const spelerVolgnr = 1;
+        const spelerVolgnr =
+            aanwezigheden.filter((a) => a.speeldagId === geselecteerdeSpeeldag).length + 1;
 
-        // Update de aanwezigheden state direct zonder opnieuw de server aan te roepen
-        const nieuweAanwezigheid: Aanwezigheid = {
-            aanwezigheidId: Date.now(), // Tijdelijk ID gebruiken
+        const nieuweAanwezigheid: Omit<Aanwezigheid, "aanwezigheidId"> = {
             speeldagId: geselecteerdeSpeeldag,
             spelerId,
             spelerVolgnr,
         };
 
-        setAanwezigheden((prev) => [...prev, nieuweAanwezigheid]);
-
-        // Toon direct bevestiging in de UI (markeer de speler als aanwezig)
-        setSpelers((prev) =>
-            prev.map((speler) =>
-                speler.spelerId === spelerId
-                    ? { ...speler, aanwezig: true } // Markeer de speler als aanwezig
-                    : speler
-            )
-        );
+        fetch(`${apiUrl}/aanwezigheden`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(nieuweAanwezigheid),
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error("Fout bij versturen van aanwezigheid");
+                return res.json();
+            })
+            .then((data: Aanwezigheid) => {
+                setAanwezigheden((prev) => [...prev, data]);
+            })
+            .catch((err) => {
+                setError(err.message);
+            });
     };
 
-    // Hulpfunctie om te checken of de geselecteerde speeldag in het verleden ligt
     const isSpeeldagInVerleden = (speeldagDatum: string) => {
         const speeldagDate = new Date(speeldagDatum);
         const today = new Date();
         return speeldagDate < today;
     };
 
-    // Hulpfunctie om te checken of de geselecteerde speeldag vandaag is
     const isSpeeldagVandaag = (speeldagDatum: string) => {
         const speeldagDate = new Date(speeldagDatum);
         const today = new Date();
@@ -144,22 +141,20 @@ function Aanwezigheidspagina() {
     if (loading) return <p className="text-center mt-10">Bezig met laden...</p>;
     if (error) return <p className="text-center text-red-600 mt-10">Fout: {error}</p>;
 
-    // Filter de aanwezigheden op basis van de geselecteerde speeldag
     const filteredAanwezigheden = aanwezigheden.filter(
         (aanwezigheid) => aanwezigheid.speeldagId === geselecteerdeSpeeldag
     );
 
     return (
         <div className="p-6">
-            <h1 className="text-3xl font-bold text-white bg-blue-600 p-4 rounded-xl text-center mb-8 shadow-lg">
-                Aanwezigheid Overzicht
+            <h1 className="text-3xl font-bold text-white bg-[#3c444c] p-4 rounded-2xl shadow mb-6 text-center">
+                Overzicht Aanwezigheden
             </h1>
 
-            {/* Speeldag Dropdown */}
             <div className="mb-8 flex flex-col sm:flex-row items-center gap-4">
-                <label className="text-lg font-medium">Kies een speeldag:</label>
+                <label className="text-lg font-medium text-[#44444c]">Kies een speeldag:</label>
                 <select
-                    className="px-4 py-2 rounded-xl border border-gray-300 shadow"
+                    className="px-4 py-2 rounded-xl border border-[#74747c] shadow text-[#44444c]"
                     value={geselecteerdeSpeeldag ?? ""}
                     onChange={(e) => setGeselecteerdeSpeeldag(parseInt(e.target.value))}
                 >
@@ -171,7 +166,6 @@ function Aanwezigheidspagina() {
                 </select>
             </div>
 
-            {/* Spelers Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                 {spelers.map((speler) => {
                     const spelerAanwezig = filteredAanwezigheden.find(
@@ -190,7 +184,7 @@ function Aanwezigheidspagina() {
                             className="bg-white rounded-2xl shadow-md p-6 flex flex-col justify-between w-full"
                         >
                             <div>
-                                <h2 className="text-xl font-semibold text-gray-800 mb-1">
+                                <h2 className="text-xl font-semibold text-[#44444c] mb-1">
                                     {speler.voornaam} {speler.naam}
                                 </h2>
                             </div>
@@ -199,21 +193,26 @@ function Aanwezigheidspagina() {
                                     !spelerAanwezig ? (
                                         <button
                                             onClick={() => bevestigAanwezigheid(speler.spelerId)}
-                                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl w-full transition"
+                                            className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-4 py-2 rounded-xl w-full transition cursor-pointer"
                                         >
                                             Bevestig aanwezigheid
                                         </button>
                                     ) : (
-                                        <p className="text-green-500 font-semibold">Aanwezig</p>
+                                        <p className="bg-[#fbd46d] text-[#44444c] font-semibold px-2 py-1 rounded-full inline-block">
+                                            Aanwezig
+                                        </p>
+
                                     )
                                 ) : speeldagInVerleden ? (
-                                    <p className="text-sm text-gray-500">
-                                        {spelerAanwezig ? "Was aanwezig" : "Was niet aanwezig"}
-                                    </p>
+                                    spelerAanwezig ? (
+                                        <p className="text-sm font-medium text-[#ccac4c]">Was aanwezig</p>
+                                    ) : (
+                                        <p className="text-sm font-medium text-[#74747c]">Was niet aanwezig</p>
+                                    )
                                 ) : (
                                     <button
                                         onClick={() => bevestigAanwezigheid(speler.spelerId)}
-                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl w-full transition"
+                                        className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-4 py-2 rounded-xl w-full transition cursor-pointer"
                                     >
                                         Bevestig aanwezigheid
                                     </button>
@@ -224,6 +223,8 @@ function Aanwezigheidspagina() {
                 })}
             </div>
         </div>
+
+
     );
 }
 

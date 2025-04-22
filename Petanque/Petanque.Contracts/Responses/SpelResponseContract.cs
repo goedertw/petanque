@@ -13,12 +13,8 @@ namespace Petanque.Contracts.Responses
         public int? SpeeldagId { get; set; }
 
         public string Terrein { get; set; } = null!;
-
-        public int SpelerVolgnr { get; set; }
-
         public int ScoreA { get; set; }
-
         public int ScoreB { get; set; }
-
+        public List<SpelverdelingResponseContract> Spelverdelingen { get; set; }
     }
 }

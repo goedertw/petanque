@@ -8,12 +8,8 @@ namespace Petanque.Contracts.Requests
 {
     public class SpeeldagRequestContract
     {
-        public int SpeeldagId { get; set; }
-
         public DateOnly Datum { get; set; }
 
         public int? SeizoensId { get; set; }
-
-  
     }
 }
