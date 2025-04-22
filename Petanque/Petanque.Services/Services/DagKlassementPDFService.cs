@@ -61,9 +61,9 @@ namespace Petanque.Services
             {
                 container.Page(page =>
                 {
-                    page.Size(210, 297);
+                    page.Size(595, 842);
                     page.Margin(20);
-                    page.DefaultTextStyle(x => x.FontSize(7));
+                    page.DefaultTextStyle(x => x.FontSize(11));
 
                     page.Content().Column(col =>
                     {

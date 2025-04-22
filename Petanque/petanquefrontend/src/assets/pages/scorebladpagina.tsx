@@ -15,7 +15,7 @@ interface SpelResponseContract {
     spelerScores: any[]; // Wordt niet gebruikt
 }
 
-interface PlayerResponseContract extends Speler {}
+interface PlayerResponseContract extends Speler { }
 
 interface SpelverdelingResponseContract {
     spelverdelingsId: number;
@@ -57,7 +57,8 @@ const createEmptyGame = (): Game => ({
     teamB: createEmptyTeam(),
 });
 
-const MatchScoreCard: React.FC = () => {
+// MatchScoreCard Component
+function MatchScoreCard() {
     const [games, setGames] = useState<Game[]>([createEmptyGame(), createEmptyGame(), createEmptyGame()]);
     const [terrein, setTerrein] = useState<number>(1);
     const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
@@ -80,19 +81,16 @@ const MatchScoreCard: React.FC = () => {
     useEffect(() => {
         if (selectedSpeeldag === null) return;
 
-        // Haal spelverdelingen op, en filter op het geselecteerde terrein
         fetch(`${apiUrl}/spelverdelingen/${selectedSpeeldag}`)
             .then((res) => res.json())
             .then((data: SpelverdelingResponseContract[]) => {
                 const spelMap: Record<number, Game> = {};
-                // Loop door de spelverdelingen en groepeer spelers per team
                 data.forEach((entry) => {
                     const terreinLabel = entry.spel.terrein;
                     const spelId = entry.spel.spelId;
-                    const teamKey = entry.team === "Team A" ? "teamA" : "teamB"; // Toewijzen van team op basis van de naam
+                    const teamKey = entry.team === "Team A" ? "teamA" : "teamB";
                     const spelerNaam = `${entry.speler.voornaam} ${entry.speler.naam}`;
 
-                    // Controleer of het terrein overeenkomt met het geselecteerde terrein
                     if (terreinLabel.trim().toLowerCase() === `terrein ${terrein}`.toLowerCase()) {
                         if (!spelMap[spelId]) {
                             spelMap[spelId] = {
@@ -103,18 +101,17 @@ const MatchScoreCard: React.FC = () => {
                             };
                         }
 
-                        // Voeg speler toe aan het juiste team
                         spelMap[spelId][teamKey].players.push(spelerNaam);
                     }
                 });
 
-                // Zet de gefilterde spellen in de state
                 const mappedGames = Object.values(spelMap);
                 setGames(mappedGames);
             })
             .catch((err) => console.error("Fout bij laden van spelverdeling:", err));
-    }, [selectedSpeeldag, terrein]); // Alleen opnieuw ophalen bij verandering van speeldag of terrein
+    }, [selectedSpeeldag, terrein]);
 
+    // Handlers
     const handleNameChange = (gameIndex: number, teamKey: "teamA" | "teamB", playerIndex: number, value: string) => {
         const updatedGames = [...games];
         updatedGames[gameIndex][teamKey].players[playerIndex] = value;
@@ -128,83 +125,43 @@ const MatchScoreCard: React.FC = () => {
         setGames(updatedGames);
     };
 
-    /*dit is als je saved per player (in meeste gevallen dus een spel 4 keer opslaan door de 4 spelers)
-    
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!selectedSpeeldag) return;
 
-        const spelResultaten: SpelRequestContract[] = [];
+        // Validate that one of the teams has a score of 13
+        const invalidGames = games.filter(
+            (game) => game.teamA.points !== 13 && game.teamB.points !== 13
+        );
 
-        games.forEach((game) => {
-            ["teamA", "teamB"].forEach((teamKey) => {
-                const team = game[teamKey as "teamA" | "teamB"];
-                const scoreA = teamKey === "teamA" ? game.teamA.points : game.teamB.points;
-                const scoreB = teamKey === "teamA" ? game.teamB.points : game.teamA.points;
-                const terreinNaam = game.terrein;
+        if (invalidGames.length > 0) {
+            alert("Fout: Beide teams hebben geen score van 13. Scores kunnen niet worden opgeslagen.");
+            return;
+        }
 
-                team.players.forEach((_, spelerIndex) => {
-                    spelResultaten.push({
-                        speeldagId: selectedSpeeldag,
-                        terrein: terreinNaam,
-                        spelerVolgnr: spelerIndex + 1,
-                        scoreA,
-                        scoreB
-                    });
-                });
-            });
-        });
-
-        // Verstuur elke score apart naar de backend
-        Promise.all(
-            spelResultaten.map((spel) =>
-                fetch(`${apiUrl}/scores`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(spel),
-                }).then((res) => {
-                    if (!res.ok) throw new Error("Fout bij opslaan van score");
-                })
-            )
-        )
-            .then(() => {
-                alert("Alle scores succesvol opgeslagen!");
-            })
-            .catch((err) => {
-                console.error("Fout bij opslaan:", err);
-                alert("Er ging iets mis bij het opslaan.");
-            });
-    };*/
-
-    const handleSave = () => {
-        if (!selectedSpeeldag) return;
-
-        Promise.all(
-                 spelResultaten.map((spel) =>
-                    fetch(`${apiUrl}/scores`/*/${game.spelId}`*/, {
-                    method: "PUT",
-
-
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        speeldagId: selectedSpeeldag,
-                        terrein: spel.terrein,
-                        spelerVolgnr: 1, // You can remove this if unused
-                        scoreA: spel.teamA.points,
-                        scoreB: spel.teamB.points
-                    }),
-                }).then((res) => {
-                    if (!res.ok) throw new Error("Fout bij opslaan van score");
-                })
-            )
-        )
-            .then(() => {
-                alert("Scores succesvol geüpdatet!");
-            })
-            .catch((err) => {
-                console.error("Fout bij opslaan:", err);
-                alert("Er ging iets mis bij het opslaan.");
-            });
+        try {
+            await Promise.all(
+                games.map((game) =>
+                    fetch(`${apiUrl}/scores/${game.spelId}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            speeldagId: selectedSpeeldag,
+                            terrein: game.terrein,
+                            scoreA: game.teamA.points,
+                            scoreB: game.teamB.points,
+                        }),
+                    }).then((res) => {
+                        if (!res.ok) throw new Error("Fout bij opslaan van score");
+                    })
+                )
+            );
+            alert("Scores succesvol geüpdatet!");
+        } catch (error) {
+            console.error("Fout bij opslaan:", error);
+            alert("Er ging iets mis bij het opslaan.");
+        }
     };
+
     return (
         <div className="p-6 max-w-6xl mx-auto text-sm">
             <div className="mb-4">
@@ -212,30 +169,31 @@ const MatchScoreCard: React.FC = () => {
                     VL@S - Scores
                 </h1>
                 <div className="flex justify-between mt-2 text-sm items-center">
-            <span className="flex items-center gap-2">
-                <span className="bg-[#fbd46d] px-2 py-1 rounded">TERREIN</span>
-                <input
-                    type="number"
-                    value={terrein}
-                    min={1}
-                    onChange={(e) => setTerrein(Math.max(1, parseInt(e.target.value) || 1))}
-                    placeholder="Nr"
-                    className="border border-[#74747c] p-2 rounded w-16"/>
-            </span>
                     <span className="flex items-center gap-2">
-                <label className="text-sm font-medium text-[#44444c]">Speeldag:</label>
-                <select
-                    value={selectedSpeeldag ?? ""}
-                    onChange={(e) => setSelectedSpeeldag(parseInt(e.target.value))}
-                    className="border rounded px-2 py-1 border-[#74747c]"
-                >
-                    {speeldagen.map((dag) => (
-                        <option key={dag.speeldagId} value={dag.speeldagId}>
-                            {new Date(dag.datum).toLocaleDateString()}
-                        </option>
-                    ))}
-                </select>
-            </span>
+                        <span className="bg-[#fbd46d] px-2 py-1 rounded">TERREIN</span>
+                        <input
+                            type="number"
+                            value={terrein}
+                            min={1}
+                            onChange={(e) => setTerrein(Math.max(1, parseInt(e.target.value) || 1))}
+                            placeholder="Nr"
+                            className="border border-[#74747c] p-2 rounded w-16"
+                        />
+                    </span>
+                    <span className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-[#44444c]">Speeldag:</label>
+                        <select
+                            value={selectedSpeeldag ?? ""}
+                            onChange={(e) => setSelectedSpeeldag(parseInt(e.target.value))}
+                            className="border rounded px-2 py-1 border-[#74747c]"
+                        >
+                            {speeldagen.map((dag) => (
+                                <option key={dag.speeldagId} value={dag.speeldagId}>
+                                    {new Date(dag.datum).toLocaleDateString()}
+                                </option>
+                            ))}
+                        </select>
+                    </span>
                 </div>
             </div>
 
@@ -249,14 +207,9 @@ const MatchScoreCard: React.FC = () => {
                             <h3 className="font-medium text-lg text-left text-[#3c444c]">Team A</h3>
                             <div className="space-y-2 w-full">
                                 {game.teamA.players.map((name, i) => (
-                                    <input
-                                        key={i}
-                                        type="text"
-                                        value={name}
-                                        onChange={(e) => handleNameChange(gameIndex, "teamA", i, e.target.value)}
-                                        placeholder={`Speler ${i + 1}`}
-                                        className="border-b w-full px-2 py-1 mb-2 rounded-lg border-[#74747c]"
-                                    />
+                                    <p key={i} className="border-b w-full px-2 py-1 mb-2 rounded-lg border-[#74747c]">
+                                        {name}
+                                    </p>
                                 ))}
                             </div>
                             <div className="mt-4">
@@ -272,27 +225,22 @@ const MatchScoreCard: React.FC = () => {
                                 <div className="mt-2 text-sm font-medium text-[#44444c]">
                                     Aantal: <span className="font-bold">{game.teamA.points}</span>
                                     <span className="ml-4">
-                                {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
+                                        {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
                                         {game.teamA.points - game.teamB.points}
-                            </span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="w-1 bg-gray-300 h-48 my-auto"></div> {/* Verticale scheidingslijn */}
+                        <div className="w-1 bg-gray-300 h-48 my-auto"></div>
 
                         <div className="w-full flex flex-col items-end">
                             <h3 className="font-medium text-lg text-right text-[#3c444c]">Team B</h3>
                             <div className="space-y-2 w-full">
                                 {game.teamB.players.map((name, i) => (
-                                    <input
-                                        key={i}
-                                        type="text"
-                                        value={name}
-                                        onChange={(e) => handleNameChange(gameIndex, "teamB", i, e.target.value)}
-                                        placeholder={`Speler ${i + 1}`}
-                                        className="border-b w-full px-2 py-1 mb-2 rounded-lg border-[#74747c]"
-                                    />
+                                    <p key={i} className="border-b w-full px-2 py-1 mb-2 rounded-lg border-[#74747c]">
+                                        {name}
+                                    </p>
                                 ))}
                             </div>
 
@@ -309,28 +257,24 @@ const MatchScoreCard: React.FC = () => {
                                 <div className="mt-2 text-sm font-medium text-[#44444c]">
                                     Aantal: <span className="font-bold">{game.teamB.points}</span>
                                     <span className="ml-4">
-                                {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
+                                        {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
                                         {game.teamB.points - game.teamA.points}
-                            </span>
+                                    </span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             ))}
 
-            <div>
-                <button
-                    onClick={handleSave}
-                    className="bg-[#3c444c] text-white px-4 py-2 rounded hover:bg-[#2f373f] transition cursor-pointer">
-                    Opslaan
-                </button>
-            </div>
+            <button
+                onClick={handleSave}
+                className="bg-[#3c444c] text-white px-4 py-2 rounded hover:bg-[#2f373f] transition cursor-pointer mt-6"
+            >
+                Opslaan
+            </button>
         </div>
-
-
     );
-};
+}
 
 export default MatchScoreCard;
