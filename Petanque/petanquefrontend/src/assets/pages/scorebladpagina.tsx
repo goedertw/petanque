@@ -179,10 +179,6 @@ const MatchScoreCard: React.FC = () => {
         if (!selectedSpeeldag) return;
 
         Promise.all(
-
-
-
-
                  spelResultaten.map((spel) =>
                     fetch(`${apiUrl}/scores`/*/${game.spelId}`*/, {
                     method: "PUT",
@@ -209,15 +205,11 @@ const MatchScoreCard: React.FC = () => {
                 alert("Er ging iets mis bij het opslaan.");
             });
     };
-
-
-
-
     return (
         <div className="p-6 max-w-6xl mx-auto text-sm">
             <div className="mb-4">
                 <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg">
-                    VL@S - Wervik/Geluwe
+                    VL@S - Scores
                 </h1>
                 <div className="flex justify-between mt-2 text-sm items-center">
             <span className="flex items-center gap-2">
