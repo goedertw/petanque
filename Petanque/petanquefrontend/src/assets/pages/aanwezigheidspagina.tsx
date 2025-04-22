@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import '../../index.css';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 interface Speler {
     spelerId: number;
@@ -29,7 +30,7 @@ function Aanwezigheidspagina() {
 
     const loadAanwezigheden = () => {
         setLoading(true);
-        fetch("https://localhost:7241/api/aanwezigheden")
+        fetch(`${apiUrl}/aanwezigheden`)
             .then((res) => {
                 if (!res.ok) throw new Error("Fout bij ophalen aanwezigheden");
                 return res.json();
@@ -45,7 +46,7 @@ function Aanwezigheidspagina() {
     };
 
     useEffect(() => {
-        fetch("https://localhost:7241/api/players")
+        fetch(`${apiUrl}/players`)
             .then((res) => {
                 if (!res.ok) throw new Error("Netwerkfout bij spelers");
                 return res.json();
@@ -59,7 +60,7 @@ function Aanwezigheidspagina() {
     }, []);
 
     useEffect(() => {
-        fetch("https://localhost:7241/api/speeldagen")
+        fetch(`${apiUrl}/speeldagen`)
             .then((res) => {
                 if (!res.ok) throw new Error("Netwerkfout bij speeldagen");
                 return res.json();
@@ -102,7 +103,7 @@ function Aanwezigheidspagina() {
             spelerVolgnr,
         };
 
-        fetch("https://localhost:7241/api/aanwezigheden", {
+        fetch(`${apiUrl}/aanwezigheden`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -146,14 +147,14 @@ function Aanwezigheidspagina() {
 
     return (
         <div className="p-6">
-            <h1 className="text-3xl font-bold text-white bg-blue-600 p-4 rounded-xl text-center mb-8 shadow-lg">
+            <h1 className="text-3xl font-bold text-white bg-[#3c444c] p-4 rounded-2xl shadow mb-6 text-center">
                 Overzicht Aanwezigheden
             </h1>
 
             <div className="mb-8 flex flex-col sm:flex-row items-center gap-4">
-                <label className="text-lg font-medium">Kies een speeldag:</label>
+                <label className="text-lg font-medium text-[#44444c]">Kies een speeldag:</label>
                 <select
-                    className="px-4 py-2 rounded-xl border border-gray-300 shadow"
+                    className="px-4 py-2 rounded-xl border border-[#74747c] shadow text-[#44444c]"
                     value={geselecteerdeSpeeldag ?? ""}
                     onChange={(e) => setGeselecteerdeSpeeldag(parseInt(e.target.value))}
                 >
@@ -183,7 +184,7 @@ function Aanwezigheidspagina() {
                             className="bg-white rounded-2xl shadow-md p-6 flex flex-col justify-between w-full"
                         >
                             <div>
-                                <h2 className="text-xl font-semibold text-gray-800 mb-1">
+                                <h2 className="text-xl font-semibold text-[#44444c] mb-1">
                                     {speler.voornaam} {speler.naam}
                                 </h2>
                             </div>
@@ -192,21 +193,26 @@ function Aanwezigheidspagina() {
                                     !spelerAanwezig ? (
                                         <button
                                             onClick={() => bevestigAanwezigheid(speler.spelerId)}
-                                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl w-full transition"
+                                            className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-4 py-2 rounded-xl w-full transition cursor-pointer"
                                         >
                                             Bevestig aanwezigheid
                                         </button>
                                     ) : (
-                                        <p className="text-green-500 font-semibold">Aanwezig</p>
+                                        <p className="bg-[#fbd46d] text-[#44444c] font-semibold px-2 py-1 rounded-full inline-block">
+                                            Aanwezig
+                                        </p>
+
                                     )
                                 ) : speeldagInVerleden ? (
-                                    <p className="text-sm text-gray-500">
-                                        {spelerAanwezig ? "Was aanwezig" : "Was niet aanwezig"}
-                                    </p>
+                                    spelerAanwezig ? (
+                                        <p className="text-sm font-medium text-[#ccac4c]">Was aanwezig</p>
+                                    ) : (
+                                        <p className="text-sm font-medium text-[#74747c]">Was niet aanwezig</p>
+                                    )
                                 ) : (
                                     <button
                                         onClick={() => bevestigAanwezigheid(speler.spelerId)}
-                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl w-full transition"
+                                        className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-4 py-2 rounded-xl w-full transition cursor-pointer"
                                     >
                                         Bevestig aanwezigheid
                                     </button>
@@ -217,6 +223,8 @@ function Aanwezigheidspagina() {
                 })}
             </div>
         </div>
+
+
     );
 }
 

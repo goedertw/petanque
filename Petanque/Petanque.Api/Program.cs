@@ -1,9 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using Petanque.Services;
 using Petanque.Services.Interfaces;
 using Petanque.Services.Services;
 using Petanque.Storage;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community; // Deze regel kan nu mogelijk niet werken als 'LicenseType' niet bestaat
+
 
 builder.Services.AddCors(options =>
 {
@@ -15,17 +20,20 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+// Verbinding met de MySQL database
 var connectionString = builder.Configuration.GetConnectionString("LocalMySQL");
-var serverVersion = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
 builder.Services.AddDbContext<Id312896PetanqueContext>(options =>
-    options.UseMySql(connectionString, serverVersion));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+// Services toevoegen
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();
 builder.Services.AddScoped<ISpelverdelingService, SpelverdelingService>();
 builder.Services.AddScoped<IAanwezigheidService, AanwezigheidService>();
 builder.Services.AddScoped<IScoreService, ScoreService>();
 builder.Services.AddScoped<ISpeeldagService, SpeeldagService>();
+builder.Services.AddScoped<IDagKlassementPDFService, DagKlassementPDFService>();
+
 
 var app = builder.Build();
 

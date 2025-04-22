@@ -1,4 +1,5 @@
-﻿using Petanque.Contracts.Requests;
+﻿using Microsoft.EntityFrameworkCore;
+using Petanque.Contracts.Requests;
 using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
 using Petanque.Storage;
@@ -12,27 +13,6 @@ namespace Petanque.Services.Services
 {
     public class ScoreService(Id312896PetanqueContext context) : IScoreService
     {
-        public SpelResponseContract Create(SpelRequestContract request)
-        {
-            //Check op ongeldige invoer
-            if (request.ScoreA > 13 || request.ScoreA < 0 || request.ScoreB > 13 || request.ScoreB < 0)
-            {
-                throw new Exception("De score van een team moet tussen 0 en 13 liggen.");
-            }
-            var entity = new Spel()
-            {
-                SpeeldagId = request.SpeeldagId,
-                Terrein = request.Terrein,
-                SpelerVolgnr = request.SpelerVolgnr,
-                ScoreA = request.ScoreA,
-                ScoreB = request.ScoreB
-            };
-
-            context.Spels.Add(entity);
-            context.SaveChanges();
-
-            return MapToContract(entity);
-        }
 
         public SpelResponseContract? GetById(int id)
         {
@@ -47,6 +27,16 @@ namespace Petanque.Services.Services
                 SpeeldagId = entity.SpeeldagId,
                 Terrein = entity.Terrein
             };
+        }
+
+        public void UpdateScore(int spelId, int scoreA, int scoreB) {
+            var spel = context.Spels.Find(spelId);
+            if (spel == null) throw new Exception("Spel niet gevonden");
+
+            spel.ScoreA = scoreA;
+            spel.ScoreB = scoreB;
+
+            context.SaveChanges();
         }
     }
 }
