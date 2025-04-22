@@ -48,31 +48,31 @@ function Header() {
                     <nav className={`lg:flex space-x-4 ${isMenuOpen ? "block" : "hidden"} lg:block`}>
                         <button
                             onClick={() => handleNavigation('/')}
-                            className="w-36 bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
+                            className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
                         >
                             Home
                         </button>
                         <button
                             onClick={() => handleNavigation('/aanwezigheden')}
-                            className="w-36 bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
+                            className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
                         >
                             Aanwezigheden
                         </button>
                         <button
                             onClick={() => handleNavigation('/spelers')}
-                            className="w-36 bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
+                            className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
                         >
                             Spelers
                         </button>
                         <button
                             onClick={() => handleNavigation('/scorebladeren')}
-                            className="w-36 bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
+                            className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
                         >
                             Scores
                         </button>
                         <button
                             onClick={() => handleNavigation('/dagklassement')}
-                            className="w-36 bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
+                            className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
                         >
                             Dagklassementen
                         </button>

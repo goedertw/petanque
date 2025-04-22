@@ -95,13 +95,12 @@ namespace Petanque.Services.Services
 
                 var teamA = beschikbareSpelers.Take(2).ToList();
                 var teamB = beschikbareSpelers.Skip(2).Take(2).ToList();
-                Random rn = new Random();
                 var spel = new Spel
                 {
                     SpeeldagId = speeldagId,
                     Terrein = gekozenTerrein,
-                    ScoreA = rn.Next(0,13),
-                    ScoreB = rn.Next(0, 13),
+                    ScoreA = 0,
+                    ScoreB = 0,
                     SpelerVolgnr = teamA.First().Key
                 };
 

@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
 using Petanque.Storage;
+using QuestPDF.Helpers;
 
 namespace Petanque.Services
 {
@@ -20,82 +22,96 @@ namespace Petanque.Services
 
         public async Task<Stream> GenerateDagKlassementPdfAsync(int id)
         {
-            // Haal alle spelers op
-            var spelers = await _context.Spelers.ToListAsync();
+            // Haal alleen de spelers op waarvan het spelerId voorkomt in het dagklassement voor de opgegeven speeldag
+            var spelerIdsInDagklassement = await _context.Dagklassements
+                .Where(d => d.SpeeldagId == id)
+                .Select(d => d.SpelerId)
+                .ToListAsync();
 
-            // Haal alle dagklassements op voor de opgegeven SpeeldagId
+            var spelers = await _context.Spelers
+                .Where(sp => spelerIdsInDagklassement.Contains(sp.SpelerId))
+                .ToListAsync();
+
             var dagklassements = await _context.Dagklassements
                 .Where(d => d.SpeeldagId == id)
                 .ToListAsync();
 
             if (dagklassements == null || !dagklassements.Any())
             {
-                return null; // Geen dagklassementen gevonden voor het opgegeven id
+                return null;
             }
 
-            // Voeg de scores toe aan de spelers
             var spelersMetScores = spelers.Select(speler =>
             {
-                // Zoek het dagklassement voor deze speler
                 var dagKlassement = dagklassements.FirstOrDefault(dk => dk.SpelerId == speler.SpelerId);
-
-                // Score van de speler (0 als de speler geen dagklassement heeft)
                 var score = dagKlassement != null ? dagKlassement.PlusMinPunten : 0;
 
                 return new
                 {
                     speler.Naam,
-                    score
+                    speler.Voornaam,
+                    Score = score,
+                    Hoofdpunten = dagKlassement?.Hoofdpunten ?? 0
                 };
-            }).ToList();
+            }).OrderByDescending(s => s.Hoofdpunten).ToList();
 
-            // Sorteer de lijst van spelers op score, van hoog naar laag
-            var gesorteerdeSpelers = spelersMetScores.OrderByDescending(s => s.score).ToList();
-
-            // Maak een MemoryStream om de gegenereerde PDF in te bewaren
             var memoryStream = new MemoryStream();
 
-            // Genereer de PDF
             var document = Document.Create(container =>
             {
                 container.Page(page =>
                 {
-                    page.Size(210, 297); // A4 formaat
+                    page.Size(210, 297);
                     page.Margin(20);
+                    page.DefaultTextStyle(x => x.FontSize(7));
 
                     page.Content().Column(col =>
                     {
-                        col.Item().Text("Dagklassementen");
+                        // Voeg titel toe met padding aan de onderkant van de titel
+                        col.Item().Element(e => e
+                            .PaddingBottom(2)  // Padding aan de onderkant van de titel
+                            .Text($"VL@S Speeldag {id}")
+                            .FontSize(14)
+                            .Bold()
+                            .AlignCenter());
 
-                        // Voeg de tabel met spelers en scores toe
+                        // Voeg wat extra ruimte boven de tabel toe
+                        col.Item().Element(e => e.PaddingTop(10));  // Dit geeft de ruimte tussen de titel en de tabel
+
+                        // Tabel toevoegen
                         col.Item().Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.RelativeColumn(); // Naam van de speler
-                                columns.RelativeColumn(); // Score of rang van de speler
+                                columns.ConstantColumn(25);   // Rang
+                                columns.RelativeColumn(3);    // Naam
+                                columns.ConstantColumn(35);   // Hoofdpunten
+                                columns.ConstantColumn(35);   // +/- punten
                             });
 
-                            // Voeg de gesorteerde spelers toe aan de tabel
-                            foreach (var speler in gesorteerdeSpelers)
+                            int rang = 1;
+                            foreach (var speler in spelersMetScores)
                             {
-                                int nummer = 1;
-                                table.Cell().Text(nummer + " " + speler.Naam);  // Naam van de speler
-                                table.Cell().Text(speler.score.ToString());  // Score van de speler
-                                nummer++;
+                                bool isEvenRow = rang % 2 == 0;
+                                string background = isEvenRow ? Colors.Grey.Lighten4 : Colors.White;
+
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(speler.Voornaam + " " + speler.Naam);
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Hoofdpunten.ToString() ?? "0");
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Score.ToString());
+
+                                rang++;
                             }
                         });
                     });
                 });
             });
 
-            // Genereer de PDF naar de stream
             document.GeneratePdf(memoryStream);
-
-            // Zet de positie van de stream naar het begin voordat we deze teruggeven
             memoryStream.Seek(0, SeekOrigin.Begin);
 
             return memoryStream;
         }
+
     }
 }
