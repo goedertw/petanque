@@ -33,8 +33,8 @@ builder.Services.AddScoped<IAanwezigheidService, AanwezigheidService>();
 builder.Services.AddScoped<IScoreService, ScoreService>();
 builder.Services.AddScoped<ISpeeldagService, SpeeldagService>();
 builder.Services.AddScoped<IDagKlassementPDFService, DagKlassementPDFService>();
-builder.Services.AddScoped<ISeizoensKlassementService, SeizoensKlassementService>();
 
+builder.Services.AddScoped<ISeizoensKlassementService, SeizoensKlassementService>();
 
 var app = builder.Build();
 
