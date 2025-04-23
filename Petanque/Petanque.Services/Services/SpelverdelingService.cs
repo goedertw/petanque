@@ -217,5 +217,36 @@ namespace Petanque.Services.Services
                 }
             };
         }
+        public IEnumerable<SpelverdelingResponseContract> GetBySpeeldagAndTerrein(int speeldag, int terrein)
+        {
+            var spellen = _context.Spels
+                .Where(sp => sp.SpeeldagId == speeldag && sp.Terrein == $"Terrein {terrein}")
+                .ToList();
+
+            if (!spellen.Any())
+                return Enumerable.Empty<SpelverdelingResponseContract>();
+
+            var spelIds = spellen.Select(s => s.SpelId).ToList();
+
+            var spelverdelingen = _context.Spelverdelings
+                .Where(sv => spelIds.Contains(sv.SpelId ?? 0))
+                .ToList();
+
+            var aanwezigheden = _context.Aanwezigheids
+                .Include(a => a.Speler)
+                .Where(a => a.SpeeldagId == speeldag)
+                .ToList();
+
+            return spelverdelingen.Select(sv =>
+            {
+                var speler = aanwezigheden
+                    .FirstOrDefault(a => a.SpelerVolgnr == sv.SpelerVolgnr)
+                    ?.Speler;
+
+                var spel = spellen.FirstOrDefault(sp => sp.SpelId == sv.SpelId);
+
+                return MapToReturn(sv, speler, spel);
+            }).ToList();
+        }
     }
 }
