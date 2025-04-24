@@ -15,7 +15,6 @@ namespace Petanque.Api.Controllers
         {
             _dagKlassementPDFService = dagKlassementPDFService;
         }
-
         [HttpPost("{id}")]
         public async Task<IActionResult> GeneratePdf(int id)
         {

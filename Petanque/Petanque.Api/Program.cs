@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Petanque.Api.Controllers;
 using Petanque.Services;
 using Petanque.Services.Interfaces;
 using Petanque.Services.Services;
@@ -36,6 +37,7 @@ builder.Services.AddScoped<IDagKlassementPDFService, DagKlassementPDFService>();
 builder.Services.AddScoped<ISpelverdelingPDFService, SpelverdelingPDFService>();
 
 builder.Services.AddScoped<ISeizoensKlassementService, SeizoensKlassementService>();
+builder.Services.AddScoped<ISeizoensKlassementPDFService, SeizoensKlassementPDFService>();
 
 var app = builder.Build();
 
