@@ -5,8 +5,9 @@ import ThirdPage from '../pages/spelerpagina.tsx';
 import HomePage from '../pages/HomePagina.tsx';
 import ScorePagina from '../pages/scorebladpagina.tsx';
 import vlasLogo from '../images/vlas_logo.png';
-import DagKlassementpagina from '../pages/Dagklassementpagina.tsx';
+// import DagKlassementpagina from '../pages/Dagklassementpagina.tsx';
 import SpeeldagenDropdown from '../pages/spelverdeling.tsx';
+import KlassementenPagina from "../pages/KlassementenPagina.tsx";
 
 function Header() {
     const navigate = useNavigate();
@@ -53,7 +54,7 @@ function Header() {
                         <button onClick={() => handleNavigation('/aanwezigheden')} className={navButtonClass}>Aanwezigheden</button>
                         <button onClick={() => handleNavigation('/spelers')} className={navButtonClass}>Spelers</button>
                         <button onClick={() => handleNavigation('/scorebladeren')} className={navButtonClass}>Scores</button>
-                        <button onClick={() => handleNavigation('/dagklassement')} className={navButtonClass}>Dagklassementen</button>
+                        <button onClick={() => handleNavigation('/klassement')} className={navButtonClass}>Klassementen</button>
                         <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdelingen</button>
                     </nav>
                 </div>
@@ -77,7 +78,7 @@ function Header() {
                     <Route path="/aanwezigheden" element={<SecondPage />} />
                     <Route path="/spelers" element={<ThirdPage />} />
                     <Route path="/scorebladeren" element={<ScorePagina />} />
-                    <Route path="/dagklassement" element={<DagKlassementpagina />} />
+                    <Route path="/klassement" element={<KlassementenPagina />} />
                     <Route path="/spelverdeling" element={<SpeeldagenDropdown />} />
                 </Routes>
             </main>

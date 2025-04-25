@@ -38,6 +38,7 @@ builder.Services.AddScoped<ISpelverdelingPDFService, SpelverdelingPDFService>();
 
 builder.Services.AddScoped<ISeizoensKlassementService, SeizoensKlassementService>();
 builder.Services.AddScoped<ISeizoensKlassementPDFService, SeizoensKlassementPDFService>();
+builder.Services.AddScoped<ISeizoensService, SeizoensService>();
 
 var app = builder.Build();
 
