@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 const apiUrl = import.meta.env.VITE_API_URL;
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 interface Speeldag {
   speeldagId: number;
@@ -86,26 +88,71 @@ function Dagklassementpagina() {
         <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6">
           Dagklassementen
         </h1>
+          <h2 className="text-center">Selecteer een speeldag:</h2>
 
-        <select
-            value={speeldagId}
-            onChange={(e) => {
-              setSpeeldagId(e.target.value);
-              localStorage.setItem('dagklassementSpeeldagId', e.target.value);
-              setPdfUrl(null);
-              localStorage.removeItem('dagklassementPdfUrl');
-            }}
-            className="border p-2 rounded w-full mb-4"
-        >
-          <option value="">Selecteer een speeldag</option>
-          {speeldagen.map((dag) => (
-              <option key={dag.speeldagId} value={dag.speeldagId.toString()}>
-                Speeldag {dag.speeldagId} – {formatDate(dag.datum)}
-              </option>
-          ))}
-        </select>
+          <div className="flex justify-center mt-4 mb-4">
+              <Calendar
+                  onClickDay={(value) => {
+                      const clickedDate = new Date(value);
+                      const matchingSpeeldag = speeldagen.find((dag) => {
+                          const dagDate = new Date(dag.datum);
+                          return (
+                              dagDate.getFullYear() === clickedDate.getFullYear() &&
+                              dagDate.getMonth() === clickedDate.getMonth() &&
+                              dagDate.getDate() === clickedDate.getDate()
+                          );
+                      });
 
-        <button
+                      if (matchingSpeeldag) {
+                          setSelectedDag(matchingSpeeldag);
+                          setSpeeldagId(matchingSpeeldag.speeldagId.toString());
+                          localStorage.setItem('dagklassementSpeeldagId', matchingSpeeldag.speeldagId.toString());
+                          setPdfUrl(null);
+                          localStorage.removeItem('dagklassementPdfUrl');
+                      }
+                  }}
+                  value={selectedDag ? new Date(selectedDag.datum) : null}
+                  tileContent={({ date, view }) => {
+                      if (view === 'month') {
+                          const match = speeldagen.find((dag) => {
+                              const dagDate = new Date(dag.datum);
+                              return (
+                                  dagDate.getFullYear() === date.getFullYear() &&
+                                  dagDate.getMonth() === date.getMonth() &&
+                                  dagDate.getDate() === date.getDate()
+                              );
+                          });
+
+                          return match ? (
+                              <div className="flex justify-center items-center mt-1">
+                                  <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
+                              </div>
+                          ) : null;
+                      }
+                  }}
+                  tileClassName={({ date, view }) => {
+                      if (view === 'month') {
+                          const match = speeldagen.find((dag) => {
+                              const dagDate = new Date(dag.datum);
+                              return (
+                                  dagDate.getFullYear() === date.getFullYear() &&
+                                  dagDate.getMonth() === date.getMonth() &&
+                                  dagDate.getDate() === date.getDate()
+                              );
+                          });
+
+                          if (match && selectedDag && match.speeldagId === selectedDag.speeldagId) {
+                              return 'bg-[#ccac4c] text-white rounded-full';
+                          }
+                      }
+                      return null;
+                  }}
+                  className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
+              />
+          </div>
+
+
+          <button
             onClick={fetchPdf}
             className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
         >

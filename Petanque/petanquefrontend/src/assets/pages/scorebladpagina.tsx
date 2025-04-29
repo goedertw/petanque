@@ -199,7 +199,7 @@ function MatchScoreCard() {
                         />
                     </span>
                     <span className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-[#44444c]">Speeldag:</label>
+                        <label className="text-sm font-medium text-[#44444c]">Selecteer een speeldag:</label>
                         <Calendar
                             onClickDay={(value) => {
                                 const clickedDate = new Date(value);

@@ -86,7 +86,7 @@ function SpeeldagenDropdown() {
             <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6 w-full">
                 Spelverdelingen
             </h1>
-            <h2 className="text-center w-full mb-4">Selecteer een speeldag</h2>
+            <h2 className="text-center w-full mb-4">Selecteer een speeldag:</h2>
 
             <Calendar
                 onClickDay={(value) => {

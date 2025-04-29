@@ -171,7 +171,7 @@ function Aanwezigheidspagina() {
 
             <div className="mb-8">
                 {/* Text boven de kalender */}
-                <h2 className="text-center text-lg font-medium text-[#44444c] mb-4">Kies een speeldag:</h2>
+                <h2 className="text-center text-lg font-medium text-[#44444c] mb-4">Selecteer een speeldag:</h2>
 
                 {/* Kalender gecentreerd */}
                 <div className="flex justify-center">
