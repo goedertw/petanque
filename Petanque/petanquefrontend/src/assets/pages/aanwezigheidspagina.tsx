@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import '../../index.css';
 const apiUrl = import.meta.env.VITE_API_URL;
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 interface Speler {
     spelerId: number;
@@ -167,19 +169,70 @@ function Aanwezigheidspagina() {
                 Overzicht Aanwezigheden
             </h1>
 
-            <div className="mb-8 flex flex-col sm:flex-row items-center gap-4">
-                <label className="text-lg font-medium text-[#44444c]">Kies een speeldag:</label>
-                <select
-                    className="px-4 py-2 rounded-xl border border-[#74747c] shadow text-[#44444c]"
-                    value={geselecteerdeSpeeldag ?? ""}
-                    onChange={(e) => setGeselecteerdeSpeeldag(parseInt(e.target.value))}
-                >
-                    {speeldagen.map((dag) => (
-                        <option key={dag.speeldagId} value={dag.speeldagId}>
-                            {new Date(dag.datum).toLocaleDateString()}
-                        </option>
-                    ))}
-                </select>
+            <div className="mb-8">
+                {/* Text boven de kalender */}
+                <h2 className="text-center text-lg font-medium text-[#44444c] mb-4">Kies een speeldag:</h2>
+
+                {/* Kalender gecentreerd */}
+                <div className="flex justify-center">
+                    <Calendar
+                        onClickDay={(value) => {
+                            const clickedDate = new Date(value);
+                            const matchingSpeeldag = speeldagen.find((dag) => {
+                                const dagDate = new Date(dag.datum);
+                                return (
+                                    dagDate.getFullYear() === clickedDate.getFullYear() &&
+                                    dagDate.getMonth() === clickedDate.getMonth() &&
+                                    dagDate.getDate() === clickedDate.getDate()
+                                );
+                            });
+
+                            if (matchingSpeeldag) {
+                                setGeselecteerdeSpeeldag(matchingSpeeldag.speeldagId);
+                            }
+                        }}
+                        value={(() => {
+                            const speeldag = speeldagen.find((dag) => dag.speeldagId === geselecteerdeSpeeldag);
+                            return speeldag ? new Date(speeldag.datum) : null;
+                        })()}
+                        tileContent={({ date, view }) => {
+                            if (view === 'month') {
+                                const match = speeldagen.find((dag) => {
+                                    const dagDate = new Date(dag.datum);
+                                    return (
+                                        dagDate.getFullYear() === date.getFullYear() &&
+                                        dagDate.getMonth() === date.getMonth() &&
+                                        dagDate.getDate() === date.getDate()
+                                    );
+                                });
+
+                                return match ? (
+                                    <div className="flex justify-center items-center mt-1">
+                                        <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
+                                    </div>
+                                ) : null;
+                            }
+                        }}
+                        className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
+                        tileClassName={({ date, view }) => {
+                            if (view === 'month') {
+                                const speeldag = speeldagen.find((dag) => {
+                                    const dagDate = new Date(dag.datum);
+                                    return (
+                                        dagDate.getFullYear() === date.getFullYear() &&
+                                        dagDate.getMonth() === date.getMonth() &&
+                                        dagDate.getDate() === date.getDate()
+                                    );
+                                });
+
+                                if (speeldag && speeldag.speeldagId === geselecteerdeSpeeldag) {
+                                    return 'bg-[#ccac4c] text-white rounded-full'; // ✨ Highlight
+                                }
+                            }
+                            return null;
+                        }}
+                    />
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
@@ -217,7 +270,6 @@ function Aanwezigheidspagina() {
                                         <p className="bg-[#fbd46d] text-[#44444c] font-semibold px-2 py-1 rounded-full inline-block">
                                             Aanwezig
                                         </p>
-
                                     )
                                 ) : speeldagInVerleden ? (
                                     spelerAanwezig ? (
@@ -239,9 +291,8 @@ function Aanwezigheidspagina() {
                 })}
             </div>
         </div>
-
-
     );
+
 }
 
 export default Aanwezigheidspagina;

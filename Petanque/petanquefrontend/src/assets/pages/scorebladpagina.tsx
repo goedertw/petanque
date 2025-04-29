@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import Calendar from "react-calendar";
 const apiUrl = import.meta.env.VITE_API_URL;
-
+import 'react-calendar/dist/Calendar.css';
 // Interfaces
 interface Speler {
     spelerId: number;
@@ -199,21 +200,66 @@ function MatchScoreCard() {
                     </span>
                     <span className="flex items-center gap-2">
                         <label className="text-sm font-medium text-[#44444c]">Speeldag:</label>
-                        <select
-                            value={selectedSpeeldag ?? ""}
-                            onChange={(e) => {
-                                const value = parseInt(e.target.value);
-                                setSelectedSpeeldag(value);
-                                localStorage.setItem('selectedSpeeldag', value.toString());
+                        <Calendar
+                            onClickDay={(value) => {
+                                const clickedDate = new Date(value);
+                                const matchingSpeeldag = speeldagen.find((dag) => {
+                                    const dagDate = new Date(dag.datum);
+                                    return (
+                                        dagDate.getFullYear() === clickedDate.getFullYear() &&
+                                        dagDate.getMonth() === clickedDate.getMonth() &&
+                                        dagDate.getDate() === clickedDate.getDate()
+                                    );
+                                });
+
+                                if (matchingSpeeldag) {
+                                    setSelectedSpeeldag(matchingSpeeldag.speeldagId);
+                                }
                             }}
-                            className="border rounded px-2 py-1 border-[#74747c]"
-                        >
-                            {speeldagen.map((dag) => (
-                                <option key={dag.speeldagId} value={dag.speeldagId}>
-                                    {new Date(dag.datum).toLocaleDateString()}
-                                </option>
-                            ))}
-                        </select>
+                            value={
+                                (() => {
+                                    const speeldag = speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag);
+                                    return speeldag ? new Date(speeldag.datum) : null;
+                                })()
+                            }
+                            tileContent={({ date, view }) => {
+                                if (view === 'month') {
+                                    const match = speeldagen.find((dag) => {
+                                        const dagDate = new Date(dag.datum);
+                                        return (
+                                            dagDate.getFullYear() === date.getFullYear() &&
+                                            dagDate.getMonth() === date.getMonth() &&
+                                            dagDate.getDate() === date.getDate()
+                                        );
+                                    });
+
+                                    return match ? (
+                                        <div className="flex justify-center items-center mt-1">
+                                            <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
+                                        </div>
+                                    ) : null;
+                                }
+                            }}
+                            className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
+                            // calendarType="ISO"
+                            tileClassName={({ date, view }) => {
+                                if (view === 'month') {
+                                    const speeldag = speeldagen.find((dag) => {
+                                        const dagDate = new Date(dag.datum);
+                                        return (
+                                            dagDate.getFullYear() === date.getFullYear() &&
+                                            dagDate.getMonth() === date.getMonth() &&
+                                            dagDate.getDate() === date.getDate()
+                                        );
+                                    });
+
+                                    if (speeldag && speeldag.speeldagId === selectedSpeeldag) {
+                                        return 'bg-[#ccac4c] text-white rounded-full'; // ✨ Highlight
+                                    }
+                                }
+                                return null;
+                            }}
+                        />
                     </span>
                 </div>
             </div>
