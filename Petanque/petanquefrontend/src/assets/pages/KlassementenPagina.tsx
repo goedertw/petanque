@@ -1,11 +1,17 @@
-﻿// KlassementenPagina.tsx
-import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import Dagklassementpagina from "./Dagklassementpagina";
 import Seizoensklassementpagina from "./SeizoensklassementPagina";
+
 type KlassementType = "dag" | "seizoen";
 
 function KlassementenPagina() {
-    const [activeTab, setActiveTab] = useState<KlassementType>("dag");
+    const [activeTab, setActiveTab] = useState<KlassementType>(() => {
+        return (localStorage.getItem("activeTab") as KlassementType) || "dag";
+    });
+
+    useEffect(() => {
+        localStorage.setItem("activeTab", activeTab);
+    }, [activeTab]);
 
     return (
         <div className="p-4 max-w-3xl mx-auto">

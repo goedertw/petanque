@@ -34,7 +34,7 @@ function SpelerPagina() {
         fetchAllPlayers();
     }, []);
 
-    
+
 
     const handleCreatePlayer = () => {
         if (!newVoornaam || !newNaam) return;
@@ -71,12 +71,12 @@ function SpelerPagina() {
             <div className="max-w-3xl w-full p-6">
                 <div className="max-w-3xl mx-auto p-6">
                     <h1 className="text-3xl font-bold text-white bg-[#3c444c] p-4 rounded-2xl shadow mb-6 text-center">
-                        Spelers Pagina
+                        Leden
                     </h1>
 
                     {/* Voeg speler toe */}
                     <div className="mb-8 bg-white p-4 rounded-xl shadow">
-                        <h2 className="text-xl font-semibold text-[#44444c] mb-4">Nieuwe Speler Toevoegen</h2>
+                        <h2 className="text-xl font-semibold text-[#44444c] mb-4">Nieuw Lid Toevoegen</h2>
                         <div className="flex flex-col sm:flex-row gap-2 mb-2">
                             <input
                                 type="text"
@@ -105,12 +105,12 @@ function SpelerPagina() {
                     <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:items-center">
                         <input
                             type="text"
-                            placeholder="Zoek speler op naam"
+                            placeholder="Zoek lid op naam"
                             value={searchNaam}
                             onChange={(e) => setSearchNaam(e.target.value)}
                             className="border border-[#74747c] p-2 rounded w-full sm:w-auto"
                         />
-                     
+
                     </div>
 
                     {/* Loading & Error */}
