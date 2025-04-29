@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 interface Speeldag {
@@ -8,10 +8,10 @@ interface Speeldag {
 
 function SpeeldagenDropdown() {
   const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
-  const [speeldagId, setSpeeldagId] = useState<string>("");
+  const [speeldagId, setSpeeldagId] = useState<string>(() => localStorage.getItem('speeldagId') || "");
   const [selectedSpeeldag, setSelectedSpeeldag] = useState<Speeldag | null>(null);
-  const [terrein, setTerrein] = useState<string>("");
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [terrein, setTerrein] = useState<string>(() => localStorage.getItem('terrein') || "");
+  const [pdfUrl, setPdfUrl] = useState<string | null>(() => localStorage.getItem('pdfUrl') || null);
 
   useEffect(() => {
     const fetchSpeeldagen = async () => {
@@ -20,6 +20,13 @@ function SpeeldagenDropdown() {
         if (!response.ok) throw new Error("Fout bij ophalen van speeldagen");
         const data: Speeldag[] = await response.json();
         setSpeeldagen(data);
+
+        const savedSpeeldagId = localStorage.getItem('speeldagId');
+        if (savedSpeeldagId) {
+            const foundSpeeldag = data.find((dag) => dag.speeldagId.toString() === savedSpeeldagId);
+            setSelectedSpeeldag(foundSpeeldag || null);
+        }
+        
       } catch (error) {
         console.error("Fout bij laden van speeldagen:", error);
         alert("Kon speeldagen niet laden.");
@@ -62,8 +69,13 @@ function SpeeldagenDropdown() {
       if (!response.ok) throw new Error("Fout bij ophalen van PDF");
 
       const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+            const base64data = reader.result as string;
+            setPdfUrl(base64data);
+            localStorage.setItem('pdfUrl', base64data);
+        };
     } catch (error) {
       console.error("Fout bij ophalen van PDF:", error);
       alert("Kon PDF niet ophalen.");
@@ -76,14 +88,16 @@ function SpeeldagenDropdown() {
         Spelverdelingen
       </h1>
 
-      <select
-        value={speeldagId}
-        onChange={(e) => {
-          setSpeeldagId(e.target.value);
-          setPdfUrl(null); // reset bij nieuwe selectie
-        }}
-        className="border p-2 rounded w-full mb-4"
-      >
+        <select
+            value={speeldagId}
+            onChange={(e) => {
+                setSpeeldagId(e.target.value);
+                localStorage.setItem('speeldagId', e.target.value);
+                setPdfUrl(null);
+                localStorage.removeItem('pdfUrl');
+            }}
+            className="border p-2 rounded w-full mb-4"
+        >
         <option value="">Selecteer een speeldag</option>
         {speeldagen.map((dag) => (
           <option key={dag.speeldagId} value={dag.speeldagId.toString()}>
@@ -92,15 +106,21 @@ function SpeeldagenDropdown() {
         ))}
       </select>
 
-      <input
-        type="text"
-        placeholder="Voer terrein in"
-        value={terrein}
-        onChange={(e) => setTerrein(e.target.value)}
-        className="border p-2 rounded w-full mb-4"
-      />
+        <input
+            type="number"
+            placeholder="Voer terrein in"
+            value={terrein}
+            onChange={(e) => {
+                setTerrein(e.target.value);
+                localStorage.setItem('terrein', e.target.value);
+                setPdfUrl(null);
+                localStorage.removeItem('pdfUrl');
+            }}
+            className="border p-2 rounded w-full mb-4"
+        />
 
-      <button
+
+        <button
         onClick={fetchPdf}
         className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer w-full"
       >

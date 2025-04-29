@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 // Interfaces
@@ -60,7 +60,10 @@ const createEmptyGame = (): Game => ({
 // MatchScoreCard Component
 function MatchScoreCard() {
     const [games, setGames] = useState<Game[]>([createEmptyGame(), createEmptyGame(), createEmptyGame()]);
-    const [terrein, setTerrein] = useState<number>(1);
+    const [terrein, setTerrein] = useState<number>(() => {
+        const opgeslagenTerrein = localStorage.getItem('selectedTerrein');
+        return opgeslagenTerrein ? parseInt(opgeslagenTerrein) : 1;
+    });
     const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
     const [selectedSpeeldag, setSelectedSpeeldag] = useState<number | null>(null);
 
@@ -70,8 +73,18 @@ function MatchScoreCard() {
             .then((res) => res.json())
             .then((data: Speeldag[]) => {
                 setSpeeldagen(data);
+
                 if (data.length > 0) {
-                    setSelectedSpeeldag(data[0].speeldagId);
+                    const opgeslagenSpeeldagId = localStorage.getItem("selectedSpeeldag");
+                    let gekozenSpeeldagId = opgeslagenSpeeldagId ? parseInt(opgeslagenSpeeldagId) : data[0].speeldagId;
+
+                    const speeldagBestaat = data.some((dag) => dag.speeldagId === gekozenSpeeldagId);
+
+                    if (!speeldagBestaat) {
+                        gekozenSpeeldagId = data[0].speeldagId;
+                    }
+
+                    setSelectedSpeeldag(gekozenSpeeldagId);
                 }
             })
             .catch((err) => console.error("Fout bij laden van speeldagen:", err));
@@ -155,7 +168,7 @@ function MatchScoreCard() {
                     })
                 )
             );
-            alert("Scores succesvol geüpdatet!");
+            alert("Scores succesvol ge pdatet!");
         } catch (error) {
             console.error("Fout bij opslaan:", error);
             alert("Er ging iets mis bij het opslaan.");
@@ -175,7 +188,11 @@ function MatchScoreCard() {
                             type="number"
                             value={terrein}
                             min={1}
-                            onChange={(e) => setTerrein(Math.max(1, parseInt(e.target.value) || 1))}
+                            onChange={(e) => {
+                                const value = Math.max(1, parseInt(e.target.value) || 1);
+                                setTerrein(value);
+                                localStorage.setItem('selectedTerrein', value.toString());
+                            }}
                             placeholder="Nr"
                             className="border border-[#74747c] p-2 rounded w-16"
                         />
@@ -184,7 +201,11 @@ function MatchScoreCard() {
                         <label className="text-sm font-medium text-[#44444c]">Speeldag:</label>
                         <select
                             value={selectedSpeeldag ?? ""}
-                            onChange={(e) => setSelectedSpeeldag(parseInt(e.target.value))}
+                            onChange={(e) => {
+                                const value = parseInt(e.target.value);
+                                setSelectedSpeeldag(value);
+                                localStorage.setItem('selectedSpeeldag', value.toString());
+                            }}
                             className="border rounded px-2 py-1 border-[#74747c]"
                         >
                             {speeldagen.map((dag) => (

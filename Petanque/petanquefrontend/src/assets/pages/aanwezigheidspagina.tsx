@@ -67,14 +67,30 @@ function Aanwezigheidspagina() {
             })
             .then((data: Speeldag[]) => {
                 setSpeeldagen(data);
+
                 if (data.length > 0) {
-                    const eersteSpeeldagId = data[0].speeldagId;
-                    setGeselecteerdeSpeeldag(eersteSpeeldagId);
+                    const savedSpeeldag = localStorage.getItem('geselecteerdeSpeeldag');
+                    let speeldagId = savedSpeeldag ? parseInt(savedSpeeldag) : data[0].speeldagId;
+                    const speeldagBestaat = data.some((dag) => dag.speeldagId === speeldagId);
+
+                    if (!speeldagBestaat) {
+                        speeldagId = data[0].speeldagId; 
+                    }
+
+                    setGeselecteerdeSpeeldag(speeldagId);
                     loadAanwezigheden();
                 }
             })
             .catch((err) => setError(err.message));
     }, []);
+
+
+    useEffect(() => {
+        if (geselecteerdeSpeeldag !== null) {
+            localStorage.setItem('geselecteerdeSpeeldag', geselecteerdeSpeeldag.toString());
+        }
+    }, [geselecteerdeSpeeldag]);
+
 
     useEffect(() => {
         if (geselecteerdeSpeeldag) {

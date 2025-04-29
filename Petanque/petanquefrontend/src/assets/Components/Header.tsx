@@ -20,7 +20,7 @@ function Header() {
     };
 
     const navButtonClass =
-        "bg-[#fbd46d] text-[#3c444c] font-bold py-1.5 px-3 rounded-2xl shadow hover:bg-[#f7c84c] transition duration-200";
+        "bg-[#fbd46d] text-[#3c444c] font-bold py-1.5 px-3 rounded-2xl shadow hover:bg-[#f7c84c] transition duration-200 cursor-pointer";
 
     return (
         <div className="min-h-screen bg-gray-100 text-gray-900">
@@ -51,11 +51,11 @@ function Header() {
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex flex-wrap gap-3 justify-center">
                         <button onClick={() => handleNavigation('/')} className={navButtonClass}>Home</button>
+                        <button onClick={() => handleNavigation('/leden')} className={navButtonClass}>Leden</button>
                         <button onClick={() => handleNavigation('/aanwezigheden')} className={navButtonClass}>Aanwezigheden</button>
-                        <button onClick={() => handleNavigation('/spelers')} className={navButtonClass}>Spelers</button>
+                        <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdelingen</button>
                         <button onClick={() => handleNavigation('/scorebladeren')} className={navButtonClass}>Scores</button>
                         <button onClick={() => handleNavigation('/klassement')} className={navButtonClass}>Klassementen</button>
-                        <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdelingen</button>
                     </nav>
                 </div>
 
@@ -63,11 +63,11 @@ function Header() {
                 {isMenuOpen && (
                     <div className="lg:hidden mt-4 bg-white rounded-xl p-4 shadow space-y-2 flex flex-col items-center animate-fade-in">
                         <button onClick={() => handleNavigation('/')} className={navButtonClass}>Home</button>
+                        <button onClick={() => handleNavigation('/leden')} className={navButtonClass}>Leden</button>
                         <button onClick={() => handleNavigation('/aanwezigheden')} className={navButtonClass}>Aanwezigheden</button>
-                        <button onClick={() => handleNavigation('/spelers')} className={navButtonClass}>Spelers</button>
+                        <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdelingen</button>
                         <button onClick={() => handleNavigation('/scorebladeren')} className={navButtonClass}>Scores</button>
                         <button onClick={() => handleNavigation('/dagklassement')} className={navButtonClass}>Dagklassementen</button>
-                        <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdelingen</button>
                     </div>
                 )}
             </header>
@@ -76,7 +76,7 @@ function Header() {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/aanwezigheden" element={<SecondPage />} />
-                    <Route path="/spelers" element={<ThirdPage />} />
+                    <Route path="/leden" element={<ThirdPage />} />
                     <Route path="/scorebladeren" element={<ScorePagina />} />
                     <Route path="/klassement" element={<KlassementenPagina />} />
                     <Route path="/spelverdeling" element={<SpeeldagenDropdown />} />
