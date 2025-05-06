@@ -59,7 +59,7 @@ const createEmptyGame = (): Game => ({
 });
 
 // MatchScoreCard Component
-function MatchScoreCard() {
+function Scorebladpagina() {
     const [games, setGames] = useState<Game[]>([createEmptyGame(), createEmptyGame(), createEmptyGame()]);
     const [terrein, setTerrein] = useState<number>(() => {
         const opgeslagenTerrein = localStorage.getItem('selectedTerrein');
@@ -67,6 +67,7 @@ function MatchScoreCard() {
     });
     const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
     const [selectedSpeeldag, setSelectedSpeeldag] = useState<number | null>(null);
+    const [showCalendar, setShowCalendar] = useState(false);
 
     // Fetch speeldagen
     useEffect(() => {
@@ -120,7 +121,27 @@ function MatchScoreCard() {
                 });
 
                 const mappedGames = Object.values(spelMap);
-                setGames(mappedGames);
+                const key = `punten_${selectedSpeeldag}_terrein_${terrein}`;
+                const opgeslagenGames = localStorage.getItem(key);
+                if (opgeslagenGames) {
+                    const parsedScores = JSON.parse(opgeslagenGames) as Game[];
+
+                    const gamesWithRestoredScores = mappedGames.map((game) => {
+                        const match = parsedScores.find((g) => g.spelId === game.spelId);
+                        if (match) {
+                            return {
+                                ...game,
+                                teamA: { ...game.teamA, points: match.teamA.points },
+                                teamB: { ...game.teamB, points: match.teamB.points },
+                            };
+                        }
+                        return game;
+                    });
+
+                    setGames(gamesWithRestoredScores);
+                } else {
+                    setGames(mappedGames);
+                }
             })
             .catch((err) => console.error("Fout bij laden van spelverdeling:", err));
     }, [selectedSpeeldag, terrein]);
@@ -137,7 +158,11 @@ function MatchScoreCard() {
         const parsedValue = parseInt(value);
         updatedGames[gameIndex][teamKey].points = isNaN(parsedValue) ? 0 : Math.max(0, parsedValue);
         setGames(updatedGames);
+
+        const key = `punten_${selectedSpeeldag}_terrein_${terrein}`;
+        localStorage.setItem(key, JSON.stringify(updatedGames));
     };
+
 
     const handleSave = async () => {
         if (!selectedSpeeldag) return;
@@ -157,7 +182,7 @@ function MatchScoreCard() {
                 games.map((game) =>
                     fetch(`${apiUrl}/scores/${game.spelId}`, {
                         method: "PUT",
-                        headers: { "Content-Type": "application/json" },
+                        headers: {"Content-Type": "application/json"},
                         body: JSON.stringify({
                             speeldagId: selectedSpeeldag,
                             terrein: game.terrein,
@@ -183,23 +208,35 @@ function MatchScoreCard() {
                     VL@S - Scores
                 </h1>
                 <div className="flex justify-between mt-2 text-sm items-center">
-                    <span className="flex items-center gap-2">
-                        <span className="bg-[#fbd46d] px-2 py-1 rounded">TERREIN</span>
-                        <input
-                            type="number"
-                            value={terrein}
-                            min={1}
-                            onChange={(e) => {
-                                const value = Math.max(1, parseInt(e.target.value) || 1);
-                                setTerrein(value);
-                                localStorage.setItem('selectedTerrein', value.toString());
-                            }}
-                            placeholder="Nr"
-                            className="border border-[#74747c] p-2 rounded w-16"
-                        />
-                    </span>
-                    <span className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-[#44444c]">Selecteer een speeldag:</label>
+                <span className="flex items-center gap-2">
+                    <span className="bg-[#fbd46d] px-2 py-1 rounded">TERREIN</span>
+                    <input
+                        type="number"
+                        value={terrein}
+                        min={1}
+                        onChange={(e) => {
+                            const value = Math.max(1, parseInt(e.target.value) || 1);
+                            setTerrein(value);
+                            localStorage.setItem('selectedTerrein', value.toString());
+                        }}
+                        placeholder="Nr"
+                        className="border border-[#74747c] p-2 rounded w-16"
+                    />
+                </span>
+
+                    <div className="flex flex-col items-end">
+                        <label className="text-sm font-medium text-[#44444c] mb-1">Selecteer een speeldag:</label>
+                        <button
+                            onClick={() => setShowCalendar(!showCalendar)}
+                            className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
+                        >
+                            {showCalendar ? 'Verberg speeldagen' : 'Toon speeldagen'}
+                        </button>
+                    </div>
+                </div>
+
+                {showCalendar && (
+                    <div className="flex justify-center mt-4">
                         <Calendar
                             onClickDay={(value) => {
                                 const clickedDate = new Date(value);
@@ -214,15 +251,14 @@ function MatchScoreCard() {
 
                                 if (matchingSpeeldag) {
                                     setSelectedSpeeldag(matchingSpeeldag.speeldagId);
+                                    setShowCalendar(false);
                                 }
                             }}
-                            value={
-                                (() => {
-                                    const speeldag = speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag);
-                                    return speeldag ? new Date(speeldag.datum) : null;
-                                })()
-                            }
-                            tileContent={({ date, view }) => {
+                            value={(() => {
+                                const speeldag = speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag);
+                                return speeldag ? new Date(speeldag.datum) : null;
+                            })()}
+                            tileContent={({date, view}) => {
                                 if (view === 'month') {
                                     const match = speeldagen.find((dag) => {
                                         const dagDate = new Date(dag.datum);
@@ -241,8 +277,7 @@ function MatchScoreCard() {
                                 }
                             }}
                             className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
-                            // calendarType="ISO"
-                            tileClassName={({ date, view }) => {
+                            tileClassName={({date, view}) => {
                                 if (view === 'month') {
                                     const speeldag = speeldagen.find((dag) => {
                                         const dagDate = new Date(dag.datum);
@@ -254,14 +289,14 @@ function MatchScoreCard() {
                                     });
 
                                     if (speeldag && speeldag.speeldagId === selectedSpeeldag) {
-                                        return 'bg-[#ccac4c] text-white rounded-full'; // ✨ Highlight
+                                        return 'bg-[#ccac4c] text-white rounded-full';
                                     }
                                 }
                                 return null;
                             }}
                         />
-                    </span>
-                </div>
+                    </div>
+                )}
             </div>
 
             {games.map((game, gameIndex) => (
@@ -292,9 +327,9 @@ function MatchScoreCard() {
                                 <div className="mt-2 text-sm font-medium text-[#44444c]">
                                     Aantal: <span className="font-bold">{game.teamA.points}</span>
                                     <span className="ml-4">
-                                        {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
+                                    {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
                                         {game.teamA.points - game.teamB.points}
-                                    </span>
+                                </span>
                                 </div>
                             </div>
                         </div>
@@ -324,9 +359,9 @@ function MatchScoreCard() {
                                 <div className="mt-2 text-sm font-medium text-[#44444c]">
                                     Aantal: <span className="font-bold">{game.teamB.points}</span>
                                     <span className="ml-4">
-                                        {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
+                                    {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
                                         {game.teamB.points - game.teamA.points}
-                                    </span>
+                                </span>
                                 </div>
                             </div>
                         </div>
@@ -344,4 +379,4 @@ function MatchScoreCard() {
     );
 }
 
-export default MatchScoreCard;
+    export default Scorebladpagina;

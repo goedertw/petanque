@@ -8,11 +8,12 @@ interface Speeldag {
     datum: string;
 }
 
-function SpeeldagenDropdown() {
+function Spelverdeling() {
     const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
     const [selectedSpeeldag, setSelectedSpeeldag] = useState<Speeldag | null>(null);
     const [terrein, setTerrein] = useState<string>(() => localStorage.getItem('terrein') || "");
     const [pdfUrl, setPdfUrl] = useState<string | null>(() => localStorage.getItem('pdfUrl') || null);
+    const [showCalendar, setShowCalendar] = useState(false);
 
     useEffect(() => {
         const fetchSpeeldagen = async () => {
@@ -22,7 +23,6 @@ function SpeeldagenDropdown() {
                 const data: Speeldag[] = await response.json();
                 setSpeeldagen(data);
 
-                // Check for the speeldagId saved in localStorage and select the speeldag
                 const savedSpeeldagId = localStorage.getItem('speeldagId');
                 if (savedSpeeldagId) {
                     const foundSpeeldag = data.find((dag) => dag.speeldagId.toString() === savedSpeeldagId);
@@ -42,7 +42,6 @@ function SpeeldagenDropdown() {
             fetchPdf(selectedSpeeldag.speeldagId, terrein);
         }
     }, [selectedSpeeldag, terrein]);
-
     const formatDate = (isoDate: string) => {
         const date = new Date(isoDate);
         return new Intl.DateTimeFormat("nl-NL", {
@@ -86,63 +85,80 @@ function SpeeldagenDropdown() {
             <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6 w-full">
                 Spelverdelingen
             </h1>
-            <h2 className="text-center w-full mb-4">Selecteer een speeldag:</h2>
 
-            <Calendar
-                onClickDay={(value) => {
-                    const clickedDate = new Date(value);
-                    const matchingSpeeldag = speeldagen.find((dag) => {
-                        const dagDate = new Date(dag.datum);
-                        return (
-                            dagDate.getFullYear() === clickedDate.getFullYear() &&
-                            dagDate.getMonth() === clickedDate.getMonth() &&
-                            dagDate.getDate() === clickedDate.getDate()
-                        );
-                    });
+            <div className="mb-8 w-full">
+                <h2 className="text-center w-full mb-4">Selecteer een speeldag:</h2>
 
-                    if (matchingSpeeldag) {
-                        setSelectedSpeeldag(matchingSpeeldag);
-                        localStorage.setItem('speeldagId', matchingSpeeldag.speeldagId.toString());
-                    }
-                }}
-                value={selectedSpeeldag ? new Date(selectedSpeeldag.datum) : null}
-                tileContent={({ date, view }) => {
-                    if (view === 'month') {
-                        const match = speeldagen.find((dag) => {
-                            const dagDate = new Date(dag.datum);
-                            return (
-                                dagDate.getFullYear() === date.getFullYear() &&
-                                dagDate.getMonth() === date.getMonth() &&
-                                dagDate.getDate() === date.getDate()
-                            );
-                        });
+                <div className="flex justify-center mb-4">
+                    <button
+                        onClick={() => setShowCalendar(!showCalendar)}
+                        className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
+                    >
+                        {showCalendar ? 'Verberg speeldagen' : 'Toon speeldagen'}
+                    </button>
+                </div>
 
-                        return match ? (
-                            <div className="flex justify-center items-center mt-1">
-                                <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
-                            </div>
-                        ) : null;
-                    }
-                }}
-                className="p-4 bg-white rounded-2xl shadow-md text-[#44444c] mb-4"
-                tileClassName={({ date, view }) => {
-                    if (view === 'month') {
-                        const speeldag = speeldagen.find((dag) => {
-                            const dagDate = new Date(dag.datum);
-                            return (
-                                dagDate.getFullYear() === date.getFullYear() &&
-                                dagDate.getMonth() === date.getMonth() &&
-                                dagDate.getDate() === date.getDate()
-                            );
-                        });
+                {showCalendar && (
+                    <div className="flex justify-center w-full">
+                        <Calendar
+                            onClickDay={(value) => {
+                                const clickedDate = new Date(value);
+                                const matchingSpeeldag = speeldagen.find((dag) => {
+                                    const dagDate = new Date(dag.datum);
+                                    return (
+                                        dagDate.getFullYear() === clickedDate.getFullYear() &&
+                                        dagDate.getMonth() === clickedDate.getMonth() &&
+                                        dagDate.getDate() === clickedDate.getDate()
+                                    );
+                                });
 
-                        if (speeldag && speeldag.speeldagId === selectedSpeeldag?.speeldagId) {
-                            return 'bg-[#ccac4c] text-white rounded-full'; // ✨ Highlight
-                        }
-                    }
-                    return null;
-                }}
-            />
+                                if (matchingSpeeldag) {
+                                    setSelectedSpeeldag(matchingSpeeldag);
+                                    localStorage.setItem('speeldagId', matchingSpeeldag.speeldagId.toString());
+                                    setShowCalendar(false);
+                                }
+                            }}
+                            value={selectedSpeeldag ? new Date(selectedSpeeldag.datum) : null}
+                            tileContent={({ date, view }) => {
+                                if (view === 'month') {
+                                    const match = speeldagen.find((dag) => {
+                                        const dagDate = new Date(dag.datum);
+                                        return (
+                                            dagDate.getFullYear() === date.getFullYear() &&
+                                            dagDate.getMonth() === date.getMonth() &&
+                                            dagDate.getDate() === date.getDate()
+                                        );
+                                    });
+
+                                    return match ? (
+                                        <div className="flex justify-center items-center mt-1">
+                                            <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
+                                        </div>
+                                    ) : null;
+                                }
+                            }}
+                            className="p-4 bg-white rounded-2xl shadow-md text-[#44444c] mb-4 w-full"
+                            tileClassName={({ date, view }) => {
+                                if (view === 'month') {
+                                    const speeldag = speeldagen.find((dag) => {
+                                        const dagDate = new Date(dag.datum);
+                                        return (
+                                            dagDate.getFullYear() === date.getFullYear() &&
+                                            dagDate.getMonth() === date.getMonth() &&
+                                            dagDate.getDate() === date.getDate()
+                                        );
+                                    });
+
+                                    if (speeldag && speeldag.speeldagId === selectedSpeeldag?.speeldagId) {
+                                        return 'bg-[#ccac4c] text-white rounded-full';
+                                    }
+                                }
+                                return null;
+                            }}
+                        />
+                    </div>
+                )}
+            </div>
 
             <h2 className="text-center w-full mb-4">Voer een terrein in</h2>
 
@@ -184,7 +200,6 @@ function SpeeldagenDropdown() {
             )}
         </div>
     );
-
 }
 
-export default SpeeldagenDropdown;
+export default Spelverdeling;

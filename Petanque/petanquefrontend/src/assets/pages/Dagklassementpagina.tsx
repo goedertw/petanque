@@ -13,6 +13,7 @@ function Dagklassementpagina() {
   const [speeldagId, setSpeeldagId] = useState<string>(() => localStorage.getItem('dagklassementSpeeldagId') || "");
   const [pdfUrl, setPdfUrl] = useState<string | null>(() => localStorage.getItem('dagklassementPdfUrl') || null);
   const [selectedDag, setSelectedDag] = useState<Speeldag | null>(null);
+    const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
     const fetchSpeeldagen = async () => {
@@ -89,67 +90,76 @@ function Dagklassementpagina() {
           Dagklassementen
         </h1>
           <h2 className="text-center">Selecteer een speeldag:</h2>
-
-          <div className="flex justify-center mt-4 mb-4">
-              <Calendar
-                  onClickDay={(value) => {
-                      const clickedDate = new Date(value);
-                      const matchingSpeeldag = speeldagen.find((dag) => {
-                          const dagDate = new Date(dag.datum);
-                          return (
-                              dagDate.getFullYear() === clickedDate.getFullYear() &&
-                              dagDate.getMonth() === clickedDate.getMonth() &&
-                              dagDate.getDate() === clickedDate.getDate()
-                          );
-                      });
-
-                      if (matchingSpeeldag) {
-                          setSelectedDag(matchingSpeeldag);
-                          setSpeeldagId(matchingSpeeldag.speeldagId.toString());
-                          localStorage.setItem('dagklassementSpeeldagId', matchingSpeeldag.speeldagId.toString());
-                          setPdfUrl(null);
-                          localStorage.removeItem('dagklassementPdfUrl');
-                      }
-                  }}
-                  value={selectedDag ? new Date(selectedDag.datum) : null}
-                  tileContent={({ date, view }) => {
-                      if (view === 'month') {
-                          const match = speeldagen.find((dag) => {
-                              const dagDate = new Date(dag.datum);
-                              return (
-                                  dagDate.getFullYear() === date.getFullYear() &&
-                                  dagDate.getMonth() === date.getMonth() &&
-                                  dagDate.getDate() === date.getDate()
-                              );
-                          });
-
-                          return match ? (
-                              <div className="flex justify-center items-center mt-1">
-                                  <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
-                              </div>
-                          ) : null;
-                      }
-                  }}
-                  tileClassName={({ date, view }) => {
-                      if (view === 'month') {
-                          const match = speeldagen.find((dag) => {
-                              const dagDate = new Date(dag.datum);
-                              return (
-                                  dagDate.getFullYear() === date.getFullYear() &&
-                                  dagDate.getMonth() === date.getMonth() &&
-                                  dagDate.getDate() === date.getDate()
-                              );
-                          });
-
-                          if (match && selectedDag && match.speeldagId === selectedDag.speeldagId) {
-                              return 'bg-[#ccac4c] text-white rounded-full';
-                          }
-                      }
-                      return null;
-                  }}
-                  className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
-              />
+          <div className="flex justify-center mb-4">
+              <button
+                  onClick={() => setShowCalendar(!showCalendar)}
+                  className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
+              >
+                  {showCalendar ? 'Verberg speeldagen' : 'Toon speeldagen'}
+              </button>
           </div>
+          {showCalendar && (
+              <div className="flex justify-center">
+                  <Calendar
+                      onClickDay={(value) => {
+                          const clickedDate = new Date(value);
+                          const matching = speeldagen.find((dag) => {
+                              const dagDate = new Date(dag.datum);
+                              return (
+                                  dagDate.getFullYear() === clickedDate.getFullYear() &&
+                                  dagDate.getMonth() === clickedDate.getMonth() &&
+                                  dagDate.getDate() === clickedDate.getDate()
+                              );
+                          });
+
+                          if (matching) {
+                              setSpeeldagId(matching.speeldagId.toString());
+                              setSelectedDag(matching);
+                              setShowCalendar(false);
+                          }
+                      }}
+                      value={(() => {
+                          const found = speeldagen.find((dag) => dag.speeldagId.toString() === speeldagId);
+                          return found ? new Date(found.datum) : null;
+                      })()}
+                      tileContent={({ date, view }) => {
+                          if (view === 'month') {
+                              const match = speeldagen.find((dag) => {
+                                  const d = new Date(dag.datum);
+                                  return (
+                                      d.getFullYear() === date.getFullYear() &&
+                                      d.getMonth() === date.getMonth() &&
+                                      d.getDate() === date.getDate()
+                                  );
+                              });
+                              return match ? (
+                                  <div className="flex justify-center items-center mt-1">
+                                      <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
+                                  </div>
+                              ) : null;
+                          }
+                      }}
+                      tileClassName={({ date, view }) => {
+                          if (view === 'month') {
+                              const dag = speeldagen.find((d) => {
+                                  const dDate = new Date(d.datum);
+                                  return (
+                                      dDate.getFullYear() === date.getFullYear() &&
+                                      dDate.getMonth() === date.getMonth() &&
+                                      dDate.getDate() === date.getDate()
+                                  );
+                              });
+
+                              if (dag && dag.speeldagId.toString() === speeldagId) {
+                                  return 'bg-[#ccac4c] text-white rounded-full';
+                              }
+                          }
+                          return null;
+                      }}
+                      className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
+                  />
+              </div>
+          )}
 
 
           <button
