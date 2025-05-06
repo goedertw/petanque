@@ -29,6 +29,7 @@ function Aanwezigheidspagina() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [aanwezigheden, setAanwezigheden] = useState<Aanwezigheid[]>([]);
+    const [showCalendar, setShowCalendar] = useState(false);
 
     const loadAanwezigheden = () => {
         setLoading(true);
@@ -173,66 +174,77 @@ function Aanwezigheidspagina() {
                 {/* Text boven de kalender */}
                 <h2 className="text-center text-lg font-medium text-[#44444c] mb-4">Selecteer een speeldag:</h2>
 
-                {/* Kalender gecentreerd */}
-                <div className="flex justify-center">
-                    <Calendar
-                        onClickDay={(value) => {
-                            const clickedDate = new Date(value);
-                            const matchingSpeeldag = speeldagen.find((dag) => {
-                                const dagDate = new Date(dag.datum);
-                                return (
-                                    dagDate.getFullYear() === clickedDate.getFullYear() &&
-                                    dagDate.getMonth() === clickedDate.getMonth() &&
-                                    dagDate.getDate() === clickedDate.getDate()
-                                );
-                            });
-
-                            if (matchingSpeeldag) {
-                                setGeselecteerdeSpeeldag(matchingSpeeldag.speeldagId);
-                            }
-                        }}
-                        value={(() => {
-                            const speeldag = speeldagen.find((dag) => dag.speeldagId === geselecteerdeSpeeldag);
-                            return speeldag ? new Date(speeldag.datum) : null;
-                        })()}
-                        tileContent={({ date, view }) => {
-                            if (view === 'month') {
-                                const match = speeldagen.find((dag) => {
-                                    const dagDate = new Date(dag.datum);
-                                    return (
-                                        dagDate.getFullYear() === date.getFullYear() &&
-                                        dagDate.getMonth() === date.getMonth() &&
-                                        dagDate.getDate() === date.getDate()
-                                    );
-                                });
-
-                                return match ? (
-                                    <div className="flex justify-center items-center mt-1">
-                                        <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
-                                    </div>
-                                ) : null;
-                            }
-                        }}
-                        className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
-                        tileClassName={({ date, view }) => {
-                            if (view === 'month') {
-                                const speeldag = speeldagen.find((dag) => {
-                                    const dagDate = new Date(dag.datum);
-                                    return (
-                                        dagDate.getFullYear() === date.getFullYear() &&
-                                        dagDate.getMonth() === date.getMonth() &&
-                                        dagDate.getDate() === date.getDate()
-                                    );
-                                });
-
-                                if (speeldag && speeldag.speeldagId === geselecteerdeSpeeldag) {
-                                    return 'bg-[#ccac4c] text-white rounded-full'; // ✨ Highlight
-                                }
-                            }
-                            return null;
-                        }}
-                    />
+                <div className="flex justify-center mb-4">
+                    <button
+                        onClick={() => setShowCalendar(!showCalendar)}
+                        className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
+                    >
+                        {showCalendar ? 'Verberg speeldagen' : 'Toon speeldagen'}
+                    </button>
                 </div>
+                
+                {showCalendar && (
+                    <div className="flex justify-center">
+                        <Calendar
+                            onClickDay={(value) => {
+                                const clickedDate = new Date(value);
+                                const matchingSpeeldag = speeldagen.find((dag) => {
+                                    const dagDate = new Date(dag.datum);
+                                    return (
+                                        dagDate.getFullYear() === clickedDate.getFullYear() &&
+                                        dagDate.getMonth() === clickedDate.getMonth() &&
+                                        dagDate.getDate() === clickedDate.getDate()
+                                    );
+                                });
+
+                                if (matchingSpeeldag) {
+                                    setGeselecteerdeSpeeldag(matchingSpeeldag.speeldagId);
+                                    setShowCalendar(false); // Optioneel: verberg kalender na selectie
+                                }
+                            }}
+                            value={(() => {
+                                const speeldag = speeldagen.find((dag) => dag.speeldagId === geselecteerdeSpeeldag);
+                                return speeldag ? new Date(speeldag.datum) : null;
+                            })()}
+                            tileContent={({ date, view }) => {
+                                if (view === 'month') {
+                                    const match = speeldagen.find((dag) => {
+                                        const dagDate = new Date(dag.datum);
+                                        return (
+                                            dagDate.getFullYear() === date.getFullYear() &&
+                                            dagDate.getMonth() === date.getMonth() &&
+                                            dagDate.getDate() === date.getDate()
+                                        );
+                                    });
+
+                                    return match ? (
+                                        <div className="flex justify-center items-center mt-1">
+                                            <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
+                                        </div>
+                                    ) : null;
+                                }
+                            }}
+                            className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
+                            tileClassName={({ date, view }) => {
+                                if (view === 'month') {
+                                    const speeldag = speeldagen.find((dag) => {
+                                        const dagDate = new Date(dag.datum);
+                                        return (
+                                            dagDate.getFullYear() === date.getFullYear() &&
+                                            dagDate.getMonth() === date.getMonth() &&
+                                            dagDate.getDate() === date.getDate()
+                                        );
+                                    });
+
+                                    if (speeldag && speeldag.speeldagId === geselecteerdeSpeeldag) {
+                                        return 'bg-[#ccac4c] text-white rounded-full';
+                                    }
+                                }
+                                return null;
+                            }}
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
