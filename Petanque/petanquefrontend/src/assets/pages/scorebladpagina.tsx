@@ -236,7 +236,7 @@ function Scorebladpagina() {
                             onClick={() => setShowCalendar(!showCalendar)}
                             className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
                         >
-                            {showCalendar ? 'Verberg speeldagen' : 'Toon speeldagen'}
+                            {showCalendar ? 'Verberg speeldagen' : 'Wijzig speeldag'}
                         </button>
                     </div>
 
