@@ -58,6 +58,12 @@ const createEmptyGame = (): Game => ({
     teamB: createEmptyTeam(),
 });
 
+
+const formatDateToDutch = (dateString: string): string => {
+    const date = new Date(dateString);
+    return ` speeldag: ${date.getDate()} ${date.toLocaleDateString("nl-NL", { month: "long" })}`;
+};
+
 // MatchScoreCard Component
 function Scorebladpagina() {
     const [games, setGames] = useState<Game[]>([createEmptyGame(), createEmptyGame(), createEmptyGame()]);
@@ -233,6 +239,18 @@ function Scorebladpagina() {
                             {showCalendar ? 'Verberg speeldagen' : 'Toon speeldagen'}
                         </button>
                     </div>
+
+                    {selectedSpeeldag !== null && (
+                        <div className="text-black-800 text-xl font-bold italic mt-1">
+                            {
+                                formatDateToDutch(
+                                    speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag)?.datum ?? ""
+                                )
+                            }
+                        </div>
+                    )}
+
+
                 </div>
 
                 {showCalendar && (
