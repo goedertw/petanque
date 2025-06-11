@@ -90,6 +90,11 @@ function Dagklassementpagina() {
     setShowCalendar(!showCalendar);
   };
 
+  const formatDateToDutch = (dateString: string): string => {
+    const date = new Date(dateString);
+    return ` speeldag: ${date.getDate()} ${date.toLocaleDateString("nl-NL", { month: "long" })}`;
+  };
+
   return (
       <div className="p-4 max-w-3xl mx-auto">
         <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6">
@@ -104,6 +109,17 @@ function Dagklassementpagina() {
                 showCalendar={showCalendar}
                 onToggleCalendar={handleToggleCalendar}
             />
+        )}
+
+        {selectedSpeeldag !== null && (
+            <div className="text-black-800 text-xl font-bold italic mt-1 text-center">
+              {
+                formatDateToDutch(
+                    speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
+
+                )
+              }
+            </div>
         )}
 
         <button

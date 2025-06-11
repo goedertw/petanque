@@ -200,6 +200,11 @@ function Aanwezigheidspagina() {
         ? aanwezigheden.filter(a => a.speeldagId === selectedSpeeldag.speeldagId)
         : [];
 
+    const formatDateToDutch = (dateString: string): string => {
+        const date = new Date(dateString);
+        return ` speeldag: ${date.getDate()} ${date.toLocaleDateString("nl-NL", { month: "long" })}`;
+    };
+
     return (
         <div className="p-6">
             <h1 className="text-3xl font-bold text-white bg-[#3c444c] p-4 rounded-2xl shadow mb-6 text-center">
@@ -214,6 +219,17 @@ function Aanwezigheidspagina() {
                     showCalendar={showCalendar}
                     onToggleCalendar={handleToggleCalendar}
                 />
+            )}
+
+            {selectedSpeeldag !== null && (
+                <div className="text-black-800 text-xl font-bold italic mt-1 text-center">
+                    {
+                        formatDateToDutch(
+                            speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
+
+                        )
+                    }
+                </div>
             )}
 
             <div className="overflow-x-auto max-h-[600px] overflow-y-auto border rounded-2xl shadow-md">
