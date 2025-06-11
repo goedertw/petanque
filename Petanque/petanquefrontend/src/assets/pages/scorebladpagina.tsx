@@ -153,7 +153,8 @@ function Scorebladpagina() {
     }, [selectedSpeeldag, terrein]);
 
     // Handlers
-    const handleNameChange = (gameIndex: number, teamKey: "teamA" | "teamB", playerIndex: number, value: string) => {
+    const 
+        handleNameChange = (gameIndex: number, teamKey: "teamA" | "teamB", playerIndex: number, value: string) => {
         const updatedGames = [...games];
         updatedGames[gameIndex][teamKey].players[playerIndex] = value;
         setGames(updatedGames);
