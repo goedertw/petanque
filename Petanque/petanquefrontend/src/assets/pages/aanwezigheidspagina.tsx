@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import '../../index.css';
 const apiUrl = import.meta.env.VITE_API_URL;
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import Kalender from '../Components/Kalender.tsx';
 
 interface Speler {
     spelerId: number;
@@ -25,7 +24,7 @@ interface Aanwezigheid {
 function Aanwezigheidspagina() {
     const [spelers, setSpelers] = useState<Speler[]>([]);
     const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
-    const [geselecteerdeSpeeldag, setGeselecteerdeSpeeldag] = useState<number | null>(null);
+    const [selectedSpeeldag, setSelectedSpeeldag] = useState<Speeldag | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [aanwezigheden, setAanwezigheden] = useState<Aanwezigheid[]>([]);
@@ -63,61 +62,64 @@ function Aanwezigheidspagina() {
     }, []);
 
     useEffect(() => {
-        fetch(`${apiUrl}/speeldagen`)
-            .then((res) => {
-                if (!res.ok) throw new Error("Netwerkfout bij speeldagen");
-                return res.json();
-            })
-            .then((data: Speeldag[]) => {
-                setSpeeldagen(data);
+        const fetchSpeeldagen = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/speeldagen`);
+                if (!response.ok) throw new Error("Netwerkfout bij speeldagen");
+                const data: Speeldag[] = await response.json();
 
-                if (data.length > 0) {
-                    const savedSpeeldag = localStorage.getItem('geselecteerdeSpeeldag');
-                    let speeldagId = savedSpeeldag ? parseInt(savedSpeeldag) : data[0].speeldagId;
-                    const speeldagBestaat = data.some((dag) => dag.speeldagId === speeldagId);
+                // Forceer datum naar YYYY-MM-DD → zelfde als in Spelverdeling
+                const processedData = data.map(dag => ({
+                    ...dag,
+                    datum: new Date(dag.datum).toISOString(), // volledige string
+                }));
+                setSpeeldagen(processedData);
 
-                    if (!speeldagBestaat) {
-                        speeldagId = data[0].speeldagId; 
-                    }
+                setSpeeldagen(processedData);
 
-                    setGeselecteerdeSpeeldag(speeldagId);
-                    loadAanwezigheden();
+                const savedSpeeldagId = localStorage.getItem('geselecteerdeSpeeldag');
+                if (savedSpeeldagId) {
+                    const foundSpeeldag = processedData.find(dag => dag.speeldagId.toString() === savedSpeeldagId);
+                    setSelectedSpeeldag(foundSpeeldag || processedData[0]);
+                } else {
+                    setSelectedSpeeldag(processedData[0]);
                 }
-            })
-            .catch((err) => setError(err.message));
+
+                loadAanwezigheden();
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSpeeldagen();
     }, []);
 
-
     useEffect(() => {
-        if (geselecteerdeSpeeldag !== null) {
-            localStorage.setItem('geselecteerdeSpeeldag', geselecteerdeSpeeldag.toString());
-        }
-    }, [geselecteerdeSpeeldag]);
-
-
-    useEffect(() => {
-        if (geselecteerdeSpeeldag) {
+        if (selectedSpeeldag) {
+            localStorage.setItem('geselecteerdeSpeeldag', selectedSpeeldag.speeldagId.toString());
             loadAanwezigheden();
         }
-    }, [geselecteerdeSpeeldag]);
+    }, [selectedSpeeldag]);
 
     const bevestigAanwezigheid = (spelerId: number) => {
-        if (!geselecteerdeSpeeldag) {
+        if (!selectedSpeeldag) {
             setError("Geen speeldag gekozen");
             return;
         }
 
         const spelerAanwezig = aanwezigheden.find(
-            (aanwezigheid) => aanwezigheid.spelerId === spelerId && aanwezigheid.speeldagId === geselecteerdeSpeeldag
+            (aanwezigheid) => aanwezigheid.spelerId === spelerId && aanwezigheid.speeldagId === selectedSpeeldag.speeldagId
         );
 
         if (spelerAanwezig) return;
 
         const spelerVolgnr =
-            aanwezigheden.filter((a) => a.speeldagId === geselecteerdeSpeeldag).length + 1;
+            aanwezigheden.filter((a) => a.speeldagId === selectedSpeeldag.speeldagId).length + 1;
 
         const nieuweAanwezigheid: Omit<Aanwezigheid, "aanwezigheidId"> = {
-            speeldagId: geselecteerdeSpeeldag,
+            speeldagId: selectedSpeeldag.speeldagId,
             spelerId,
             spelerVolgnr,
         };
@@ -157,12 +159,22 @@ function Aanwezigheidspagina() {
         );
     };
 
+    const handleSelectSpeeldag = (speeldag: Speeldag) => {
+        setSelectedSpeeldag(speeldag);
+        localStorage.setItem('geselecteerdeSpeeldag', speeldag.speeldagId.toString());
+        setShowCalendar(false);
+    };
+
+    const handleToggleCalendar = () => {
+        setShowCalendar(!showCalendar);
+    };
+
     if (loading) return <p className="text-center mt-10">Bezig met laden...</p>;
     if (error) return <p className="text-center text-red-600 mt-10">Fout: {error}</p>;
 
-    const filteredAanwezigheden = aanwezigheden.filter(
-        (aanwezigheid) => aanwezigheid.speeldagId === geselecteerdeSpeeldag
-    );
+    const filteredAanwezigheden = selectedSpeeldag
+        ? aanwezigheden.filter(a => a.speeldagId === selectedSpeeldag.speeldagId)
+        : [];
 
     return (
         <div className="p-6">
@@ -170,94 +182,25 @@ function Aanwezigheidspagina() {
                 Overzicht Aanwezigheden
             </h1>
 
-            <div className="mb-8">
-                {/* Text boven de kalender */}
-                <h2 className="text-center text-lg font-medium text-[#44444c] mb-4">Selecteer een speeldag:</h2>
-
-                <div className="flex justify-center mb-4">
-                    <button
-                        onClick={() => setShowCalendar(!showCalendar)}
-                        className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
-                    >
-                        {showCalendar ? 'Verberg speeldagen' : 'Toon speeldagen'}
-                    </button>
-                </div>
-                
-                {showCalendar && (
-                    <div className="flex justify-center">
-                        <Calendar
-                            onClickDay={(value) => {
-                                const clickedDate = new Date(value);
-                                const matchingSpeeldag = speeldagen.find((dag) => {
-                                    const dagDate = new Date(dag.datum);
-                                    return (
-                                        dagDate.getFullYear() === clickedDate.getFullYear() &&
-                                        dagDate.getMonth() === clickedDate.getMonth() &&
-                                        dagDate.getDate() === clickedDate.getDate()
-                                    );
-                                });
-
-                                if (matchingSpeeldag) {
-                                    setGeselecteerdeSpeeldag(matchingSpeeldag.speeldagId);
-                                    setShowCalendar(false); // Optioneel: verberg kalender na selectie
-                                }
-                            }}
-                            value={(() => {
-                                const speeldag = speeldagen.find((dag) => dag.speeldagId === geselecteerdeSpeeldag);
-                                return speeldag ? new Date(speeldag.datum) : null;
-                            })()}
-                            tileContent={({ date, view }) => {
-                                if (view === 'month') {
-                                    const match = speeldagen.find((dag) => {
-                                        const dagDate = new Date(dag.datum);
-                                        return (
-                                            dagDate.getFullYear() === date.getFullYear() &&
-                                            dagDate.getMonth() === date.getMonth() &&
-                                            dagDate.getDate() === date.getDate()
-                                        );
-                                    });
-
-                                    return match ? (
-                                        <div className="flex justify-center items-center mt-1">
-                                            <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
-                                        </div>
-                                    ) : null;
-                                }
-                            }}
-                            className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
-                            tileClassName={({ date, view }) => {
-                                if (view === 'month') {
-                                    const speeldag = speeldagen.find((dag) => {
-                                        const dagDate = new Date(dag.datum);
-                                        return (
-                                            dagDate.getFullYear() === date.getFullYear() &&
-                                            dagDate.getMonth() === date.getMonth() &&
-                                            dagDate.getDate() === date.getDate()
-                                        );
-                                    });
-
-                                    if (speeldag && speeldag.speeldagId === geselecteerdeSpeeldag) {
-                                        return 'bg-[#ccac4c] text-white rounded-full';
-                                    }
-                                }
-                                return null;
-                            }}
-                        />
-                    </div>
-                )}
-            </div>
+            {speeldagen.length > 0 && selectedSpeeldag && (
+                <Kalender
+                    speeldagen={speeldagen}
+                    selectedSpeeldag={selectedSpeeldag}
+                    onSelectSpeeldag={handleSelectSpeeldag}
+                    showCalendar={showCalendar}
+                    onToggleCalendar={handleToggleCalendar}
+                />
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                 {spelers.map((speler) => {
                     const spelerAanwezig = filteredAanwezigheden.find(
                         (aanwezigheid) => aanwezigheid.spelerId === speler.spelerId
                     );
-                    const speeldagDatum = speeldagen.find(
-                        (dag) => dag.speeldagId === geselecteerdeSpeeldag
-                    )?.datum;
+                    const speeldagDatum = selectedSpeeldag?.datum || '';
 
-                    const speeldagInVerleden = speeldagDatum && isSpeeldagInVerleden(speeldagDatum);
-                    const speeldagIsVandaag = speeldagDatum && isSpeeldagVandaag(speeldagDatum);
+                    const speeldagInVerleden = isSpeeldagInVerleden(speeldagDatum);
+                    const speeldagIsVandaag = isSpeeldagVandaag(speeldagDatum);
 
                     return (
                         <div
@@ -304,7 +247,6 @@ function Aanwezigheidspagina() {
             </div>
         </div>
     );
-
 }
 
 export default Aanwezigheidspagina;
