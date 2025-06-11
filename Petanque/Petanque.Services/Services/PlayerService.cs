@@ -31,6 +31,17 @@ public class PlayerService(Id312896PetanqueContext context) : IPlayerService
         return context.Spelers.Select(a => MapToContract(a)).ToList();
     }
 
+    public void Delete(int id)
+    {
+        var entity = context.Spelers.Find(id);
+        if (entity is null)
+        {
+            throw new ArgumentException($"Lid met ID {id} werd niet gevonden");
+        }
+        context.Spelers.Remove(entity);
+        context.SaveChanges();
+    }
+
     private static PlayerResponseContract MapToContract(Speler entity)
     {
         return new PlayerResponseContract()

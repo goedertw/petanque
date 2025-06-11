@@ -30,5 +30,37 @@ namespace Petanque.Api.Controllers
         {
             return Ok(service.GetAll());
         }
+        
+        [HttpDelete("{id}")]
+        public IActionResult DeleteAanwezigheid(int id)
+        {
+            try
+            {
+                service.Delete(id);
+                return NoContent(); 
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpGet("check-speler-aanwezig")]
+        public ActionResult<object> CheckSpelerAanwezig([FromQuery] int id)
+        {
+            var aanwezigheden = service.GetAanwezighedenOpSpeler(id);
+
+            if (aanwezigheden.Any())
+            {
+                var speeldagen = aanwezigheden
+                    .Select(a => a.SpeeldagDatum)
+                    .Distinct()
+                    .ToList();
+
+                return Ok(new { aanwezig = true, speeldagen });
+            }
+
+            return Ok(new { aanwezig = false, speeldagen = new List<string>() });
+        }
+
     }
 }

@@ -29,6 +29,15 @@ function Aanwezigheidspagina() {
     const [error, setError] = useState<string | null>(null);
     const [aanwezigheden, setAanwezigheden] = useState<Aanwezigheid[]>([]);
     const [showCalendar, setShowCalendar] = useState(false);
+    const [sortField, setSortField] = useState<'voornaam' | 'naam'>('voornaam');
+
+    const sortedSpelers = [...spelers].sort((a, b) => {
+        if (sortField === 'voornaam') {
+            return a.voornaam.localeCompare(b.voornaam);
+        } else {
+            return a.naam.localeCompare(b.naam);
+        }
+    });
 
     const loadAanwezigheden = () => {
         setLoading(true);
@@ -143,21 +152,36 @@ function Aanwezigheidspagina() {
             });
     };
 
-    const isSpeeldagInVerleden = (speeldagDatum: string) => {
-        const speeldagDate = new Date(speeldagDatum);
-        const today = new Date();
-        return speeldagDate < today;
+    const verwijderAanwezigheid = (aanwezigheidId: number) => {
+        fetch(`${apiUrl}/aanwezigheden/${aanwezigheidId}`, {
+            method: 'DELETE',
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error('Fout bij verwijderen van aanwezigheid');
+                // Verwijderen uit de lokale state:
+                setAanwezigheden(prev => prev.filter(a => a.aanwezigheidId !== aanwezigheidId));
+            })
+            .catch((err) => {
+                setError(err.message);
+            });
     };
 
-    const isSpeeldagVandaag = (speeldagDatum: string) => {
-        const speeldagDate = new Date(speeldagDatum);
-        const today = new Date();
-        return (
-            speeldagDate.getFullYear() === today.getFullYear() &&
-            speeldagDate.getMonth() === today.getMonth() &&
-            speeldagDate.getDate() === today.getDate()
-        );
-    };
+
+    // const isSpeeldagInVerleden = (speeldagDatum: string) => {
+    //     const speeldagDate = new Date(speeldagDatum);
+    //     const today = new Date();
+    //     return speeldagDate < today;
+    // };
+    //
+    // const isSpeeldagVandaag = (speeldagDatum: string) => {
+    //     const speeldagDate = new Date(speeldagDatum);
+    //     const today = new Date();
+    //     return (
+    //         speeldagDate.getFullYear() === today.getFullYear() &&
+    //         speeldagDate.getMonth() === today.getMonth() &&
+    //         speeldagDate.getDate() === today.getDate()
+    //     );
+    // };
 
     const handleSelectSpeeldag = (speeldag: Speeldag) => {
         setSelectedSpeeldag(speeldag);
@@ -192,59 +216,76 @@ function Aanwezigheidspagina() {
                 />
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
-                {spelers.map((speler) => {
-                    const spelerAanwezig = filteredAanwezigheden.find(
-                        (aanwezigheid) => aanwezigheid.spelerId === speler.spelerId
-                    );
-                    const speeldagDatum = selectedSpeeldag?.datum || '';
-
-                    const speeldagInVerleden = isSpeeldagInVerleden(speeldagDatum);
-                    const speeldagIsVandaag = isSpeeldagVandaag(speeldagDatum);
-
-                    return (
-                        <div
-                            key={speler.spelerId}
-                            className="bg-white rounded-2xl shadow-md p-6 flex flex-col justify-between w-full"
+            <div className="overflow-x-auto max-h-[600px] overflow-y-auto border rounded-2xl shadow-md">
+                <table className="min-w-full text-left text-sm">
+                    <thead className="bg-[#3c444c] text-white sticky top-0">
+                    <tr>
+                        <th
+                            className="cursor-pointer px-6 py-3"
+                            onClick={() => setSortField('voornaam')}
                         >
-                            <div>
-                                <h2 className="text-xl font-semibold text-[#44444c] mb-1">
-                                    {speler.voornaam} {speler.naam}
-                                </h2>
-                            </div>
-                            <div className="mt-auto">
-                                {speeldagIsVandaag ? (
-                                    !spelerAanwezig ? (
-                                        <button
-                                            onClick={() => bevestigAanwezigheid(speler.spelerId)}
-                                            className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-4 py-2 rounded-xl w-full transition cursor-pointer"
+                            Voornaam {sortField === 'voornaam' ? '▲' : ''}
+                        </th>
+                        <th
+                            className="cursor-pointer px-6 py-3"
+                            onClick={() => setSortField('naam')}
+                        >
+                            Achternaam {sortField === 'naam' ? '▲' : ''}
+                        </th>
+                        <th className="px-6 py-3">Aanwezig?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {sortedSpelers.map((speler) => {
+                        const spelerAanwezig = filteredAanwezigheden.find(
+                            (aanwezigheid) => aanwezigheid.spelerId === speler.spelerId
+                        );
+
+                        const isAanwezig = !!spelerAanwezig;
+
+                        return (
+                            <tr
+                                key={speler.spelerId}
+                                className={
+                                    isAanwezig
+                                        ? 'bg-green-200 border-t-2 border-b-2 border-black'
+                                        : 'bg-red-200 border-t-2 border-b-2 border-black'
+                                }
+                            >
+                                <td className="px-6 py-4 border-b border-gray-200">{speler.voornaam}</td>
+                                <td className="px-6 py-4 border-b border-gray-200">{speler.naam}</td>
+                                <td className="px-6 py-4 border-b border-gray-200 text-center">
+                                    <div className="flex items-center justify-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={isAanwezig}
+                                            onChange={() => {
+                                                if (isAanwezig && spelerAanwezig) {
+                                                    verwijderAanwezigheid(spelerAanwezig.aanwezigheidId);
+                                                } else {
+                                                    bevestigAanwezigheid(speler.spelerId);
+                                                }
+                                            }}
+
+                                            className="h-5 w-5 cursor-pointer"
+                                        />
+                                        <div
+                                            className={`inline-block px-3 py-1 rounded-full text-white text-xs font-semibold
+                                ${isAanwezig ? 'bg-green-500' : 'bg-red-500'}`}
                                         >
-                                            Bevestig aanwezigheid
-                                        </button>
-                                    ) : (
-                                        <p className="bg-[#fbd46d] text-[#44444c] font-semibold px-2 py-1 rounded-full inline-block">
-                                            Aanwezig
-                                        </p>
-                                    )
-                                ) : speeldagInVerleden ? (
-                                    spelerAanwezig ? (
-                                        <p className="text-sm font-medium text-[#ccac4c]">Was aanwezig</p>
-                                    ) : (
-                                        <p className="text-sm font-medium text-[#74747c]">Was niet aanwezig</p>
-                                    )
-                                ) : (
-                                    <button
-                                        onClick={() => bevestigAanwezigheid(speler.spelerId)}
-                                        className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-4 py-2 rounded-xl w-full transition cursor-pointer"
-                                    >
-                                        Bevestig aanwezigheid
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
+                                            {isAanwezig ? 'Aanwezig' : 'Afwezig'}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        );
+                    })}
+                    </tbody>
+
+
+                </table>
             </div>
+
         </div>
     );
 }

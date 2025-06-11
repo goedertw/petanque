@@ -14,5 +14,8 @@ namespace Petanque.Services.Interfaces
         AanwezigheidResponseContract Create(AanwezigheidRequestContract request);
         IEnumerable<AanwezigheidResponseContract> GetAll();
         IEnumerable<AanwezigheidResponseContract> GetAanwezighedenOpSpeeldag(int id);
+        void Delete(int id);
+        IEnumerable<AanwezigheidResponseContract> GetAanwezighedenOpSpeler(int spelerId);
+
     }
 }

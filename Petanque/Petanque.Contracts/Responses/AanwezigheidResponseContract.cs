@@ -15,5 +15,6 @@ namespace Petanque.Contracts.Responses
         public int? SpelerId { get; set; }
 
         public int SpelerVolgnr { get; set; }
+        public string SpeeldagDatum { get; set; } = string.Empty;
     }
 }

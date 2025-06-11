@@ -29,4 +29,18 @@ public class PlayerController(IPlayerService service) : Controller
         {
             return Ok(service.GetAll());
         }
+        
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                service.Delete(id);
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 }
