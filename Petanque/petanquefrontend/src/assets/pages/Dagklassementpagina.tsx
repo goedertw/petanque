@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 const apiUrl = import.meta.env.VITE_API_URL;
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import Kalender from '../Components/Kalender.tsx';  // jouw herbruikbare Kalender component
 
 interface Speeldag {
   speeldagId: number;
@@ -10,10 +9,9 @@ interface Speeldag {
 
 function Dagklassementpagina() {
   const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
-  const [speeldagId, setSpeeldagId] = useState<string>(() => localStorage.getItem('dagklassementSpeeldagId') || "");
+  const [selectedSpeeldag, setSelectedSpeeldag] = useState<Speeldag | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(() => localStorage.getItem('dagklassementPdfUrl') || null);
-  const [selectedDag, setSelectedDag] = useState<Speeldag | null>(null);
-    const [showCalendar, setShowCalendar] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
     const fetchSpeeldagen = async () => {
@@ -26,7 +24,7 @@ function Dagklassementpagina() {
         const savedSpeeldagId = localStorage.getItem('dagklassementSpeeldagId');
         if (savedSpeeldagId) {
           const foundSpeeldag = data.find((dag) => dag.speeldagId.toString() === savedSpeeldagId);
-          setSelectedDag(foundSpeeldag || null);
+          setSelectedSpeeldag(foundSpeeldag || null);
         }
       } catch (error) {
         console.error("Fout bij laden van speeldagen:", error);
@@ -48,18 +46,16 @@ function Dagklassementpagina() {
   };
 
   const fetchPdf = async () => {
-    if (!speeldagId) {
+    if (!selectedSpeeldag) {
       alert("Selecteer een speeldag.");
       return;
     }
 
-    const selected = speeldagen.find((dag) => dag.speeldagId.toString() === speeldagId);
-    setSelectedDag(selected || null);
-    localStorage.setItem('dagklassementSpeeldagId', speeldagId);
+    localStorage.setItem('dagklassementSpeeldagId', selectedSpeeldag.speeldagId.toString());
 
     try {
       const response = await fetch(
-          `${apiUrl}/pdfdagklassementen/${speeldagId}`,
+          `${apiUrl}/pdfdagklassementen/${selectedSpeeldag.speeldagId}`,
           {
             method: "POST",
             headers: {
@@ -84,95 +80,43 @@ function Dagklassementpagina() {
     }
   };
 
+  const handleSelectSpeeldag = (speeldag: Speeldag) => {
+    setSelectedSpeeldag(speeldag);
+    localStorage.setItem('dagklassementSpeeldagId', speeldag.speeldagId.toString());
+    setShowCalendar(false);
+  };
+
+  const handleToggleCalendar = () => {
+    setShowCalendar(!showCalendar);
+  };
+
   return (
       <div className="p-4 max-w-3xl mx-auto">
         <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6">
           Dagklassementen
         </h1>
-          <h2 className="text-center">Selecteer een speeldag:</h2>
-          <div className="flex justify-center mb-4">
-              <button
-                  onClick={() => setShowCalendar(!showCalendar)}
-                  className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
-              >
-                  {showCalendar ? 'Verberg speeldagen' : 'Toon speeldagen'}
-              </button>
-          </div>
-          {showCalendar && (
-              <div className="flex justify-center">
-                  <Calendar
-                      onClickDay={(value) => {
-                          const clickedDate = new Date(value);
-                          const matching = speeldagen.find((dag) => {
-                              const dagDate = new Date(dag.datum);
-                              return (
-                                  dagDate.getFullYear() === clickedDate.getFullYear() &&
-                                  dagDate.getMonth() === clickedDate.getMonth() &&
-                                  dagDate.getDate() === clickedDate.getDate()
-                              );
-                          });
 
-                          if (matching) {
-                              setSpeeldagId(matching.speeldagId.toString());
-                              setSelectedDag(matching);
-                              setShowCalendar(false);
-                          }
-                      }}
-                      value={(() => {
-                          const found = speeldagen.find((dag) => dag.speeldagId.toString() === speeldagId);
-                          return found ? new Date(found.datum) : null;
-                      })()}
-                      tileContent={({ date, view }) => {
-                          if (view === 'month') {
-                              const match = speeldagen.find((dag) => {
-                                  const d = new Date(dag.datum);
-                                  return (
-                                      d.getFullYear() === date.getFullYear() &&
-                                      d.getMonth() === date.getMonth() &&
-                                      d.getDate() === date.getDate()
-                                  );
-                              });
-                              return match ? (
-                                  <div className="flex justify-center items-center mt-1">
-                                      <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
-                                  </div>
-                              ) : null;
-                          }
-                      }}
-                      tileClassName={({ date, view }) => {
-                          if (view === 'month') {
-                              const dag = speeldagen.find((d) => {
-                                  const dDate = new Date(d.datum);
-                                  return (
-                                      dDate.getFullYear() === date.getFullYear() &&
-                                      dDate.getMonth() === date.getMonth() &&
-                                      dDate.getDate() === date.getDate()
-                                  );
-                              });
+        {speeldagen.length > 0 && (
+            <Kalender
+                speeldagen={speeldagen}
+                selectedSpeeldag={selectedSpeeldag}
+                onSelectSpeeldag={handleSelectSpeeldag}
+                showCalendar={showCalendar}
+                onToggleCalendar={handleToggleCalendar}
+            />
+        )}
 
-                              if (dag && dag.speeldagId.toString() === speeldagId) {
-                                  return 'bg-[#ccac4c] text-white rounded-full';
-                              }
-                          }
-                          return null;
-                      }}
-                      className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
-                  />
-              </div>
-          )}
-
-
-          <button
+        <button
             onClick={fetchPdf}
-            className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
+            className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer mt-4 block mx-auto"
         >
           Toon PDF
         </button>
 
-        {pdfUrl && selectedDag && (
+        {pdfUrl && selectedSpeeldag && (
             <div className="mt-6">
-              <h2 className="text-lg font-medium mb-2">
-                Dagklassement voor {formatDate(selectedDag.datum)}
+              <h2 className="text-lg font-medium mb-2 text-center">
+                Dagklassement voor {formatDate(selectedSpeeldag.datum)}
               </h2>
 
               <iframe
@@ -185,8 +129,8 @@ function Dagklassementpagina() {
 
               <a
                   href={pdfUrl}
-                  download={`dagklassement-speeldag-${selectedDag.speeldagId}-${selectedDag.datum}.pdf`}
-                  className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer"
+                  download={`dagklassement-speeldag-${selectedSpeeldag.speeldagId}-${selectedSpeeldag.datum}.pdf`}
+                  className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer block mx-auto"
               >
                 Download PDF
               </a>
