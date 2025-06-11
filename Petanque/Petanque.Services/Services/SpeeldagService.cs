@@ -18,6 +18,11 @@ namespace Petanque.Services.Services
 
         public SpeeldagResponseContract Create(SpeeldagRequestContract request)
         {
+            var speeldagCheck = context.Speeldags.FirstOrDefault(sd => sd.Datum == request.Datum);
+
+            if (speeldagCheck != null)
+                return MapToContract(speeldagCheck);
+
             var speeldag = new Speeldag
             {
                 Datum = request.Datum,
