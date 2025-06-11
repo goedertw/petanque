@@ -152,7 +152,21 @@ function Aanwezigheidspagina() {
             });
     };
 
-    
+    const verwijderAanwezigheid = (aanwezigheidId: number) => {
+        fetch(`${apiUrl}/aanwezigheden/${aanwezigheidId}`, {
+            method: 'DELETE',
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error('Fout bij verwijderen van aanwezigheid');
+                // Verwijderen uit de lokale state:
+                setAanwezigheden(prev => prev.filter(a => a.aanwezigheidId !== aanwezigheidId));
+            })
+            .catch((err) => {
+                setError(err.message);
+            });
+    };
+
+
     // const isSpeeldagInVerleden = (speeldagDatum: string) => {
     //     const speeldagDate = new Date(speeldagDatum);
     //     const today = new Date();
@@ -246,12 +260,13 @@ function Aanwezigheidspagina() {
                                             type="checkbox"
                                             checked={isAanwezig}
                                             onChange={() => {
-                                                if (isAanwezig) {
-                                                    alert('Verwijderen nog niet geïmplementeerd!');
+                                                if (isAanwezig && spelerAanwezig) {
+                                                    verwijderAanwezigheid(spelerAanwezig.aanwezigheidId);
                                                 } else {
                                                     bevestigAanwezigheid(speler.spelerId);
                                                 }
                                             }}
+
                                             className="h-5 w-5 cursor-pointer"
                                         />
                                         <div
