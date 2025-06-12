@@ -15,91 +15,118 @@ public class SpelverdelingPDFService : ISpelverdelingPDFService
     {
         var stream = new MemoryStream();
 
+        // Eerst: groepeer per spel
+        var spellen = spelverdelingen
+            .GroupBy(sv => sv.SpelId)
+            .Select(g =>
+            {
+                var eerste = g.First();
+                return new SpelResponseContract
+                {
+                    SpelId = (int)eerste.SpelId,
+                    SpeeldagId = eerste.Spel.SpeeldagId,
+                    Terrein = eerste.Spel.Terrein,
+                    ScoreA = eerste.Spel.ScoreA,
+                    ScoreB = eerste.Spel.ScoreB,
+                    Spelverdelingen = g.ToList()
+                };
+            })
+            .ToList();
+
         Document.Create(container =>
         {
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Margin(30); // Iets ruimere marges
-                page.DefaultTextStyle(x => x.FontSize(12)); // Grotere standaard lettergrootte
+                page.Margin(30);
+                page.DefaultTextStyle(x => x.FontSize(12));
 
                 page.Content().Column(col =>
                 {
-                    var spellen = spelverdelingen
-                        .GroupBy(x => x.Spel.SpelId)
-                        .OrderBy(x => x.Key);
+                    var spellenPerTerrein = spellen
+                        .GroupBy(spel => spel.Terrein)
+                        .OrderBy(g => g.Key);
 
-                    var spelnummer = 1;
-                    foreach (var spelGroup in spellen)
+                    int terreinNummer = 1;
+
+                    foreach (var terreinGroup in spellenPerTerrein)
                     {
-                        var spel = spelGroup.First().Spel;
-                        var teamA = spelGroup.Where(x => x.Team == "Team A").ToList();
-                        var teamB = spelGroup.Where(x => x.Team == "Team B").ToList();
-
-                        col.Item().PaddingBottom(25).Border(1).Padding(20).Column(spelCol =>
+                        col.Item().PaddingBottom(15).Column(c =>
                         {
-                            // Spel header gecentreerd met grotere tekst
-                            spelCol.Item().Row(row =>
-                            {
-                                row.RelativeItem().AlignCenter().Container()
-                                    .Background(Colors.BlueGrey.Darken2)
-                                    .Padding(10)
-                                    .Text($"SPEL {spelnummer++}")
-                                    .FontSize(16)
-                                    .Bold()
-                                    .FontColor(Colors.White);
-                            });
-
-                            spelCol.Item().PaddingTop(10); // Extra ruimte boven teams
-
-                            // Teams
-                            spelCol.Item().Row(row =>
-                            {
-                                // Team A
-                                row.RelativeItem().Column(teamCol =>
-                                {
-                                    teamCol.Item().Text("Team A").FontSize(14).Bold().Underline();
-                                    teamCol.Item().PaddingBottom(5);
-                                    foreach (var speler in teamA)
-                                    {
-                                        string naam;
-
-                                        if (speler.Speler != null)
-                                            naam = $"{speler.Speler.Voornaam} {speler.Speler.Naam}";
-                                        else
-                                            naam = $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
-
-                                        teamCol.Item().Text(naam);
-                                    }
-
-                                    teamCol.Item().PaddingTop(10).Text("Punten Team A: ");
-                                });
-
-                                // Verticale lijn
-                                row.ConstantItem(2).Height(120).Background(Colors.Grey.Lighten2);
-
-                                // Team B
-                                row.RelativeItem().Column(teamCol =>
-                                {
-                                    teamCol.Item().Text("Team B").FontSize(14).Bold().Underline();
-                                    teamCol.Item().PaddingBottom(5);
-                                    foreach (var speler in teamB)
-                                    {
-                                        string naam;
-
-                                        if (speler.Speler != null)
-                                            naam = $"{speler.Speler.Voornaam} {speler.Speler.Naam}";
-                                        else
-                                            naam = $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
-
-                                        teamCol.Item().Text(naam);
-                                    }
-
-
-                                    teamCol.Item().PaddingTop(10).Text("Punten Team B: ");
-                                });
-                            });
+                            c.Item().Text($"TERREIN: {terreinGroup.Key}")
+                                .FontSize(18)
+                                .Bold()
+                                .Underline();
                         });
+
+                        int spelnummer = 1;
+
+                        foreach (var spel in terreinGroup)
+                        {
+                            var teamA = spel.Spelverdelingen.Where(x => x.Team == "Team A").ToList();
+                            var teamB = spel.Spelverdelingen.Where(x => x.Team == "Team B").ToList();
+
+                            col.Item().PaddingBottom(20).Border(1).Padding(15).Column(spelCol =>
+                            {
+                                spelCol.Item().Row(row =>
+                                {
+                                    row.RelativeItem().AlignCenter()
+                                        .Background(Colors.BlueGrey.Darken2)
+                                        .Padding(8)
+                                        .Text($"Spel {spelnummer++}")
+                                        .FontSize(16)
+                                        .Bold()
+                                        .FontColor(Colors.White);
+                                });
+
+                                spelCol.Item().PaddingTop(10);
+
+                                spelCol.Item().Row(row =>
+                                {
+                                    // Team A
+                                    row.RelativeItem().Column(teamCol =>
+                                    {
+                                        teamCol.Item().Text("Team A").FontSize(14).Bold().Underline();
+                                        teamCol.Item().PaddingBottom(5);
+                                        foreach (var speler in teamA)
+                                        {
+                                            var naam = speler.Speler != null
+                                                ? $"{speler.Speler.Voornaam} {speler.Speler.Naam}"
+                                                : $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
+
+                                            teamCol.Item().Text(naam);
+                                        }
+                                        teamCol.Item().PaddingTop(10).Text($"Punten Team A: ");
+                                    });
+
+                                    // Verticale lijn tussen teams
+                                    row.ConstantItem(2).Height(120).Background(Colors.Grey.Lighten2);
+
+                                    // Team B
+                                    row.RelativeItem().Column(teamCol =>
+                                    {
+                                        teamCol.Item().Text("Team B").FontSize(14).Bold().Underline();
+                                        teamCol.Item().PaddingBottom(5);
+                                        foreach (var speler in teamB)
+                                        {
+                                            var naam = speler.Speler != null
+                                                ? $"{speler.Speler.Voornaam} {speler.Speler.Naam}"
+                                                : $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
+
+                                            teamCol.Item().Text(naam);
+                                        }
+                                        teamCol.Item().PaddingTop(10).Text($"Punten Team B: ");
+                                    });
+                                });
+                            });
+                        }
+
+                        if (terreinGroup != spellenPerTerrein.Last())
+                        {
+                            col.Item().PageBreak();
+                        }
+
+                        terreinNummer++;
                     }
                 });
             });
@@ -109,5 +136,4 @@ public class SpelverdelingPDFService : ISpelverdelingPDFService
         stream.Position = 0;
         return stream;
     }
-
 }

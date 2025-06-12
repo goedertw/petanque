@@ -73,7 +73,11 @@ namespace Petanque.Services.Services
     const int aantalTerreinen = 5;
     const int spellenPerSpeler = 3;
 
-    var spelerSpellenTelling = aanwezigheden.ToDictionary(a => a.SpelerVolgnr, _ => 0);
+    var spelerSpellenTelling = aanwezigheden
+        .GroupBy(a => a.SpelerVolgnr)
+        .Select(g => g.First())
+        .ToDictionary(a => a.SpelerVolgnr, _ => 0);
+
     var spelerSpelPerSpelId = new Dictionary<int, HashSet<int>>();
     var gebruikteSpelersPerSpelId = new Dictionary<int, HashSet<int>>();
     var gebruikteCombinaties = new HashSet<HashSet<int>>(); 
@@ -156,7 +160,8 @@ namespace Petanque.Services.Services
                     SpelId = spel.SpelId,
                     Team = "Team A",
                     SpelerPositie = $"P{positie++}",
-                    SpelerVolgnr = spelerId
+                    SpelerVolgnr = spelerId,
+                    SpelerId = spelerId
                 });
                 spelerSpellenTelling[spelerId]++;
                 spelerSpelPerSpelId[spelNr].Add(spelerId);
@@ -170,7 +175,8 @@ namespace Petanque.Services.Services
                     SpelId = spel.SpelId,
                     Team = "Team B",
                     SpelerPositie = $"P{positie++}",
-                    SpelerVolgnr = spelerId
+                    SpelerVolgnr = spelerId,
+                    SpelerId = spelerId
                 });
                 spelerSpellenTelling[spelerId]++;
                 spelerSpelPerSpelId[spelNr].Add(spelerId);
@@ -213,6 +219,9 @@ namespace Petanque.Services.Services
 
         private static SpelverdelingResponseContract MapToReturn(Spelverdeling entity, Speler? speler, Spel? spel)
         {
+            if (speler == null) throw new ArgumentNullException(nameof(speler), "Speler mag niet null zijn.");
+            if (spel == null) throw new ArgumentNullException(nameof(spel), "Spel mag niet null zijn.");
+
             return new SpelverdelingResponseContract
             {
                 SpelverdelingsId = entity.SpelverdelingsId,
@@ -220,13 +229,13 @@ namespace Petanque.Services.Services
                 Team = entity.Team,
                 SpelerPositie = entity.SpelerPositie,
                 SpelerVolgnr = entity.SpelerVolgnr,
-                Speler = speler == null ? null : new PlayerResponseContract
+                Speler = new PlayerResponseContract
                 {
                     SpelerId = speler.SpelerId,
                     Voornaam = speler.Voornaam,
                     Naam = speler.Naam
                 },
-                Spel = spel == null ? null : new SpelResponseContract
+                Spel = new SpelResponseContract
                 {
                     SpelId = spel.SpelId,
                     SpeeldagId = spel.SpeeldagId,

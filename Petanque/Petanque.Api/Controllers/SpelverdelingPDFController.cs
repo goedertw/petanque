@@ -7,12 +7,12 @@ namespace Petanque.Api.Controllers
 {
     [Route("api/pdfspelverdelingen")]
     [ApiController]
-    public class SpelverdelingPDFController(ISpelverdelingPDFService service, ISpelverdelingService spelservice) : ControllerBase
+    public class SpelverdelingPDFController(ISpelverdelingPDFService service, ISpelverdelingService sdService) : ControllerBase
     {
-        [HttpPost("{speeldagid}/{terreinid}")]
-        public IActionResult GeneratePdf([FromRoute] int speeldagid, [FromRoute] int terreinid)
+        [HttpPost("{speeldagid}")]
+        public IActionResult GeneratePdf([FromRoute] int speeldagid)
         {
-            var spelverdelingen = spelservice.GetBySpeeldagAndTerrein(speeldagid, terreinid);
+            var spelverdelingen = sdService.GetById(speeldagid);
             if (spelverdelingen == null)
             {
                 return NotFound($"Spelverdeling voor Speeldag {speeldagid} niet gevonden.");
@@ -20,7 +20,7 @@ namespace Petanque.Api.Controllers
 
             var pdfStream = service.GenerateSpelverdelingPDF(spelverdelingen);
 
-            return File(pdfStream, "application/pdf", $"speeldag_{speeldagid}_terrein_{terreinid}.pdf");
+            return File(pdfStream, "application/pdf", $"speeldag_{speeldagid}.pdf");
         }
     }
 }

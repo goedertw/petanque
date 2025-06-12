@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-const apiUrl = import.meta.env.VITE_API_URL;
 import Kalender from '../Components/Kalender.tsx';
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 interface Speeldag {
     speeldagId: number;
@@ -10,8 +11,7 @@ interface Speeldag {
 function Spelverdeling() {
     const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
     const [selectedSpeeldag, setSelectedSpeeldag] = useState<Speeldag | null>(null);
-    const [terrein, setTerrein] = useState<string>(() => localStorage.getItem('terrein') || "");
-    const [pdfUrl, setPdfUrl] = useState<string | null>(() => localStorage.getItem('pdfUrl') || null);
+    const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
     const [showCalendar, setShowCalendar] = useState(false);
 
     useEffect(() => {
@@ -25,7 +25,9 @@ function Spelverdeling() {
                 const savedSpeeldagId = localStorage.getItem('speeldagId');
                 if (savedSpeeldagId) {
                     const foundSpeeldag = data.find((dag) => dag.speeldagId.toString() === savedSpeeldagId);
-                    setSelectedSpeeldag(foundSpeeldag || null);
+                    if (foundSpeeldag) {
+                        setSelectedSpeeldag(foundSpeeldag);
+                    }
                 }
             } catch (error) {
                 console.error("Fout bij laden van speeldagen:", error);
@@ -37,43 +39,25 @@ function Spelverdeling() {
     }, []);
 
     useEffect(() => {
-        if (selectedSpeeldag && terrein.trim()) {
-            fetchPdf(selectedSpeeldag.speeldagId, terrein);
+        if (selectedSpeeldag) {
+            fetchPdf(selectedSpeeldag.speeldagId);
         }
-    }, [selectedSpeeldag, terrein]);
+    }, [selectedSpeeldag]);
 
-    const formatDate = (isoDate: string) => {
-        const date = new Date(isoDate);
-        return new Intl.DateTimeFormat("nl-NL", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        }).format(date);
-    };
-
-    const fetchPdf = async (speeldagId: number, terrein: string) => {
+    const fetchPdf = async (speeldagId: number) => {
         try {
-            const response = await fetch(
-                `${apiUrl}/pdfspelverdelingen/${speeldagId}/${encodeURIComponent(terrein)}`,
-                {
-                    method: "POST",
-                    headers: {
-                        Accept: "application/pdf",
-                    },
-                }
-            );
+            const response = await fetch(`${apiUrl}/pdfspelverdelingen/${speeldagId}`, {
+                method: "POST",
+                headers: {
+                    Accept: "application/pdf",
+                },
+            });
 
             if (!response.ok) throw new Error("Fout bij ophalen van PDF");
 
             const blob = await response.blob();
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                const base64data = reader.result as string;
-                setPdfUrl(base64data);
-                localStorage.setItem('pdfUrl', base64data);
-            };
+            const url = URL.createObjectURL(blob);
+            setPdfBlobUrl(url);
         } catch (error) {
             console.error("Fout bij ophalen van PDF:", error);
             alert("Kon PDF niet ophalen.");
@@ -84,14 +68,12 @@ function Spelverdeling() {
         setSelectedSpeeldag(speeldag);
         localStorage.setItem('speeldagId', speeldag.speeldagId.toString());
         setShowCalendar(false);
+        setPdfBlobUrl(null); // reset tonen oude PDF
 
         try {
             await fetch(`${apiUrl}/spelverdelingen/${speeldag.speeldagId}`, {
                 method: "POST",
             });
-
-            setPdfUrl(null);
-            localStorage.removeItem('pdfUrl');
         } catch (error) {
             console.error("Fout bij aanmaken van spelverdeling:", error);
             alert("Kon spelverdeling niet aanmaken.");
@@ -100,6 +82,16 @@ function Spelverdeling() {
 
     const handleToggleCalendar = () => {
         setShowCalendar(!showCalendar);
+    };
+
+    const formatDate = (isoDate: string) => {
+        const date = new Date(isoDate);
+        return new Intl.DateTimeFormat("nl-NL", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        }).format(date);
     };
 
     const formatDateToDutch = (dateString: string): string => {
@@ -121,40 +113,22 @@ function Spelverdeling() {
                 onToggleCalendar={handleToggleCalendar}
             />
 
-            {selectedSpeeldag !== null && (
+            {selectedSpeeldag && (
                 <div className="text-black-800 text-xl font-bold italic mt-1 text-center">
-                    {
-                        formatDateToDutch(
-                            speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
-
-                        )
-                    }
+                    {formatDateToDutch(
+                        speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
+                    )}
                 </div>
             )}
 
-            <h2 className="text-center w-full mb-4">Voer een terrein in</h2>
-
-            <input
-                type="number"
-                placeholder="Voer terrein in"
-                value={terrein}
-                onChange={(e) => {
-                    setTerrein(e.target.value);
-                    localStorage.setItem('terrein', e.target.value);
-                    setPdfUrl(null);
-                    localStorage.removeItem('pdfUrl');
-                }}
-                className="border p-2 rounded w-full mb-4"
-            />
-
-            {pdfUrl && selectedSpeeldag && (
+            {pdfBlobUrl && selectedSpeeldag && (
                 <div className="mt-6 w-full">
                     <h2 className="text-lg font-medium mb-2 text-center">
-                        Spelverdeling voor {formatDate(selectedSpeeldag.datum)} – Terrein: {terrein}
+                        Spelverdeling voor {formatDate(selectedSpeeldag.datum)}
                     </h2>
 
                     <iframe
-                        src={pdfUrl}
+                        src={pdfBlobUrl}
                         width="100%"
                         height="600px"
                         title="Spelverdeling PDF"
@@ -162,8 +136,8 @@ function Spelverdeling() {
                     ></iframe>
 
                     <a
-                        href={pdfUrl}
-                        download={`spelverdeling-speeldag-${selectedSpeeldag.speeldagId}-${terrein}.pdf`}
+                        href={pdfBlobUrl}
+                        download={`spelverdeling-speeldag-${selectedSpeeldag.speeldagId}.pdf`}
                         className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer block mx-auto w-auto"
                     >
                         Download PDF
