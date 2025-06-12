@@ -62,7 +62,13 @@ public class SpelverdelingPDFService : ISpelverdelingPDFService
                                     teamCol.Item().PaddingBottom(5);
                                     foreach (var speler in teamA)
                                     {
-                                        var naam = $"{speler.Speler.Voornaam} {speler.Speler.Naam}";
+                                        string naam;
+
+                                        if (speler.Speler != null)
+                                            naam = $"{speler.Speler.Voornaam} {speler.Speler.Naam}";
+                                        else
+                                            naam = $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
+
                                         teamCol.Item().Text(naam);
                                     }
 
@@ -79,9 +85,16 @@ public class SpelverdelingPDFService : ISpelverdelingPDFService
                                     teamCol.Item().PaddingBottom(5);
                                     foreach (var speler in teamB)
                                     {
-                                        var naam = $"{speler.Speler.Voornaam} {speler.Speler.Naam}";
+                                        string naam;
+
+                                        if (speler.Speler != null)
+                                            naam = $"{speler.Speler.Voornaam} {speler.Speler.Naam}";
+                                        else
+                                            naam = $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
+
                                         teamCol.Item().Text(naam);
                                     }
+
 
                                     teamCol.Item().PaddingTop(10).Text("Punten Team B: ");
                                 });

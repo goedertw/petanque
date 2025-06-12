@@ -9,7 +9,8 @@ namespace Petanque.Api.Controllers;
 public class SpelverdelingController(ISpelverdelingService service, IAanwezigheidService Aservice) : Controller
 {
     [HttpGet("{id}")]
-    public ActionResult<IEnumerable<PlayerResponseContract>> Get([FromRoute] int id)
+    public ActionResult<IEnumerable<SpelverdelingResponseContract>> Get([FromRoute] int id)
+
     {
         var spelverdeling = service.GetById(id);
         if (spelverdeling is null) return NotFound();

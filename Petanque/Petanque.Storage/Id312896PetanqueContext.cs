@@ -233,12 +233,17 @@ public partial class Id312896PetanqueContext : DbContext
 
             entity.ToTable("Spelverdeling");
 
+            entity.HasIndex(e => e.SpelId, "FK_Spelverdeling_Spel");
+
+            entity.HasIndex(e => e.SpelerId, "FK_Spelverdeling_Speler");
+
             entity.Property(e => e.SpelverdelingsId)
                 .HasColumnType("int(11)")
                 .HasColumnName("spelverdelingsId");
             entity.Property(e => e.SpelId)
                 .HasColumnType("int(11)")
                 .HasColumnName("spelId");
+            entity.Property(e => e.SpelerId).HasColumnType("int(11)");
             entity.Property(e => e.SpelerPositie)
                 .HasMaxLength(50)
                 .HasColumnName("spelerPositie");
@@ -248,6 +253,14 @@ public partial class Id312896PetanqueContext : DbContext
             entity.Property(e => e.Team)
                 .HasMaxLength(50)
                 .HasColumnName("team");
+
+            entity.HasOne(d => d.Spel).WithMany(p => p.Spelverdelings)
+                .HasForeignKey(d => d.SpelId)
+                .HasConstraintName("FK_Spelverdeling_Spel");
+
+            entity.HasOne(d => d.Speler).WithMany(p => p.Spelverdelings)
+                .HasForeignKey(d => d.SpelerId)
+                .HasConstraintName("FK_Spelverdeling_Speler");
         });
 
         OnModelCreatingPartial(modelBuilder);

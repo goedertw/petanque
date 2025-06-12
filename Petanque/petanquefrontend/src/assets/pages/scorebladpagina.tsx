@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import Calendar from "react-calendar";
+import Kalender from "../Components/Kalender.tsx"; // ← importeer jouw eigen component!
 const apiUrl = import.meta.env.VITE_API_URL;
-import 'react-calendar/dist/Calendar.css';
-// Interfaces
+
+// InterfacesS
 interface Speler {
     spelerId: number;
     voornaam: string;
@@ -16,7 +16,7 @@ interface SpelResponseContract {
     spelerScores: any[]; // Wordt niet gebruikt
 }
 
-interface PlayerResponseContract extends Speler { }
+interface PlayerResponseContract extends Speler {}
 
 interface SpelverdelingResponseContract {
     spelverdelingsId: number;
@@ -58,13 +58,12 @@ const createEmptyGame = (): Game => ({
     teamB: createEmptyTeam(),
 });
 
-
 const formatDateToDutch = (dateString: string): string => {
     const date = new Date(dateString);
     return ` speeldag: ${date.getDate()} ${date.toLocaleDateString("nl-NL", { month: "long" })}`;
 };
 
-// MatchScoreCard Component
+// Component
 function Scorebladpagina() {
     const [games, setGames] = useState<Game[]>([createEmptyGame(), createEmptyGame(), createEmptyGame()]);
     const [terrein, setTerrein] = useState<number>(() => {
@@ -72,7 +71,7 @@ function Scorebladpagina() {
         return opgeslagenTerrein ? parseInt(opgeslagenTerrein) : 1;
     });
     const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
-    const [selectedSpeeldag, setSelectedSpeeldag] = useState<number | null>(null);
+    const [selectedSpeeldag, setSelectedSpeeldag] = useState<Speeldag | null>(null);
     const [showCalendar, setShowCalendar] = useState(false);
 
     // Fetch speeldagen
@@ -92,7 +91,8 @@ function Scorebladpagina() {
                         gekozenSpeeldagId = data[0].speeldagId;
                     }
 
-                    setSelectedSpeeldag(gekozenSpeeldagId);
+                    const gekozenSpeeldag = data.find((dag) => dag.speeldagId === gekozenSpeeldagId) || data[0];
+                    setSelectedSpeeldag(gekozenSpeeldag);
                 }
             })
             .catch((err) => console.error("Fout bij laden van speeldagen:", err));
@@ -102,7 +102,7 @@ function Scorebladpagina() {
     useEffect(() => {
         if (selectedSpeeldag === null) return;
 
-        fetch(`${apiUrl}/spelverdelingen/${selectedSpeeldag}`)
+        fetch(`${apiUrl}/spelverdelingen/${selectedSpeeldag.speeldagId}`)
             .then((res) => res.json())
             .then((data: SpelverdelingResponseContract[]) => {
                 const spelMap: Record<number, Game> = {};
@@ -127,7 +127,7 @@ function Scorebladpagina() {
                 });
 
                 const mappedGames = Object.values(spelMap);
-                const key = `punten_${selectedSpeeldag}_terrein_${terrein}`;
+                const key = `punten_${selectedSpeeldag.speeldagId}_terrein_${terrein}`;
                 const opgeslagenGames = localStorage.getItem(key);
                 if (opgeslagenGames) {
                     const parsedScores = JSON.parse(opgeslagenGames) as Game[];
@@ -153,28 +153,21 @@ function Scorebladpagina() {
     }, [selectedSpeeldag, terrein]);
 
     // Handlers
-    const 
-        handleNameChange = (gameIndex: number, teamKey: "teamA" | "teamB", playerIndex: number, value: string) => {
-        const updatedGames = [...games];
-        updatedGames[gameIndex][teamKey].players[playerIndex] = value;
-        setGames(updatedGames);
-    };
-
     const handlePointsChange = (gameIndex: number, teamKey: "teamA" | "teamB", value: string) => {
         const updatedGames = [...games];
         const parsedValue = parseInt(value);
         updatedGames[gameIndex][teamKey].points = isNaN(parsedValue) ? 0 : Math.max(0, parsedValue);
         setGames(updatedGames);
 
-        const key = `punten_${selectedSpeeldag}_terrein_${terrein}`;
-        localStorage.setItem(key, JSON.stringify(updatedGames));
+        if (selectedSpeeldag) {
+            const key = `punten_${selectedSpeeldag.speeldagId}_terrein_${terrein}`;
+            localStorage.setItem(key, JSON.stringify(updatedGames));
+        }
     };
-
 
     const handleSave = async () => {
         if (!selectedSpeeldag) return;
 
-        // Validate that one of the teams has a score of 13
         const invalidGames = games.filter(
             (game) => game.teamA.points !== 13 && game.teamB.points !== 13
         );
@@ -189,9 +182,9 @@ function Scorebladpagina() {
                 games.map((game) =>
                     fetch(`${apiUrl}/scores/${game.spelId}`, {
                         method: "PUT",
-                        headers: {"Content-Type": "application/json"},
+                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            speeldagId: selectedSpeeldag,
+                            speeldagId: selectedSpeeldag.speeldagId,
                             terrein: game.terrein,
                             scoreA: game.teamA.points,
                             scoreB: game.teamB.points,
@@ -201,7 +194,7 @@ function Scorebladpagina() {
                     })
                 )
             );
-            alert("Scores succesvol ge pdatet!");
+            alert("Scores succesvol geüpdatet!");
         } catch (error) {
             console.error("Fout bij opslaan:", error);
             alert("Er ging iets mis bij het opslaan.");
@@ -214,108 +207,43 @@ function Scorebladpagina() {
                 <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg">
                     VL@S - Scores
                 </h1>
-                <div className="flex justify-between mt-2 text-sm items-center">
-                <span className="flex items-center gap-2">
-                    <span className="bg-[#fbd46d] px-2 py-1 rounded">TERREIN</span>
-                    <input
-                        type="number"
-                        value={terrein}
-                        min={1}
-                        onChange={(e) => {
-                            const value = Math.max(1, parseInt(e.target.value) || 1);
-                            setTerrein(value);
-                            localStorage.setItem('selectedTerrein', value.toString());
-                        }}
-                        placeholder="Nr"
-                        className="border border-[#74747c] p-2 rounded w-16"
-                    />
-                </span>
 
-                    <div className="flex flex-col items-end">
-                        <label className="text-sm font-medium text-[#44444c] mb-1">Selecteer een speeldag:</label>
-                        <button
-                            onClick={() => setShowCalendar(!showCalendar)}
-                            className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
-                        >
-                            {showCalendar ? 'Verberg speeldagen' : 'Wijzig speeldag'}
-                        </button>
-                    </div>
+                <div className="flex justify-between mt-2 text-sm items-center">
+                    <span className="flex items-center gap-2">
+                        <span className="bg-[#fbd46d] px-2 py-1 rounded">TERREIN</span>
+                        <input
+                            type="number"
+                            value={terrein}
+                            min={1}
+                            onChange={(e) => {
+                                const value = Math.max(1, parseInt(e.target.value) || 1);
+                                setTerrein(value);
+                                localStorage.setItem('selectedTerrein', value.toString());
+                            }}
+                            placeholder="Nr"
+                            className="border border-[#74747c] p-2 rounded w-16"
+                        />
+                    </span>
 
                     {selectedSpeeldag !== null && (
                         <div className="text-black-800 text-xl font-bold italic mt-1">
-                            {
-                                formatDateToDutch(
-                                    speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag)?.datum ?? ""
-                                )
-                            }
+                            {formatDateToDutch(selectedSpeeldag.datum)}
                         </div>
                     )}
-
-
                 </div>
 
-                {showCalendar && (
-                    <div className="flex justify-center mt-4">
-                        <Calendar
-                            onClickDay={(value) => {
-                                const clickedDate = new Date(value);
-                                const matchingSpeeldag = speeldagen.find((dag) => {
-                                    const dagDate = new Date(dag.datum);
-                                    return (
-                                        dagDate.getFullYear() === clickedDate.getFullYear() &&
-                                        dagDate.getMonth() === clickedDate.getMonth() &&
-                                        dagDate.getDate() === clickedDate.getDate()
-                                    );
-                                });
-
-                                if (matchingSpeeldag) {
-                                    setSelectedSpeeldag(matchingSpeeldag.speeldagId);
-                                    setShowCalendar(false);
-                                }
-                            }}
-                            value={(() => {
-                                const speeldag = speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag);
-                                return speeldag ? new Date(speeldag.datum) : null;
-                            })()}
-                            tileContent={({date, view}) => {
-                                if (view === 'month') {
-                                    const match = speeldagen.find((dag) => {
-                                        const dagDate = new Date(dag.datum);
-                                        return (
-                                            dagDate.getFullYear() === date.getFullYear() &&
-                                            dagDate.getMonth() === date.getMonth() &&
-                                            dagDate.getDate() === date.getDate()
-                                        );
-                                    });
-
-                                    return match ? (
-                                        <div className="flex justify-center items-center mt-1">
-                                            <div className="h-2 w-2 rounded-full bg-[#ccac4c]"></div>
-                                        </div>
-                                    ) : null;
-                                }
-                            }}
-                            className="p-4 bg-white rounded-2xl shadow-md text-[#44444c]"
-                            tileClassName={({date, view}) => {
-                                if (view === 'month') {
-                                    const speeldag = speeldagen.find((dag) => {
-                                        const dagDate = new Date(dag.datum);
-                                        return (
-                                            dagDate.getFullYear() === date.getFullYear() &&
-                                            dagDate.getMonth() === date.getMonth() &&
-                                            dagDate.getDate() === date.getDate()
-                                        );
-                                    });
-
-                                    if (speeldag && speeldag.speeldagId === selectedSpeeldag) {
-                                        return 'bg-[#ccac4c] text-white rounded-full';
-                                    }
-                                }
-                                return null;
-                            }}
-                        />
-                    </div>
-                )}
+                {/* Hier gebruik je jouw eigen Kalender component */}
+                <Kalender
+                    speeldagen={speeldagen}
+                    selectedSpeeldag={selectedSpeeldag}
+                    onSelectSpeeldag={(speeldag) => {
+                        setSelectedSpeeldag(speeldag);
+                        localStorage.setItem("selectedSpeeldag", speeldag.speeldagId.toString());
+                        setShowCalendar(false);
+                    }}
+                    showCalendar={showCalendar}
+                    onToggleCalendar={() => setShowCalendar(!showCalendar)}
+                />
             </div>
 
             {games.map((game, gameIndex) => (
@@ -346,9 +274,9 @@ function Scorebladpagina() {
                                 <div className="mt-2 text-sm font-medium text-[#44444c]">
                                     Aantal: <span className="font-bold">{game.teamA.points}</span>
                                     <span className="ml-4">
-                                    {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
+                                        {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
                                         {game.teamA.points - game.teamB.points}
-                                </span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -364,7 +292,6 @@ function Scorebladpagina() {
                                     </p>
                                 ))}
                             </div>
-
                             <div className="mt-4">
                                 <label className="block text-sm mb-1 text-[#44444c]">Aantal punten:</label>
                                 <input
@@ -378,9 +305,9 @@ function Scorebladpagina() {
                                 <div className="mt-2 text-sm font-medium text-[#44444c]">
                                     Aantal: <span className="font-bold">{game.teamB.points}</span>
                                     <span className="ml-4">
-                                    {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
+                                        {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
                                         {game.teamB.points - game.teamA.points}
-                                </span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -398,4 +325,4 @@ function Scorebladpagina() {
     );
 }
 
-    export default Scorebladpagina;
+export default Scorebladpagina;

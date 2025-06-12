@@ -80,10 +80,22 @@ function Spelverdeling() {
         }
     };
 
-    const handleSelectSpeeldag = (speeldag: Speeldag) => {
+    const handleSelectSpeeldag = async (speeldag: Speeldag) => {
         setSelectedSpeeldag(speeldag);
         localStorage.setItem('speeldagId', speeldag.speeldagId.toString());
         setShowCalendar(false);
+
+        try {
+            await fetch(`${apiUrl}/spelverdelingen/${speeldag.speeldagId}`, {
+                method: "POST",
+            });
+
+            setPdfUrl(null);
+            localStorage.removeItem('pdfUrl');
+        } catch (error) {
+            console.error("Fout bij aanmaken van spelverdeling:", error);
+            alert("Kon spelverdeling niet aanmaken.");
+        }
     };
 
     const handleToggleCalendar = () => {

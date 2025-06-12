@@ -18,4 +18,6 @@ public partial class Spel
     public int ScoreB { get; set; }
 
     public virtual Speeldag? Speeldag { get; set; }
+
+    public virtual ICollection<Spelverdeling> Spelverdelings { get; set; } = new List<Spelverdeling>();
 }
