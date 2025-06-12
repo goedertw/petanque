@@ -10,7 +10,7 @@ namespace Petanque.Contracts.Responses
     {
         public int SpeeldagId { get; set; }
 
-        public DateOnly Datum { get; set; }
+        public DateTime Datum { get; set; }
 
         public virtual SeizoenResponseContract? Seizoenen { get; set; }
         public List<SpelResponseContract> Spel { get; set; }
