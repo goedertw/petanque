@@ -10,11 +10,12 @@ interface KalenderProps {
     speeldagen: Speeldag[];
     selectedSpeeldag: Speeldag | null;
     onSelectSpeeldag: (speeldag: Speeldag) => void;
+    onClickOnNewDate?: (date: Date) => void;
     showCalendar: boolean;
     onToggleCalendar: () => void;
 }
 
-function Kalender({ speeldagen, selectedSpeeldag, onSelectSpeeldag, showCalendar, onToggleCalendar }: KalenderProps) {
+function Kalender({ speeldagen, selectedSpeeldag, onSelectSpeeldag, showCalendar, onToggleCalendar, onClickOnNewDate }: KalenderProps) {
     return (
         <div className="mb-8 w-full">
             <h2 className="text-center w-full mb-4">Selecteer een speeldag:</h2>
@@ -44,6 +45,10 @@ function Kalender({ speeldagen, selectedSpeeldag, onSelectSpeeldag, showCalendar
 
                             if (matchingSpeeldag) {
                                 onSelectSpeeldag(matchingSpeeldag);
+                            } else {
+                                if (onClickOnNewDate) {
+                                    onClickOnNewDate(clickedDate);
+                                }
                             }
                         }}
                         value={selectedSpeeldag ? new Date(selectedSpeeldag.datum) : null}

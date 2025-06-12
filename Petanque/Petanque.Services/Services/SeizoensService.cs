@@ -1,4 +1,5 @@
-﻿using Petanque.Contracts.Responses;
+﻿using Petanque.Contracts.Requests;
+using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
 using Petanque.Storage;
 
@@ -19,7 +20,31 @@ public class SeizoensService : ISeizoensService
             .Select(s => MapToContract(s))
             .ToList();
     }
-    
+
+    public SeizoenResponseContract Create(SeizoenRequestContract request)
+    {
+        var entity = new Seizoen
+        {
+            Startdatum = request.Startdatum,
+            Einddatum = request.Einddatum
+        };
+        
+        var overlappingSeizoen = context.Seizoens.FirstOrDefault(s =>
+            request.Startdatum <= s.Einddatum &&
+            request.Einddatum >= s.Startdatum
+        );
+
+        if (overlappingSeizoen != null)
+        {
+            throw new InvalidOperationException($"Er bestaat al een seizoen dat overlapt met deze periode (SeizoenId={overlappingSeizoen.SeizoensId}, {overlappingSeizoen.Startdatum:yyyy-MM-dd} - {overlappingSeizoen.Einddatum:yyyy-MM-dd})");
+        }
+
+        context.Seizoens.Add(entity);
+        context.SaveChanges();
+
+        return MapToContract(entity);
+    }
+
     private static SeizoenResponseContract MapToContract(Seizoen entity)
     {
         return new SeizoenResponseContract

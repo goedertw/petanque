@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
+using Petanque.Contracts.Requests;
 using Petanque.Contracts.Responses;
 using Petanque.Services.Interfaces;
 namespace Petanque.Api.Controllers;
@@ -15,6 +15,20 @@ public class SeizoensController : ControllerBase
         _seizoensService = seizoensService;
     }
     
+    [HttpPost]
+    public IActionResult Create([FromBody] SeizoenRequestContract request)
+    {
+        try
+        {
+            var createdSeizoen = _seizoensService.Create(request);
+            return CreatedAtAction(nameof(Create), new { id = createdSeizoen.SeizoensId }, createdSeizoen);
+        }
+        catch
+        {
+            return StatusCode(500, "Er ging iets mis bij aanmaken van seizoen");
+        }
+    }
+
     [HttpGet]
     public IActionResult GetAll()
     {

@@ -7,7 +7,7 @@ public partial class Speeldag
 {
     public int SpeeldagId { get; set; }
 
-    public DateOnly Datum { get; set; }
+    public DateTime Datum { get; set; }
 
     public int? SeizoensId { get; set; }
 
