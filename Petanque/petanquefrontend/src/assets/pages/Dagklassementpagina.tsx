@@ -3,157 +3,162 @@ const apiUrl = import.meta.env.VITE_API_URL;
 import Kalender from '../Components/Kalender.tsx';  // jouw herbruikbare Kalender component
 
 interface Speeldag {
-  speeldagId: number;
-  datum: string;
+    speeldagId: number;
+    datum: string;
 }
 
 function Dagklassementpagina() {
-  const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
-  const [selectedSpeeldag, setSelectedSpeeldag] = useState<Speeldag | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(() => localStorage.getItem('dagklassementPdfUrl') || null);
-  const [showCalendar, setShowCalendar] = useState(false);
+    const [speeldagen, setSpeeldagen] = useState<Speeldag[]>([]);
+    const [selectedSpeeldag, setSelectedSpeeldag] = useState<Speeldag | null>(null);
+    const [pdfUrl, setPdfUrl] = useState<string | null>(() => localStorage.getItem('dagklassementPdfUrl') || null);
+    const [showCalendar, setShowCalendar] = useState(false);
 
-  useEffect(() => {
-    const fetchSpeeldagen = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/speeldagen`);
-        if (!response.ok) throw new Error("Fout bij ophalen van speeldagen");
-        const data: Speeldag[] = await response.json();
-        setSpeeldagen(data);
+    useEffect(() => {
+        const fetchSpeeldagen = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/speeldagen`);
+                if (!response.ok) throw new Error("Fout bij ophalen van speeldagen");
+                const data: Speeldag[] = await response.json();
+                setSpeeldagen(data);
 
-        const savedSpeeldagId = localStorage.getItem('dagklassementSpeeldagId');
-        if (savedSpeeldagId) {
-          const foundSpeeldag = data.find((dag) => dag.speeldagId.toString() === savedSpeeldagId);
-          setSelectedSpeeldag(foundSpeeldag || null);
-        }
-      } catch (error) {
-        console.error("Fout bij laden van speeldagen:", error);
-        alert("Kon speeldagen niet laden.");
-      }
+                const savedSpeeldagId = localStorage.getItem('dagklassementSpeeldagId');
+                if (savedSpeeldagId) {
+                    const foundSpeeldag = data.find((dag) => dag.speeldagId.toString() === savedSpeeldagId);
+                    setSelectedSpeeldag(foundSpeeldag || null);
+                }
+            } catch (error) {
+                console.error("Fout bij laden van speeldagen:", error);
+                alert("Kon speeldagen niet laden.");
+            }
+        };
+
+        fetchSpeeldagen();
+    }, []);
+
+    const formatDate = (isoDate: string) => {
+        const date = new Date(isoDate);
+        return new Intl.DateTimeFormat("nl-NL", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        }).format(date);
     };
 
-    fetchSpeeldagen();
-  }, []);
+    const fetchPdf = async () => {
+        if (!selectedSpeeldag) {
+            alert("Selecteer een speeldag.");
+            return;
+        }
 
-  const formatDate = (isoDate: string) => {
-    const date = new Date(isoDate);
-    return new Intl.DateTimeFormat("nl-NL", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(date);
-  };
+        localStorage.setItem('dagklassementSpeeldagId', selectedSpeeldag.speeldagId.toString());
 
-  const fetchPdf = async () => {
-    if (!selectedSpeeldag) {
-      alert("Selecteer een speeldag.");
-      return;
-    }
+        // Reset bestaande PDF
+        setPdfUrl(null);
+        localStorage.removeItem('dagklassementPdfUrl');
 
-    localStorage.setItem('dagklassementSpeeldagId', selectedSpeeldag.speeldagId.toString());
+        try {
+            const response = await fetch(
+                `${apiUrl}/pdfdagklassementen/${selectedSpeeldag.speeldagId}`,
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/pdf",
+                    },
+                }
+            );
 
-    try {
-      const response = await fetch(
-          `${apiUrl}/pdfdagklassementen/${selectedSpeeldag.speeldagId}`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/pdf",
-            },
-          }
-      );
+            if (!response.ok) throw new Error("Fout bij ophalen van PDF");
 
-      if (!response.ok) throw new Error("Fout bij ophalen van PDF");
+            const blob = await response.blob();
+            const reader = new FileReader();
 
-      const blob = await response.blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        setPdfUrl(base64data);
-        localStorage.setItem('dagklassementPdfUrl', base64data);
-      };
-    } catch (error) {
-      console.error("Fout bij ophalen van PDF:", error);
-      alert("Kon PDF niet ophalen.");
-    }
-  };
+            reader.onloadend = () => {
+                const base64data = reader.result as string;
+                setPdfUrl(base64data);
+                localStorage.setItem('dagklassementPdfUrl', base64data);
+            };
 
-  const handleSelectSpeeldag = (speeldag: Speeldag) => {
-    setSelectedSpeeldag(speeldag);
-    localStorage.setItem('dagklassementSpeeldagId', speeldag.speeldagId.toString());
-    setShowCalendar(false);
-  };
+            reader.readAsDataURL(blob);
+        } catch (error) {
+            console.error("Fout bij ophalen van PDF:", error);
+            alert("Kon PDF niet ophalen.");
+        }
+    };
 
-  const handleToggleCalendar = () => {
-    setShowCalendar(!showCalendar);
-  };
+    const handleSelectSpeeldag = (speeldag: Speeldag) => {
+        setSelectedSpeeldag(speeldag);
+        localStorage.setItem('dagklassementSpeeldagId', speeldag.speeldagId.toString());
+        setShowCalendar(false);
+    };
 
-  const formatDateToDutch = (dateString: string): string => {
-    const date = new Date(dateString);
-    return ` speeldag: ${date.getDate()} ${date.toLocaleDateString("nl-NL", { month: "long" })}`;
-  };
+    const handleToggleCalendar = () => {
+        setShowCalendar(!showCalendar);
+    };
 
-  return (
-      <div className="p-4 max-w-3xl mx-auto">
-        <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6">
-          Dagklassementen
-        </h1>
+    const formatDateToDutch = (dateString: string): string => {
+        const date = new Date(dateString);
+        return ` speeldag: ${date.getDate()} ${date.toLocaleDateString("nl-NL", { month: "long" })}`;
+    };
 
-        {speeldagen.length > 0 && (
-            <Kalender
-                speeldagen={speeldagen}
-                selectedSpeeldag={selectedSpeeldag}
-                onSelectSpeeldag={handleSelectSpeeldag}
-                showCalendar={showCalendar}
-                onToggleCalendar={handleToggleCalendar}
-            />
-        )}
+    return (
+        <div className="p-4 max-w-3xl mx-auto">
+            <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6">
+                Dagklassementen
+            </h1>
 
-        {selectedSpeeldag !== null && (
-            <div className="text-black-800 text-xl font-bold italic mt-1 text-center">
-              {
-                formatDateToDutch(
-                    speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
+            {speeldagen.length > 0 && (
+                <Kalender
+                    speeldagen={speeldagen}
+                    selectedSpeeldag={selectedSpeeldag}
+                    onSelectSpeeldag={handleSelectSpeeldag}
+                    showCalendar={showCalendar}
+                    onToggleCalendar={handleToggleCalendar}
+                />
+            )}
 
-                )
-              }
-            </div>
-        )}
+            {selectedSpeeldag !== null && (
+                <div className="text-black-800 text-xl font-bold italic mt-1 text-center">
+                    {
+                        formatDateToDutch(
+                            speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
+                        )
+                    }
+                </div>
+            )}
 
-        <button
-            onClick={fetchPdf}
-            className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer mt-4 block mx-auto"
-        >
-          Toon PDF
-        </button>
+            <button
+                onClick={fetchPdf}
+                className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer mt-4 block mx-auto"
+            >
+                Toon PDF
+            </button>
 
-        {pdfUrl && selectedSpeeldag && (
-            <div className="mt-6">
-              <h2 className="text-lg font-medium mb-2 text-center">
-                Dagklassement voor {formatDate(selectedSpeeldag.datum)}
-              </h2>
+            {pdfUrl && selectedSpeeldag && (
+                <div className="mt-6">
+                    <h2 className="text-lg font-medium mb-2 text-center">
+                        Dagklassement voor {formatDate(selectedSpeeldag.datum)}
+                    </h2>
 
-              <iframe
-                  src={pdfUrl}
-                  width="100%"
-                  height="600px"
-                  title="Dagklassement PDF"
-                  className="border rounded mb-4"
-              ></iframe>
+                    <iframe
+                        src={pdfUrl}
+                        width="100%"
+                        height="600px"
+                        title="Dagklassement PDF"
+                        className="border rounded mb-4"
+                    ></iframe>
 
-              <a
-                  href={pdfUrl}
-                  download={`dagklassement-speeldag-${selectedSpeeldag.speeldagId}-${selectedSpeeldag.datum}.pdf`}
-                  className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer block mx-auto"
-              >
-                Download PDF
-              </a>
-            </div>
-        )}
-      </div>
-  );
+                    <a
+                        href={pdfUrl}
+                        download={`dagklassement-speeldag-${selectedSpeeldag.speeldagId}-${selectedSpeeldag.datum}.pdf`}
+                        className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer block mx-auto"
+                    >
+                        Download PDF
+                    </a>
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default Dagklassementpagina;
