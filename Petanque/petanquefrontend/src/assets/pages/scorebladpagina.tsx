@@ -51,12 +51,7 @@ const createEmptyTeam = (): Team => ({
     points: 0,
 });
 
-const createEmptyGame = (): Game => ({
-    spelId: 0,
-    terrein: "",
-    teamA: createEmptyTeam(),
-    teamB: createEmptyTeam(),
-});
+
 
 const formatDateToDutch = (dateString: string): string => {
     const date = new Date(dateString);

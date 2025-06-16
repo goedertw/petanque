@@ -4,7 +4,7 @@ import SecondPage from '../pages/aanwezigheidspagina.tsx';
 import ThirdPage from '../pages/spelerpagina.tsx';
 import HomePage from '../pages/HomePagina.tsx';
 import ScorePagina from '../pages/scorebladpagina.tsx';
-import vlasLogo from '../images/vlas_logo.png';
+import vlasLogo from '../Images/vlas_logo.png';
 // import DagKlassementpagina from '../pages/Dagklassementpagina.tsx';
 import SpeeldagenDropdown from '../pages/spelverdeling.tsx';
 import KlassementenPagina from "../pages/KlassementenPagina.tsx";

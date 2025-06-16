@@ -22,7 +22,10 @@ namespace Petanque.Services
 
         public async Task<Stream> GenerateDagKlassementPdfAsync(int id)
         {
-            // Haal alleen de spelers op waarvan het spelerId voorkomt in het dagklassement voor de opgegeven speeldag
+            var speeldag = await _context.Speeldags.FirstOrDefaultAsync(s => s.SpeeldagId == id);
+            if (speeldag == null)
+                return null;
+
             var spelerIdsInDagklassement = await _context.Dagklassements
                 .Where(d => d.SpeeldagId == id)
                 .Select(d => d.SpelerId)
@@ -37,20 +40,16 @@ namespace Petanque.Services
                 .ToListAsync();
 
             if (dagklassements == null || !dagklassements.Any())
-            {
                 return null;
-            }
 
             var spelersMetScores = spelers.Select(speler =>
             {
                 var dagKlassement = dagklassements.FirstOrDefault(dk => dk.SpelerId == speler.SpelerId);
-                var score = dagKlassement != null ? dagKlassement.PlusMinPunten : 0;
-
                 return new
                 {
                     speler.Naam,
                     speler.Voornaam,
-                    Score = score,
+                    Score = dagKlassement?.PlusMinPunten ?? 0,
                     Hoofdpunten = dagKlassement?.Hoofdpunten ?? 0
                 };
             }).OrderByDescending(s => s.Hoofdpunten).ToList();
@@ -67,26 +66,25 @@ namespace Petanque.Services
 
                     page.Content().Column(col =>
                     {
-                        // Voeg titel toe met padding aan de onderkant van de titel
+                        string datumFormatted = speeldag.Datum.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("nl-NL"));
+
                         col.Item().Element(e => e
-                            .PaddingBottom(2)  // Padding aan de onderkant van de titel
-                            .Text($"VL@S Speeldag {id}")
+                            .PaddingBottom(2)
+                            .Text($"VL@S Speeldag – {datumFormatted}")
                             .FontSize(14)
                             .Bold()
                             .AlignCenter());
 
-                        // Voeg wat extra ruimte boven de tabel toe
-                        col.Item().Element(e => e.PaddingTop(10));  // Dit geeft de ruimte tussen de titel en de tabel
+                        col.Item().Element(e => e.PaddingTop(10));
 
-                        // Tabel toevoegen
                         col.Item().Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(25);   // Rang
-                                columns.RelativeColumn(3);    // Naam
-                                columns.ConstantColumn(35);   // Hoofdpunten
-                                columns.ConstantColumn(35);   // +/- punten
+                                columns.ConstantColumn(25);
+                                columns.RelativeColumn(3);
+                                columns.ConstantColumn(35);
+                                columns.ConstantColumn(35);
                             });
 
                             int rang = 1;
@@ -96,8 +94,8 @@ namespace Petanque.Services
                                 string background = isEvenRow ? Colors.Grey.Lighten4 : Colors.White;
 
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(speler.Voornaam + " " + speler.Naam);
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Hoofdpunten.ToString() ?? "0");
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{speler.Voornaam} {speler.Naam}");
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Hoofdpunten.ToString());
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Score.ToString());
 
                                 rang++;
@@ -109,9 +107,9 @@ namespace Petanque.Services
 
             document.GeneratePdf(memoryStream);
             memoryStream.Seek(0, SeekOrigin.Begin);
-
             return memoryStream;
         }
+
 
     }
 }
