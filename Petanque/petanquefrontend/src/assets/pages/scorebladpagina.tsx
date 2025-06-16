@@ -110,7 +110,7 @@ function Scorebladpagina() {
                     const terreinLabel = entry.spel.terrein;
                     const spelId = entry.spel.spelId;
                     const teamKey = entry.team === "Team A" ? "teamA" : "teamB";
-                    const spelerNaam = `${entry.speler.voornaam} ${entry.speler.naam}`;
+                    const spelerNaam = `${entry.speler.spelerId} ${entry.speler.voornaam} ${entry.speler.naam}`;
 
                     if (terreinLabel.trim().toLowerCase() === `terrein ${terrein}`.toLowerCase()) {
                         if (!spelMap[spelId]) {
