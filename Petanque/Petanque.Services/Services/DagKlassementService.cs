@@ -9,10 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Petanque.Services.Services {
-    public class DagKlassementService(Id312896PetanqueContext context) : IDagKlassementService {
-        public DagKlassementResponseContract Create(DagKlassementRequestContract request) {
-            var entity = new Dagklassement() {
+namespace Petanque.Services.Services
+{
+    public class DagKlassementService(Id312896PetanqueContext context) : IDagKlassementService
+    {
+        public DagKlassementResponseContract Create(DagKlassementRequestContract request)
+        {
+            var entity = new Dagklassement()
+            {
                 SpeeldagId = request.SpeeldagId,
                 Hoofdpunten = request.Hoofdpunten,
                 PlusMinPunten = request.PlusMinPunten,
@@ -25,7 +29,8 @@ namespace Petanque.Services.Services {
             return MapToContract(entity);
         }
 
-        public IEnumerable<DagKlassementResponseContract>? GetById(int id) {
+        public IEnumerable<DagKlassementResponseContract>? GetById(int id)
+        {
             var dagklassementen = context.Dagklassements
             .Where(d => d.SpeeldagId == id)
             .ToList();
@@ -39,9 +44,18 @@ namespace Petanque.Services.Services {
         {
             var speeldagId = speeldagData.SpeeldagId;
 
+            var gebruikteVolgnrs = speeldagData.Spel
+                .SelectMany(s => s.Spelverdelingen ?? [])
+                .Select(sv => sv.SpelerVolgnr)
+                .Distinct()
+                .ToList();
+
             var spelersInSpeeldag = context.Aanwezigheids
-                .Where(x => x.SpeeldagId == speeldagId)
-                .ToDictionary(x => x.SpelerVolgnr, x => x.SpelerId);
+                .Where(x => x.SpeeldagId == speeldagId && gebruikteVolgnrs.Contains(x.SpelerVolgnr))
+                .AsEnumerable()
+                .GroupBy(x => x.SpelerVolgnr)
+                .ToDictionary(g => g.Key, g => g.First().SpelerId);
+
 
             var scorePerSpeler = new Dictionary<int, int>();
             var winsPerSpeler = new Dictionary<int, int>();
@@ -124,8 +138,10 @@ namespace Petanque.Services.Services {
             return dagKlassementen;
         }
 
-        private static DagKlassementResponseContract MapToContract(Dagklassement entity) {
-            return new DagKlassementResponseContract() {
+        private static DagKlassementResponseContract MapToContract(Dagklassement entity)
+        {
+            return new DagKlassementResponseContract()
+            {
                 DagklassementId = entity.DagklassementId,
                 SpeeldagId = entity.SpeeldagId,
                 SpelerId = entity.SpelerId,
