@@ -26,6 +26,9 @@ var connectionString = builder.Configuration.GetConnectionString("LocalMySQL");
 builder.Services.AddDbContext<Id312896PetanqueContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 // Services toevoegen
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IDagKlassementService, DagKlassementService>();

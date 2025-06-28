@@ -4,6 +4,7 @@ using Petanque.Services.Interfaces;
 using Petanque.Storage;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Petanque.Services.Services
 {
@@ -11,8 +12,13 @@ namespace Petanque.Services.Services
     {
         private readonly Random _random = new();
         private readonly Id312896PetanqueContext _context;
+        private readonly ILogger _logger;
 
-        public SpelverdelingService(Id312896PetanqueContext context) => _context = context;
+        public SpelverdelingService(Id312896PetanqueContext context, ILogger<SpelverdelingService> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
 
         public IEnumerable<SpelverdelingResponseContract> GetById(int speeldagId)
         {
@@ -48,6 +54,7 @@ namespace Petanque.Services.Services
 
         public IEnumerable<SpelverdelingResponseContract> MaakVerdeling(IEnumerable<AanwezigheidResponseContract> aanwezigheden, int speeldagId)
 {
+    _logger.LogCritical("Starting MaakVerdeling");
     if (aanwezigheden == null || !aanwezigheden.Any())
         return Enumerable.Empty<SpelverdelingResponseContract>();
 
