@@ -1,3 +1,0 @@
-C:\Users\artjo\OneDrive\Bureaublad\HOGENT\Jaar_2\Sem_2\Projectwerk\ProjectWerk2\ProjectWerk2\Petanque\PetanqueFrontend\obj\Debug\petanquefrontend.esproj.CoreCompileInputs.cache
-C:\Users\milan\Documents\petanque test\ProjectWerk2\Petanque\PetanqueFrontend\obj\Debug\petanquefrontend.esproj.CoreCompileInputs.cache
-C:\HoGent\Projectwerk2\Petanque\PetanqueFrontend\obj\Debug\petanquefrontend.esproj.CoreCompileInputs.cache
