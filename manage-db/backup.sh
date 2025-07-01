@@ -37,7 +37,7 @@ if (( $debug == 1 )); then echo exitcode=$exitcode; fi
 rm $tmpcfgfile
 
 if (( $exitcode != 0 )); then
-    if (( $debug == 1 )); then rm -f ${dumpfile}; fi
+    if (( $debug != 1 )); then rm -f ${dumpfile}; fi
     echo "---"
     echo "ERROR: dump failed!"; echo; exit $exitcode
 fi

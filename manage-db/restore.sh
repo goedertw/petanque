@@ -11,7 +11,7 @@ usage () {
 
 cleanup_and_abort () {
     if (( $debug == 1 )); then echo exitcode=$exitcode; fi
-    rm -rf $tmpcfgfile $tmperrfile
+    rm -f $tmpcfgfile $tmperrfile
     echo "... Aborting!"; echo; exit 1
 }
 
