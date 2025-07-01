@@ -1,0 +1,62 @@
+Petanque
+-----------------
+
+URL of the original repo is: https://SpecialDevOps@dev.azure.com/SpecialDevOps/ProjectWerk2/_git/ProjectWerk2
+URL of the new, forked repo, owned by goedertw is: git@github.com:goedertw/petanque.git
+
+-----------------
+
+How to setup your git if you have 2 repo's?
+
+    git clone git@github.com:goedertw/petanque.git
+    cd petanque
+    git remote add upstream https://SpecialDevOps@dev.azure.com/SpecialDevOps/ProjectWerk2/_git/ProjectWerk2
+
+After the above:
+    repo of goedertw is called: "origin"
+    original repo of students is called: "upstream"
+    (do "cat .git/config" to check the situation)
+
+How to get changes from "upstream" into "origin"?
+
+    git fetch upstream
+    git merge upstream/master
+
+-----------------
+
+How to install necessary software?
+Run in CMD:
+
+    winget install Microsoft.DotNet.SDK.8
+    winget install node.js
+    cd petanquefrontend
+    npm install
+
+-----------------
+
+How to start the application?
+Run in CMD:
+
+    cd Petanque.Api
+    dotnet run
+
+    cd petanquefrontend
+    set VITE_API_URL=http://localhost:5251/api
+    npm run dev
+
+    start http://localhost:5173/
+
+-----------------
+
+Create a file './manage-db/mysql.cfg' based on './manage-db/mysql.cfg.example*'
+
+-----------------
+
+Details about the MySQL-server/db are currently hard-coded here:
+
+    Petanque.Api/appsettings.json
+    Petanque.Storage/Id312896PetanqueContext.cs
+
+Use "grep server Petanque.Api/appsettings.json Petanque.Storage/Id312896PetanqueContext.cs" for details
+
+-----------------

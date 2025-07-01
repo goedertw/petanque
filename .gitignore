@@ -1,17 +1,23 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+﻿
+# binaries and object files
+Petanque/Petanque.Api/obj/
+Petanque/Petanque.Storage/obj/
+Petanque/Petanque.Services/obj/
+Petanque/Petanque.Contracts/obj/
+Petanque/Petanque.Api/bin/
+Petanque/Petanque.Storage/bin/
+Petanque/Petanque.Services/bin/
+Petanque/Petanque.Contracts/bin/
 
-/Petanque/.idea/
-/Petanque/Petanque.Api/obj/
-/Petanque/Petanque.Storage/obj/
-/Petanque/Petanque.Services/obj/
-/Petanque/Petanque.Contracts/obj/
-/Petanque/Petanque.Api/bin/Debug/
-/Petanque/Petanque.Storage/bin/Debug/
-/Petanque/Petanque.Services/bin/Debug/
-/Petanque/Petanque.Contracts/bin/Debug/
+# editors
 .vs
-/Petanque/.vs/
+Petanque/.vs/
+Petanque/.idea/
 
-/Petanque/.vs/Petanque/FileContentIndex
+# added manually by Wim
+manage-db/sqldumps/
+manage-db/mysql.cfg*
+!manage-db/mysql.cfg.example*
+
+# also check ./Petanque/petanquefrontend/.gitignore
+

@@ -1,0 +1,6 @@
+[client]
+host='ID1234_petanque.db.webhosting.be'
+port='3306'
+user='ID1234_petanque'
+password='1234'
+database='ID1234_petanque'
