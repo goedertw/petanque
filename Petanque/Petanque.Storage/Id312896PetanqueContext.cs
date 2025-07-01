@@ -34,7 +34,7 @@ public partial class Id312896PetanqueContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=ID312896_petanque.db.webhosting.be;port=3306;database=ID312896_petanque;user=ID312896_petanque;password=hDQf_F!KB2b9", Microsoft.EntityFrameworkCore.ServerVersion.Parse("5.7.44-mysql"));
+        => optionsBuilder.UseMySql("server=127.0.0.1;port=3306;database=petanque;user=root;password=root", Microsoft.EntityFrameworkCore.ServerVersion.AutoDetect("server=127.0.0.1;port=3306;database=petanque;user=root;password=root"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
