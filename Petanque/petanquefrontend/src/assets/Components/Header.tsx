@@ -24,13 +24,14 @@ function Header() {
 
     return (
         <div className="min-h-screen bg-gray-100 text-gray-900">
-            <header className="bg-white py-4 px-6 shadow-md sticky top-0 z-50">
-                <div className="mx-auto max-w-screen-xl flex justify-between items-center flex-wrap gap-y-4">
+            <header className="bg-white py-3 px-3 shadow-md sticky top-0 z-50">
+                <div className="mx-auto max-w-screen-xl flex justify-between items-end flex-wrap gap-y-4">
                     {/* Logo */}
-                    <div className="flex flex-col items-center">
+
+                    <div className="flex items-end">
                         <img
                             src={vlasLogo}
-                            alt="VL@S Petanque Logo"
+                            alt="VL@S Logo"
                             className="h-16"
                         />
                         <h2 className="text-[#3c444c] text-xl font-bold mt-2">Petanque</h2>
