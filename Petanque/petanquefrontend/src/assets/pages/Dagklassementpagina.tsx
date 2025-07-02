@@ -131,7 +131,7 @@ function Dagklassementpagina() {
                 onClick={fetchPdf}
                 className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer mt-4 block mx-auto"
             >
-                Toon PDF
+                (her)genereer PDF
             </button>
 
             {pdfUrl && selectedSpeeldag && (
