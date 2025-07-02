@@ -8,19 +8,23 @@ URL of the new, forked repo, owned by goedertw is: git@github.com:goedertw/petan
 
 How to setup your git if you have 2 repo's?
 
-    git clone git@github.com:goedertw/petanque.git
-    cd petanque
-    git remote add upstream https://SpecialDevOps@dev.azure.com/SpecialDevOps/ProjectWerk2/_git/ProjectWerk2
+If you have only write access to https://SpecialDevOps@dev.azure.com/.../ProjectWerk2
+and readonly access to git@github.com:goedertw/petanque.git, then do the following:
 
-After the above:
-    repo of goedertw is called: "origin"
-    original repo of students is called: "upstream"
-    (do "cat .git/config" to check the situation)
+    # clone your own repo (probably already done)
+    git clone https://SpecialDevOps@dev.azure.com/SpecialDevOps/ProjectWerk2/_git/ProjectWerk2
+    cd ProjectWerk2
 
-How to get changes from "upstream" into "origin"?
+    # setup 'upstream'
+    git remote add upstream git@github.com:goedertw/petanque.git
+    # you have now an 'origin' repo and an 'upstream' repo, check this with:
+    git remote -v
 
+    # on a regular base: get all the changes from the main branch of goedertw/petanque
     git fetch upstream
-    git merge upstream/master
+    git merge upstream/main
+
+If you have only write access to git@github.com:goedertw/petanque.git, then do the opposite
 
 -----------------
 
