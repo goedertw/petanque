@@ -44,9 +44,7 @@ Get-Content $CfgFile | Where-Object { $_ -notmatch "^\s*database\s*=" } | Set-Co
 # Ensure dump directory exists
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $scriptDir
-if (-not (Test-Path $DumpDir)) {
-    New-Item -ItemType Directory -Path $DumpDir
-}
+New-Item -ItemType Directory -Path $DumpDir -Force >$null
 
 # Perform the dump
 Write-Host "Dumping database to '$DumpFile' ..."
