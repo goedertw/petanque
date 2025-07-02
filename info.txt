@@ -39,6 +39,7 @@ Run in CMD:
 Open PowerShell as Administrator and run:
     Get-ExecutionPolicy
     Set-ExecutionPolicy RemoteSigned
+    # or: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned ??
     # if you have still problems when ExecutionPolicy is set to 'RemoteSigned', try 'Unrestricted'
     #Set-ExecutionPolicy Unrestricted
 
@@ -69,14 +70,12 @@ If you need something else, update following files:
 
 How to start the application?
 
-Run in one CMD/PS-window:
-    cd Petanque\Petanque.Api
-    dotnet run
+Just run "start.ps1" in PowerShell
+or create a shortcut with following content:
 
-Run in another CMD/PS-window:
-    cd petanquefrontend
-    set VITE_API_URL=http://localhost:5251/api
-    npm run dev
-    # type 'o' + '<enter>' to open your browser at http://localhost:5173/
+    powershell.exe -ExecutionPolicy Bypass -File "C:\...\...\start.ps1"
+    (fill in the correct path)
+
+You can use "stop.ps1" to stop the dotnet-backend and the node.js services.
 
 -----------------
