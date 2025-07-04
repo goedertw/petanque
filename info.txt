@@ -79,3 +79,27 @@ or create a shortcut with following content:
 You can use "stop.ps1" to stop the dotnet-backend and the node.js services.
 
 -----------------
+
+Starting 'backend' and 'frontend' in PowerShell while developping:
+
+cd Petanque\Petanque.Api
+$env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+dotnet run
+
+cd Petanque\petanquefrontend
+$env:VITE_API_URL = "http://localhost:5251/api"
+npm run dev
+
+-----------------
+
+Starting 'backend' and 'frontend' in CMD while developping:
+
+cd Petanque\Petanque.Api
+set DOTNET_CLI_TELEMETRY_OPTOUT=1
+dotnet run
+
+cd Petanque\petanquefrontend
+set ITE_API_URL=http://localhost:5251/api
+npm run dev
+
+-----------------
