@@ -36,7 +36,7 @@ public class SeizoensService : ISeizoensService
 
         if (overlappingSeizoen != null)
         {
-            throw new InvalidOperationException($"Er bestaat al een seizoen dat overlapt met deze periode (SeizoenId={overlappingSeizoen.SeizoensId}, {overlappingSeizoen.Startdatum:yyyy-MM-dd} - {overlappingSeizoen.Einddatum:yyyy-MM-dd})");
+            throw new InvalidOperationException($"Er bestaat al een seizoen dat overlapt met deze periode, namelijk seizoen {overlappingSeizoen.SeizoensId} ({overlappingSeizoen.Startdatum:dd/MM/yyyy}-{overlappingSeizoen.Einddatum:dd/MM/yyyy})");
         }
 
         context.Seizoens.Add(entity);

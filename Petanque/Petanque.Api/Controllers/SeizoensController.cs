@@ -23,9 +23,9 @@ public class SeizoensController : ControllerBase
             var createdSeizoen = _seizoensService.Create(request);
             return CreatedAtAction(nameof(Create), new { id = createdSeizoen.SeizoensId }, createdSeizoen);
         }
-        catch
+        catch (Exception ex)
         {
-            return StatusCode(500, "Er ging iets mis bij aanmaken van seizoen");
+            return StatusCode(500, ex.Message);
         }
     }
 

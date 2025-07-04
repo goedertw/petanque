@@ -147,7 +147,10 @@ function HomePagina() {
                 body: JSON.stringify(request)
             });
 
-            if (!response.ok) throw new Error("Fout bij aanmaken van seizoen");
+            if (!response.ok) {
+                const errMsg = await response.text();
+                throw new Error(errMsg);
+            }
 
             const createdSeizoen = await response.json();
 
@@ -158,8 +161,8 @@ function HomePagina() {
 
             alert("Seizoen succesvol aangemaakt!");
         } catch (error) {
-            console.error("Fout bij aanmaken van seizoen:", error);
-            alert("Kon seizoen niet aanmaken.");
+            console.error("Fout bij aanmaken van seizoen:", error.message);
+            alert(error.message);
         }
     };
 
