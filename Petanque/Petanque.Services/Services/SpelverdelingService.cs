@@ -55,8 +55,33 @@ namespace Petanque.Services.Services
         public IEnumerable<SpelverdelingResponseContract> MaakVerdeling(IEnumerable<AanwezigheidResponseContract> aanwezigheden, int speeldagId)
         {
             _logger.LogCritical("Starting MaakVerdeling");
-            if (aanwezigheden == null || !aanwezigheden.Any())
-                return Enumerable.Empty<SpelverdelingResponseContract>();
+
+            const int maxAantalTerreinen = 1;
+            const int aantalSpelrondes = 3;
+
+            const int minAantalAanwezigen = 8;
+            const int minAantalSpelersPerTeam = 2;
+            const int maxAantalSpelersPerTeam = 3;
+
+            int aantalAanwezigen;
+            int aantalTerreinen;
+
+            if (aanwezigheden == null)
+                throw new InvalidOperationException($"BUG: Aanwezigheden zijn null. Dit mag niet gebeuren.");
+
+            aantalAanwezigen = aanwezigheden.Count();
+            if (aantalAanwezigen == 0)
+                throw new InvalidOperationException($"Er zijn nog geen aanwezigen aangeduid op deze speeldag");
+
+            //if (aantalAanwezigen < minAantalAanwezigen)
+            //    throw new InvalidOperationException($"Er zijn slechts {aantalAanwezigen} aanwezigen aangeduid op deze speeldag. Er moeten minstens {minAantalAanwezigen} aanwezigen zijn.");
+
+            if ((int)Math.Ceiling((double)aantalAanwezigen / maxAantalSpelersPerTeam / 2) > maxAantalTerreinen)
+                throw new InvalidOperationException($"Er zijn {maxAantalTerreinen} terreinen beschikbaar. Er is dus slechts plaats voor {maxAantalSpelersPerTeam * 2 * maxAantalTerreinen} van de {aantalAanwezigen} aanwezigen.");
+
+            aantalTerreinen = (int)Math.Floor((double)aantalAanwezigen / minAantalSpelersPerTeam / 2);
+            if (aantalTerreinen < 1)
+                throw new InvalidOperationException($"Er zijn slechts {aantalAanwezigen} aanwezigen. Dit is onvoldoende als je minstens {minAantalSpelersPerTeam} spelers per team wilt.");
 
             // STAP 1: Verwijder oude Spel + Spelverdeling voor deze speeldag
             var oudeSpelIds = _context.Spels
@@ -77,7 +102,6 @@ namespace Petanque.Services.Services
             _context.SaveChanges(); // Commit delete
 
             // STAP 2: Maak nieuwe Spelverdeling
-            const int aantalTerreinen = 5;
             const int spellenPerSpeler = 3;
 
             var spelerSpellenTelling = aanwezigheden
