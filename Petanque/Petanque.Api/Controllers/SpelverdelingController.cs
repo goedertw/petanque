@@ -19,12 +19,14 @@ public class SpelverdelingController(ISpelverdelingService service, IAanwezighei
     [HttpPost("{id}")]
     public ActionResult<IEnumerable<SpelverdelingResponseContract>> MaakVerdeling([FromRoute] int id)
     {
-        var aanwezigheden = Aservice.GetAanwezighedenOpSpeeldag(id);
-        
-
-        if (aanwezigheden == null || !aanwezigheden.Any())
-            return BadRequest("Geen aanwezige spelers gevonden.");
-
-        return Ok(service.MaakVerdeling(aanwezigheden, id));
+        try
+        {
+            var aanwezigheden = Aservice.GetAanwezighedenOpSpeeldag(id);
+            return Ok(service.MaakVerdeling(aanwezigheden, id));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 }

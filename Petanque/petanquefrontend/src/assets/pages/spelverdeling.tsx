@@ -71,12 +71,17 @@ function Spelverdeling() {
         setPdfBlobUrl(null); // reset tonen oude PDF
 
         try {
-            await fetch(`${apiUrl}/spelverdelingen/${speeldag.speeldagId}`, {
+            const response = await fetch(`${apiUrl}/spelverdelingen/${speeldag.speeldagId}`, {
                 method: "POST",
             });
+            if (!response.ok) {
+                const errMsg = await response.text();
+                throw new Error(errMsg);
+            }
+            alert("Spelverdeling aangemaakt!");
         } catch (error) {
-            console.error("Fout bij aanmaken van spelverdeling:", error);
-            alert("Kon spelverdeling niet aanmaken.");
+            console.error("Fout bij aanmaken van spelverdeling:", error.message);
+            alert(error.message);
         }
     };
 
