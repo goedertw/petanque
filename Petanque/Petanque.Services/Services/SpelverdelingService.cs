@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Security.Cryptography.X509Certificates;
+using System.Linq.Expressions;
 
 namespace Petanque.Services.Services
 {
@@ -68,51 +69,37 @@ namespace Petanque.Services.Services
             const int minAantalSpelersPerTeam = 2;
             const int maxAantalSpelersPerTeam = 3;
 
-            int aantalAanwezigen;
-            int aantalTerreinen;
-            int totaalAantalSpelers;
-            int spelronde;
-            int terrein;
-            int nrInTeam;
+            int aantalGebruikteTerreinen; // aantal GEBRUIKTE terreinen
+            List<int> masterSpelerList; // lijst van Volgnrs van aanwezige spelers
+            Dictionary<string, int> aantalSpelersPerTerreinPerTeam; // key="terrein,team", value=aantalSpelers
+            Dictionary<string, int> spelverdelingsInfo; // key="spelronde,terrein,team,nrInTeam", value=spelerVolgnr
+            Dictionary<string, smartDetails> smartDetailsDictionary; // key="spelronde,spelerVolgnr", value="Terrein,TeamLeden,Tegenspelers"
 
-            var aantalSpelersPerTerreinPerTeam = new Dictionary<string, int>(); // key="terrein,team"
-            var spelverdelingsInfo = new Dictionary<string, int>(); // key="spelronde,terrein,team,nrInTeam", value=spelerVolgnr
-            var smartDetailsDictionary = new Dictionary<string, smartDetails>(); // key="spelronde,spelerVolgnr"
-            var masterSpelerList = aanwezigheden.GroupBy(a => a.SpelerVolgnr).Select(g => g.First().SpelerVolgnr).ToList();
-
-            // STAP 0: Doe enkele checks en rapporteer problemen
+            // STAP 1: Vul 'masterSpelerList', check aantal aanwezigen en terreinen, vul 'aantalSpelersPerTerreinPerTeam'
             {
                 if (aanwezigheden == null)
                     throw new InvalidOperationException($"BUG: Aanwezigheden zijn null. Dit mag niet gebeuren.");
 
-                aantalAanwezigen = aanwezigheden.Count();
+                masterSpelerList = aanwezigheden.Select(a => a.SpelerVolgnr).ToList();
+                if (masterSpelerList.Distinct().Count() != masterSpelerList.Count())
+                    throw new InvalidOperationException($"BUG: Er zitten dubbele 'SpelerVolgnr's in de lijst 'aanwezigheden'.");
+
+                int aantalAanwezigen = masterSpelerList.Count();
                 if (aantalAanwezigen == 0)
                     throw new InvalidOperationException($"Er zijn nog geen aanwezigen aangeduid op deze speeldag");
-
                 if ((int)Math.Ceiling((double)aantalAanwezigen / maxAantalSpelersPerTeam / 2) > maxAantalTerreinen)
                     throw new InvalidOperationException($"Er zijn {maxAantalTerreinen} terreinen beschikbaar. Er is dus slechts plaats voor {maxAantalSpelersPerTeam * 2 * maxAantalTerreinen} van de {aantalAanwezigen} aanwezigen. (Verhoog evt. 'maxAantalSpelersPerTeam')");
 
-                aantalTerreinen = (int)Math.Floor((double)aantalAanwezigen / minAantalSpelersPerTeam / 2);
-                if (aantalTerreinen < 1)
+                aantalGebruikteTerreinen = (int)Math.Floor((double)aantalAanwezigen / minAantalSpelersPerTeam / 2);
+                if (aantalGebruikteTerreinen < 1)
                     throw new InvalidOperationException($"Er zijn slechts {aantalAanwezigen} aanwezigen. Dit is onvoldoende als je minstens {minAantalSpelersPerTeam} spelers per team wilt. (Verlaag evt. 'minAantalSpelersPerTeam')");
-
-                if ((int)Math.Ceiling((double)aantalAanwezigen / aantalTerreinen / 2) > maxAantalSpelersPerTeam)
+                if ((int)Math.Ceiling((double)aantalAanwezigen / aantalGebruikteTerreinen / 2) > maxAantalSpelersPerTeam)
                     throw new InvalidOperationException($"Met {aantalAanwezigen} aanwezigen kan er geen spelverdeling gemaakt worden met minstens {minAantalSpelersPerTeam} en maximaal {maxAantalSpelersPerTeam} spelers per team. (Verlaag evt. 'minAantalSpelersPerTeam' of verhoog 'maxAantalSpelersPerTeam')");
-            }
-            // STAP 1: Verwijder oude Spel + Spelverdeling voor deze speeldag
-            {
-                var oudeSpelIds = _context.Spels.Where(sp => sp.SpeeldagId == speeldagId).Select(sp => sp.SpelId).ToList();
-                var oudeSpelverdelingen = _context.Spelverdelings.Where(sv => oudeSpelIds.Contains(sv.SpelId ?? 0));
-                _context.Spelverdelings.RemoveRange(oudeSpelverdelingen);
 
-                var oudeSpellen = _context.Spels.Where(sp => sp.SpeeldagId == speeldagId);
-                _context.Spels.RemoveRange(oudeSpellen);
-                _context.SaveChanges(); // Commit delete
-            }
-            // STAP 2: Check en vul 'masterSpelerList' en 'aantalSpelersPerTerreinPerTeam'
-            {
-                totaalAantalSpelers = 0;
-                for (terrein = 1; terrein <= aantalTerreinen; terrein++)
+                aantalSpelersPerTerreinPerTeam = new Dictionary<string, int>();
+                int totaalAantalSpelers = 0;
+                int terrein;
+                for (terrein = 1; terrein <= aantalGebruikteTerreinen; terrein++)
                 {
                     aantalSpelersPerTerreinPerTeam[$"{terrein},A"] = minAantalSpelersPerTeam;
                     aantalSpelersPerTerreinPerTeam[$"{terrein},B"] = minAantalSpelersPerTeam;
@@ -131,18 +118,19 @@ namespace Petanque.Services.Services
                     {
                         team = 'A';
                         terrein++;
-                        if (terrein > aantalTerreinen) terrein = 1;
+                        if (terrein > aantalGebruikteTerreinen) terrein = 1;
                     }
                 }
             }
-            // STAP 3: Spelverdeling voor eerste ronde (gewoon random)
+            // STAP 2: Spelverdeling maken (lokaal in Dictionary)
             {
-                for (spelronde = 1; spelronde <= aantalSpelrondes; spelronde++)
+                smartDetailsDictionary = new Dictionary<string, smartDetails>();
+                spelverdelingsInfo = new Dictionary<string, int>();
+                for (int spelronde = 1; spelronde <= aantalSpelrondes; spelronde++)
                 {
                     var beschikbareSpelers = new List<int>(masterSpelerList);
                     var selectieVoorkeurScores = beschikbareSpelers.ToDictionary(n => n, n => 100);
-                    //_logger.LogCritical($"---------- spelronde={spelronde}, count na copy={beschikbareSpelers.Count()}");
-                    for (terrein = 1; terrein <= aantalTerreinen; terrein++)
+                    for (int terrein = 1; terrein <= aantalGebruikteTerreinen; terrein++)
                     {
                         var teamListDict = new Dictionary<char, List<int>>();
                         teamListDict['A'] = new List<int>();
@@ -151,13 +139,11 @@ namespace Petanque.Services.Services
                         {
                             char otherTeam = (team == 'A') ? 'B' : 'A';
                             if (spelronde > 1) { selectieVoorkeurScores = beschikbareSpelers.ToDictionary(n => n, n => 100); }
-                            for (nrInTeam = 1; nrInTeam <= aantalSpelersPerTerreinPerTeam[$"{terrein},{team}"]; nrInTeam++)
+                            for (int nrInTeam = 1; nrInTeam <= aantalSpelersPerTerreinPerTeam[$"{terrein},{team}"]; nrInTeam++)
                             {
-                                //_logger.LogInformation($"--- pas selectieVoorkeurScores aan, terrein={terrein}, team={team}, nrInTeam={nrInTeam}");
                                 // pas 'selectieVoorkeurScores' aan
                                 for (int spelronde2 = 1; spelronde2 < spelronde; spelronde2++)
                                 {
-                                    //_logger.LogInformation($"----- pas selectieVoorkeurScores aan, spelronde={spelronde2}");
                                     foreach (int speler in beschikbareSpelers)
                                     {
                                         if (nrInTeam == 1)
@@ -222,7 +208,7 @@ namespace Petanque.Services.Services
                             foreach (char team in new List<char> { 'A', 'B' })
                             {
                                 char otherTeam = (team == 'A') ? 'B' : 'A';
-                                for (nrInTeam = 1; nrInTeam <= aantalSpelersPerTerreinPerTeam[$"{terrein},{team}"]; nrInTeam++)
+                                for (int nrInTeam = 1; nrInTeam <= aantalSpelersPerTerreinPerTeam[$"{terrein},{team}"]; nrInTeam++)
                                 {
                                     int s = spelverdelingsInfo[$"{spelronde},{terrein},{team},{nrInTeam}"];
                                     smartDetailsDictionary[$"{spelronde},{s}"] = new smartDetails
@@ -237,12 +223,22 @@ namespace Petanque.Services.Services
                     }
                 }
             }
-            // STAP 4: INSERT in DB
+            // STAP 3: DELETE old Spel + Spelverdeling from DB
+            {
+                var oudeSpelIds = _context.Spels.Where(sp => sp.SpeeldagId == speeldagId).Select(sp => sp.SpelId).ToList();
+                var oudeSpelverdelingen = _context.Spelverdelings.Where(sv => oudeSpelIds.Contains(sv.SpelId ?? 0));
+                _context.Spelverdelings.RemoveRange(oudeSpelverdelingen);
+
+                var oudeSpellen = _context.Spels.Where(sp => sp.SpeeldagId == speeldagId);
+                _context.Spels.RemoveRange(oudeSpellen);
+                _context.SaveChanges(); // Commit delete
+            }
+            // STAP 4: INSERT content of (Dictionary) spelverdelingsInfo to DB
             {
                 var responses = new List<SpelverdelingResponseContract>();
-                for (spelronde = 1; spelronde <= aantalSpelrondes; spelronde++)
+                for (int spelronde = 1; spelronde <= aantalSpelrondes; spelronde++)
                 {
-                    for (terrein = 1; terrein <= aantalTerreinen; terrein++)
+                    for (int terrein = 1; terrein <= aantalGebruikteTerreinen; terrein++)
                     {
                         var spel = new Spel
                         {
@@ -257,7 +253,7 @@ namespace Petanque.Services.Services
 
                         foreach (char team in new List<char> { 'A', 'B' })
                         {
-                            for (nrInTeam = 1; nrInTeam <= aantalSpelersPerTerreinPerTeam[$"{terrein},{team}"]; nrInTeam++)
+                            for (int nrInTeam = 1; nrInTeam <= aantalSpelersPerTerreinPerTeam[$"{terrein},{team}"]; nrInTeam++)
                             {
                                 _context.Spelverdelings.Add(new Spelverdeling
                                 {
