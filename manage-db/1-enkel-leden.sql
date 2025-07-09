@@ -28,6 +28,7 @@ CREATE TABLE `Aanwezigheid` (
   `spelerId` int DEFAULT NULL,
   `spelerVolgnr` int NOT NULL,
   PRIMARY KEY (`aanwezigheidId`),
+  UNIQUE KEY `Aanwezigheid_uk` (`speeldagId`,`spelerVolgnr`),
   KEY `speeldagId` (`speeldagId`),
   KEY `spelerId` (`spelerId`),
   CONSTRAINT `Aanwezigheid_ibfk_1` FOREIGN KEY (`speeldagId`) REFERENCES `Speeldag` (`speeldagId`),
