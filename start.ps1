@@ -5,12 +5,12 @@ Set-Location $scriptDir
 Get-Process -Name "dotnet", "node" -ErrorAction SilentlyContinue | Sort-Object -Property Id -Descending | ForEach-Object {
     Write-Host "Het process '$($_.ProcessName)' (ID: $($_.Id)) van de vorige keer wordt gestopt"
     Stop-Process -Id $_.Id
-    Start-Sleep -Seconds 1
 }
+Start-Sleep -Seconds 2
 Get-Process -Name "dotnet", "node" -ErrorAction SilentlyContinue | Sort-Object -Property Id -Descending | ForEach-Object {
     Write-Host "Het process '$($_.ProcessName)' (ID: $($_.Id)) van de vorige keer wordt HARDHANDIG gestopt"
     Stop-Process -Id $_.Id -Force
-    Start-Sleep -Seconds 1
+    #Start-Sleep -Seconds 1
 }
 
 # Start dotnet run in a new PowerShell window

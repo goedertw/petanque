@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `aanwezigheid`
+-- Table structure for table `Aanwezigheid`
 --
 
-DROP TABLE IF EXISTS `aanwezigheid`;
+DROP TABLE IF EXISTS `Aanwezigheid`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `aanwezigheid` (
+CREATE TABLE `Aanwezigheid` (
   `aanwezigheidId` int NOT NULL AUTO_INCREMENT,
   `speeldagId` int DEFAULT NULL,
   `spelerId` int DEFAULT NULL,
@@ -30,29 +30,29 @@ CREATE TABLE `aanwezigheid` (
   PRIMARY KEY (`aanwezigheidId`),
   KEY `speeldagId` (`speeldagId`),
   KEY `spelerId` (`spelerId`),
-  CONSTRAINT `Aanwezigheid_ibfk_1` FOREIGN KEY (`speeldagId`) REFERENCES `speeldag` (`speeldagId`),
-  CONSTRAINT `Aanwezigheid_ibfk_2` FOREIGN KEY (`spelerId`) REFERENCES `speler` (`spelerId`)
+  CONSTRAINT `Aanwezigheid_ibfk_1` FOREIGN KEY (`speeldagId`) REFERENCES `Speeldag` (`speeldagId`),
+  CONSTRAINT `Aanwezigheid_ibfk_2` FOREIGN KEY (`spelerId`) REFERENCES `Speler` (`spelerId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `aanwezigheid`
+-- Dumping data for table `Aanwezigheid`
 --
 
-LOCK TABLES `aanwezigheid` WRITE;
-/*!40000 ALTER TABLE `aanwezigheid` DISABLE KEYS */;
-INSERT INTO `aanwezigheid` VALUES (1,1,22,1),(2,1,11,2),(3,1,14,3),(4,1,12,4),(5,1,8,5),(6,1,4,6),(7,1,7,7),(8,1,1,8),(9,1,15,9),(10,1,17,10),(11,1,16,11),(12,1,27,12),(13,1,18,13),(14,1,10,14),(15,1,9,15),(16,1,25,16),(17,1,19,17),(18,1,21,18),(19,1,6,19),(20,1,26,20),(21,1,20,21),(22,1,24,22),(23,1,2,23),(26,1,13,24);
-/*!40000 ALTER TABLE `aanwezigheid` ENABLE KEYS */;
+LOCK TABLES `Aanwezigheid` WRITE;
+/*!40000 ALTER TABLE `Aanwezigheid` DISABLE KEYS */;
+INSERT INTO `Aanwezigheid` VALUES (1,1,22,1),(2,1,11,2),(3,1,14,3),(4,1,12,4),(5,1,8,5),(6,1,4,6),(7,1,7,7),(8,1,1,8),(9,1,15,9),(10,1,17,10),(11,1,16,11),(12,1,27,12),(13,1,18,13),(14,1,10,14),(15,1,9,15),(16,1,25,16),(17,1,19,17),(18,1,21,18),(19,1,6,19),(20,1,26,20),(21,1,20,21),(22,1,24,22),(23,1,2,23),(26,1,13,24);
+/*!40000 ALTER TABLE `Aanwezigheid` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `dagklassement`
+-- Table structure for table `Dagklassement`
 --
 
-DROP TABLE IF EXISTS `dagklassement`;
+DROP TABLE IF EXISTS `Dagklassement`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `dagklassement` (
+CREATE TABLE `Dagklassement` (
   `dagklassementId` int NOT NULL AUTO_INCREMENT,
   `speeldagId` int DEFAULT NULL,
   `spelerId` int DEFAULT NULL,
@@ -61,28 +61,28 @@ CREATE TABLE `dagklassement` (
   PRIMARY KEY (`dagklassementId`),
   KEY `speeldagId` (`speeldagId`),
   KEY `spelerId` (`spelerId`),
-  CONSTRAINT `Dagklassement_ibfk_1` FOREIGN KEY (`speeldagId`) REFERENCES `speeldag` (`speeldagId`),
-  CONSTRAINT `Dagklassement_ibfk_2` FOREIGN KEY (`spelerId`) REFERENCES `speler` (`spelerId`)
+  CONSTRAINT `Dagklassement_ibfk_1` FOREIGN KEY (`speeldagId`) REFERENCES `Speeldag` (`speeldagId`),
+  CONSTRAINT `Dagklassement_ibfk_2` FOREIGN KEY (`spelerId`) REFERENCES `Speler` (`spelerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `dagklassement`
+-- Dumping data for table `Dagklassement`
 --
 
-LOCK TABLES `dagklassement` WRITE;
-/*!40000 ALTER TABLE `dagklassement` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dagklassement` ENABLE KEYS */;
+LOCK TABLES `Dagklassement` WRITE;
+/*!40000 ALTER TABLE `Dagklassement` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Dagklassement` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `seizoen`
+-- Table structure for table `Seizoen`
 --
 
-DROP TABLE IF EXISTS `seizoen`;
+DROP TABLE IF EXISTS `Seizoen`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `seizoen` (
+CREATE TABLE `Seizoen` (
   `seizoensId` int NOT NULL AUTO_INCREMENT,
   `startdatum` date NOT NULL,
   `einddatum` date NOT NULL,
@@ -91,23 +91,23 @@ CREATE TABLE `seizoen` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `seizoen`
+-- Dumping data for table `Seizoen`
 --
 
-LOCK TABLES `seizoen` WRITE;
-/*!40000 ALTER TABLE `seizoen` DISABLE KEYS */;
-INSERT INTO `seizoen` VALUES (1,'2025-01-01','2025-12-31');
-/*!40000 ALTER TABLE `seizoen` ENABLE KEYS */;
+LOCK TABLES `Seizoen` WRITE;
+/*!40000 ALTER TABLE `Seizoen` DISABLE KEYS */;
+INSERT INTO `Seizoen` VALUES (1,'2025-01-01','2025-12-31');
+/*!40000 ALTER TABLE `Seizoen` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `seizoensklassement`
+-- Table structure for table `Seizoensklassement`
 --
 
-DROP TABLE IF EXISTS `seizoensklassement`;
+DROP TABLE IF EXISTS `Seizoensklassement`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `seizoensklassement` (
+CREATE TABLE `Seizoensklassement` (
   `seizoensklassementId` int NOT NULL AUTO_INCREMENT,
   `spelerId` int DEFAULT NULL,
   `seizoensId` int DEFAULT NULL,
@@ -116,55 +116,55 @@ CREATE TABLE `seizoensklassement` (
   PRIMARY KEY (`seizoensklassementId`),
   KEY `spelerId` (`spelerId`),
   KEY `seizoensId` (`seizoensId`),
-  CONSTRAINT `Seizoensklassement_ibfk_1` FOREIGN KEY (`spelerId`) REFERENCES `speler` (`spelerId`),
-  CONSTRAINT `Seizoensklassement_ibfk_2` FOREIGN KEY (`seizoensId`) REFERENCES `seizoen` (`seizoensId`)
+  CONSTRAINT `Seizoensklassement_ibfk_1` FOREIGN KEY (`spelerId`) REFERENCES `Speler` (`spelerId`),
+  CONSTRAINT `Seizoensklassement_ibfk_2` FOREIGN KEY (`seizoensId`) REFERENCES `Seizoen` (`seizoensId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `seizoensklassement`
+-- Dumping data for table `Seizoensklassement`
 --
 
-LOCK TABLES `seizoensklassement` WRITE;
-/*!40000 ALTER TABLE `seizoensklassement` DISABLE KEYS */;
-/*!40000 ALTER TABLE `seizoensklassement` ENABLE KEYS */;
+LOCK TABLES `Seizoensklassement` WRITE;
+/*!40000 ALTER TABLE `Seizoensklassement` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Seizoensklassement` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `speeldag`
+-- Table structure for table `Speeldag`
 --
 
-DROP TABLE IF EXISTS `speeldag`;
+DROP TABLE IF EXISTS `Speeldag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `speeldag` (
+CREATE TABLE `Speeldag` (
   `speeldagId` int NOT NULL AUTO_INCREMENT,
   `datum` date NOT NULL,
   `seizoensId` int DEFAULT NULL,
   PRIMARY KEY (`speeldagId`),
   KEY `seizoensId` (`seizoensId`),
-  CONSTRAINT `Speeldag_ibfk_1` FOREIGN KEY (`seizoensId`) REFERENCES `seizoen` (`seizoensId`)
+  CONSTRAINT `Speeldag_ibfk_1` FOREIGN KEY (`seizoensId`) REFERENCES `Seizoen` (`seizoensId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `speeldag`
+-- Dumping data for table `Speeldag`
 --
 
-LOCK TABLES `speeldag` WRITE;
-/*!40000 ALTER TABLE `speeldag` DISABLE KEYS */;
-INSERT INTO `speeldag` VALUES (1,'2025-07-01',1);
-/*!40000 ALTER TABLE `speeldag` ENABLE KEYS */;
+LOCK TABLES `Speeldag` WRITE;
+/*!40000 ALTER TABLE `Speeldag` DISABLE KEYS */;
+INSERT INTO `Speeldag` VALUES (1,'2025-07-01',1);
+/*!40000 ALTER TABLE `Speeldag` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `spel`
+-- Table structure for table `Spel`
 --
 
-DROP TABLE IF EXISTS `spel`;
+DROP TABLE IF EXISTS `Spel`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `spel` (
+CREATE TABLE `Spel` (
   `spelId` int NOT NULL AUTO_INCREMENT,
   `speeldagId` int DEFAULT NULL,
   `terrein` varchar(100) NOT NULL,
@@ -173,27 +173,27 @@ CREATE TABLE `spel` (
   `scoreB` int NOT NULL,
   PRIMARY KEY (`spelId`),
   KEY `speeldagId` (`speeldagId`),
-  CONSTRAINT `Spel_ibfk_1` FOREIGN KEY (`speeldagId`) REFERENCES `speeldag` (`speeldagId`)
+  CONSTRAINT `Spel_ibfk_1` FOREIGN KEY (`speeldagId`) REFERENCES `Speeldag` (`speeldagId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `spel`
+-- Dumping data for table `Spel`
 --
 
-LOCK TABLES `spel` WRITE;
-/*!40000 ALTER TABLE `spel` DISABLE KEYS */;
-/*!40000 ALTER TABLE `spel` ENABLE KEYS */;
+LOCK TABLES `Spel` WRITE;
+/*!40000 ALTER TABLE `Spel` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Spel` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `speler`
+-- Table structure for table `Speler`
 --
 
-DROP TABLE IF EXISTS `speler`;
+DROP TABLE IF EXISTS `Speler`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `speler` (
+CREATE TABLE `Speler` (
   `spelerId` int NOT NULL AUTO_INCREMENT,
   `voornaam` varchar(100) NOT NULL,
   `naam` varchar(100) NOT NULL,
@@ -202,23 +202,23 @@ CREATE TABLE `speler` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `speler`
+-- Dumping data for table `Speler`
 --
 
-LOCK TABLES `speler` WRITE;
-/*!40000 ALTER TABLE `speler` DISABLE KEYS */;
-INSERT INTO `speler` VALUES (1,'Jan','Jansen'),(2,'Pieter','Pietersen'),(3,'Sophie','Vermeulen'),(4,'Emma','De Vries'),(5,'Seba','Achternaam'),(6,'Nicolas','Nikolaas'),(7,'Friet','Mayonaise'),(8,'Bob','Hanseeeeeeeeeenss'),(9,'Marilou','Vansteeberge'),(10,'Lentel','Opsomer'),(11,'Artjom','zijn zus'),(12,'Bakker','Sam'),(13,'Stephanie','Degrote'),(14,'Artjom','Van de Velde'),(15,'Jarne','Vercruysse'),(16,'Jorden','Rommens'),(17,'jelle','vd'),(18,'kesti','vos'),(19,'mika','dehaese'),(20,'Noah','B'),(21,'Nathan','Heeeeeeensens'),(22,'Anne','DM'),(23,'Test','Test'),(24,'oma','christine'),(25,'meneer','goedertier'),(26,'Nieuwe','Naam'),(27,'kasper','krapes');
-/*!40000 ALTER TABLE `speler` ENABLE KEYS */;
+LOCK TABLES `Speler` WRITE;
+/*!40000 ALTER TABLE `Speler` DISABLE KEYS */;
+INSERT INTO `Speler` VALUES (1,'Jan','Jansen'),(2,'Pieter','Pietersen'),(3,'Sophie','Vermeulen'),(4,'Emma','De Vries'),(5,'Seba','Achternaam'),(6,'Nicolas','Nikolaas'),(7,'Friet','Mayonaise'),(8,'Bob','Hanseeeeeeeeeenss'),(9,'Marilou','Vansteeberge'),(10,'Lentel','Opsomer'),(11,'Artjom','zijn zus'),(12,'Bakker','Sam'),(13,'Stephanie','Degrote'),(14,'Artjom','Van de Velde'),(15,'Jarne','Vercruysse'),(16,'Jorden','Rommens'),(17,'jelle','vd'),(18,'kesti','vos'),(19,'mika','dehaese'),(20,'Noah','B'),(21,'Nathan','Heeeeeeensens'),(22,'Anne','DM'),(23,'Test','Test'),(24,'oma','christine'),(25,'meneer','goedertier'),(26,'Nieuwe','Naam'),(27,'kasper','krapes');
+/*!40000 ALTER TABLE `Speler` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `spelverdeling`
+-- Table structure for table `Spelverdeling`
 --
 
-DROP TABLE IF EXISTS `spelverdeling`;
+DROP TABLE IF EXISTS `Spelverdeling`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `spelverdeling` (
+CREATE TABLE `Spelverdeling` (
   `spelverdelingsId` int NOT NULL AUTO_INCREMENT,
   `spelId` int DEFAULT NULL,
   `team` varchar(50) NOT NULL,
@@ -228,18 +228,18 @@ CREATE TABLE `spelverdeling` (
   PRIMARY KEY (`spelverdelingsId`),
   KEY `FK_Spelverdeling_Speler` (`SpelerId`),
   KEY `FK_Spelverdeling_Spel` (`spelId`),
-  CONSTRAINT `FK_Spelverdeling_Spel` FOREIGN KEY (`spelId`) REFERENCES `spel` (`spelId`),
-  CONSTRAINT `FK_Spelverdeling_Speler` FOREIGN KEY (`SpelerId`) REFERENCES `speler` (`spelerId`)
+  CONSTRAINT `FK_Spelverdeling_Spel` FOREIGN KEY (`spelId`) REFERENCES `Spel` (`spelId`),
+  CONSTRAINT `FK_Spelverdeling_Speler` FOREIGN KEY (`SpelerId`) REFERENCES `Speler` (`spelerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `spelverdeling`
+-- Dumping data for table `Spelverdeling`
 --
 
-LOCK TABLES `spelverdeling` WRITE;
-/*!40000 ALTER TABLE `spelverdeling` DISABLE KEYS */;
-/*!40000 ALTER TABLE `spelverdeling` ENABLE KEYS */;
+LOCK TABLES `Spelverdeling` WRITE;
+/*!40000 ALTER TABLE `Spelverdeling` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Spelverdeling` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
