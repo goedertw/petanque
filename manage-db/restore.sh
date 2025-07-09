@@ -9,9 +9,13 @@ usage () {
     exit 1
 }
 
+# TODO: Add check in case the 2 arguments are switched by accident
+# 	Check if sql-file looks like an sql-file
+# 	Check if the cfg-file looks like a cfg-file
+
 cleanup_and_abort () {
     if (( $debug == 1 )); then echo exitcode=$exitcode; fi
-    rm -f $tmpcfgfile $tmperrfile
+    if (( $debug != 1 )); then rm -f $tmpcfgfile $tmperrfile; fi
     echo "... Aborting!"; echo; exit 1
 }
 
