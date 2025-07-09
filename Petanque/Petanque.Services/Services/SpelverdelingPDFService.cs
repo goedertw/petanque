@@ -91,7 +91,7 @@ namespace Petanque.Services.Services
                                             foreach (var speler in teamA)
                                             {
                                                 var naam = speler.Speler != null
-                                                    ? $"{speler.Speler.Voornaam} {speler.Speler.Naam}"
+                                                    ? $"{speler.SpelerVolgnr}. {speler.Speler.Voornaam} {speler.Speler.Naam}"
                                                     : $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
                                                 teamCol.Item().Text(naam);
                                             }
@@ -101,13 +101,14 @@ namespace Petanque.Services.Services
                                             {
                                                 for (int i = 0; i < 13; i++)
                                                 {
-                                                    scoreRow.ConstantItem(12)
-                                                        .Height(12)
+                                                    scoreRow.ConstantItem(18)
+                                                        .Height(18)
                                                         .Border(1)
                                                         .PaddingRight(2);
                                                 }
                                             });
-                                            teamCol.Item().PaddingTop(10).Text("Punten Team A:");
+                                            teamCol.Item().PaddingTop(1).Text("  1   2    3    4   5    6   7    8    9  10  11 12 13");
+                                            teamCol.Item().PaddingTop(5).Text("Punten Team A:");
 
                                         });
 
@@ -123,7 +124,7 @@ namespace Petanque.Services.Services
                                             foreach (var speler in teamB)
                                             {
                                                 var naam = speler.Speler != null
-                                                    ? $"{speler.Speler.Voornaam} {speler.Speler.Naam}"
+                                                    ? $"{speler.SpelerVolgnr}. {speler.Speler.Voornaam} {speler.Speler.Naam}"
                                                     : $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
                                                 teamCol.Item().Text(naam);
                                             }
@@ -133,20 +134,21 @@ namespace Petanque.Services.Services
                                             {
                                                 for (int i = 0; i < 13; i++)
                                                 {
-                                                    scoreRow.ConstantItem(12)
-                                                        .Height(12)
+                                                    scoreRow.ConstantItem(18)
+                                                        .Height(18)
                                                         .Border(1)
                                                         .PaddingRight(2);
                                                 }
                                             });
-                                            teamCol.Item().PaddingTop(10).Text("Punten Team B:");
+                                            teamCol.Item().PaddingTop(1).Text("  1   2    3    4   5    6   7    8    9  10  11 12 13");
+                                            teamCol.Item().PaddingTop(5).Text("Punten Team B:");
 
                                         });
                                     });
                                 });
                             }
 
-                            if (terreinGroup != spellenPerTerrein.Last())
+                            if (terreinGroup.Key != spellenPerTerrein.Last().Key)
                             {
                                 col.Item().PageBreak();
                             }

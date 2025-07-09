@@ -52,7 +52,7 @@ namespace Petanque.Services
                     Score = dagKlassement?.PlusMinPunten ?? 0,
                     Hoofdpunten = dagKlassement?.Hoofdpunten ?? 0
                 };
-            }).OrderByDescending(s => s.Hoofdpunten).ToList();
+            }).OrderByDescending(s => s.Hoofdpunten).ThenByDescending(s => s.Score).ToList();
 
             var memoryStream = new MemoryStream();
 
@@ -70,7 +70,7 @@ namespace Petanque.Services
 
                         col.Item().Element(e => e
                             .PaddingBottom(2)
-                            .Text($"VL@S Speeldag – {datumFormatted}")
+                            .Text($"VL@S - Dagklassement - {datumFormatted}")
                             .FontSize(14)
                             .Bold()
                             .AlignCenter());
