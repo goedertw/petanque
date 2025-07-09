@@ -106,7 +106,7 @@ function SpelerPagina() {
 
     return (
         <div className="min-h-screen flex justify-center items-start bg-[#f7f7f7]">
-            <div className="max-w-3xl w-full p-0">
+            <div className="max-w-3xl p-0">
                 <div className="max-w-3xl mx-auto p-0">
                     <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-6 text-center">
                         Leden
@@ -121,14 +121,14 @@ function SpelerPagina() {
                                 placeholder="Voornaam"
                                 value={newVoornaam}
                                 onChange={(e) => setNewVoornaam(e.target.value)}
-                                className="border border-[#74747c] p-2 rounded w-full"
+                                className="border border-[#74747c] p-2 rounded max-w-sm"
                             />
                             <input
                                 type="text"
                                 placeholder="Naam"
                                 value={newNaam}
                                 onChange={(e) => setNewNaam(e.target.value)}
-                                className="border border-[#74747c] p-2 rounded w-full"
+                                className="border border-[#74747c] p-2 rounded max-w-sm"
                             />
                         </div>
                         <button
@@ -164,7 +164,7 @@ function SpelerPagina() {
                                     key={speler.spelerId}
                                     className="py-0 px-3 m-2 bg-[#fbd46d] rounded-lg shadow flex justify-between items-center"
                                 >
-                                    <p className="font-semibold text-[#44444c]">
+                                    <p className="font-semibold text-[#44444c] text-xl">
                                         {speler.voornaam} {speler.naam}
                                     </p>
                                     <button

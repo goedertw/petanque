@@ -208,8 +208,8 @@ function Aanwezigheidspagina() {
     };
 
     return (
-        <div className="p-0">
-            <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-6 text-center">
+        <div className="max-w-3xl place-self-center p-0">
+            <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-6 text-center w">
                 Aanwezigheden
             </h2>
 
@@ -223,8 +223,8 @@ function Aanwezigheidspagina() {
                 />
             )}
 
-            <div className="overflow-x-auto overflow-y-auto border rounded-2xl shadow-md">
-                <table className="min-w-full text-left text-sm">
+            <div className="overflow-x-auto overflow-y-auto border rounded-2xl shadow-md w-fit place-self-center">
+                <table className="text-left text-xl">
                     <thead className="bg-[#3c444c] text-white sticky top-0">
                     <tr>
                         <th
