@@ -124,8 +124,10 @@ function Aanwezigheidspagina() {
 
         if (spelerAanwezig) return;
 
-        const spelerVolgnr =
-            aanwezigheden.filter((a) => a.speeldagId === selectedSpeeldag.speeldagId).length + 1;
+        const spelerVolgnr = Math.max( 0, ...aanwezigheden
+                    .filter((a) => a.speeldagId === selectedSpeeldag.speeldagId)
+                    .map((a) => a.spelerVolgnr)
+            ) + 1;
 
         const nieuweAanwezigheid: Omit<Aanwezigheid, "aanwezigheidId"> = {
             speeldagId: selectedSpeeldag.speeldagId,
@@ -202,14 +204,14 @@ function Aanwezigheidspagina() {
 
     const formatDateToDutch = (dateString: string): string => {
         const date = new Date(dateString);
-        return ` speeldag: ${date.getDate()} ${date.toLocaleDateString("nl-NL", { month: "long" })}`;
+        return `Huidige speeldag: ${date.toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "long", year: "numeric" })}`;
     };
 
     return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold text-white bg-[#3c444c] p-4 rounded-2xl shadow mb-6 text-center">
-                Overzicht Aanwezigheden
-            </h1>
+        <div className="p-0">
+            <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-6 text-center">
+                Aanwezigheden
+            </h2>
 
             {speeldagen.length > 0 && selectedSpeeldag && (
                 <Kalender
@@ -219,17 +221,6 @@ function Aanwezigheidspagina() {
                     showCalendar={showCalendar}
                     onToggleCalendar={handleToggleCalendar}
                 />
-            )}
-
-            {selectedSpeeldag !== null && (
-                <div className="text-black-800 text-xl font-bold italic mt-1 text-center">
-                    {
-                        formatDateToDutch(
-                            speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
-
-                        )
-                    }
-                </div>
             )}
 
             <div className="overflow-x-auto max-h-[600px] overflow-y-auto border rounded-2xl shadow-md">
@@ -289,7 +280,7 @@ function Aanwezigheidspagina() {
                                             className={`inline-block px-3 py-1 rounded-full text-white text-xs font-semibold
                                 ${isAanwezig ? 'bg-green-500' : 'bg-red-500'}`}
                                         >
-                                            {isAanwezig ? 'Aanwezig' : 'Afwezig'}
+                                            {isAanwezig ? 'Volgnr '+spelerAanwezig.spelerVolgnr : 'Afwezig'}
                                         </div>
                                     </div>
                                 </td>

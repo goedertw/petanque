@@ -102,9 +102,9 @@ function Dagklassementpagina() {
     };
 
     return (
-        <div className="p-4 max-w-3xl mx-auto">
-            <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6">
-                Dagklassementen
+        <div className="p-0 max-w-3xl mx-auto">
+            <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-2 rounded-2xl shadow-lg mb-6">
+                Dagklassement
             </h1>
 
             {speeldagen.length > 0 && (
@@ -117,29 +117,15 @@ function Dagklassementpagina() {
                 />
             )}
 
-            {selectedSpeeldag !== null && (
-                <div className="text-black-800 text-xl font-bold italic mt-1 text-center">
-                    {
-                        formatDateToDutch(
-                            speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
-                        )
-                    }
-                </div>
-            )}
-
             <button
                 onClick={fetchPdf}
-                className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer mt-4 block mx-auto"
+                className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer mt-0 block mx-auto"
             >
                 (her)genereer PDF
             </button>
 
             {pdfUrl && selectedSpeeldag && (
                 <div className="mt-6">
-                    <h2 className="text-lg font-medium mb-2 text-center">
-                        Dagklassement voor {formatDate(selectedSpeeldag.datum)}
-                    </h2>
-
                     <iframe
                         src={pdfUrl}
                         width="100%"

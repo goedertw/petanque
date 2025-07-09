@@ -32,7 +32,7 @@ function Header() {
                         <img
                             src={vlasLogo}
                             alt="VL@S Logo"
-                            className="h-16"
+                            className="h-10"
                         />
                         <h2 className="text-[#3c444c] text-xl font-bold mt-2">Petanque</h2>
                     </div>
@@ -54,7 +54,7 @@ function Header() {
                         <button onClick={() => handleNavigation('/')} className={navButtonClass}>Home</button>
                         <button onClick={() => handleNavigation('/leden')} className={navButtonClass}>Leden</button>
                         <button onClick={() => handleNavigation('/aanwezigheden')} className={navButtonClass}>Aanwezigheden</button>
-                        <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdelingen</button>
+                        <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdeling</button>
                         <button onClick={() => handleNavigation('/scorebladeren')} className={navButtonClass}>Scores</button>
                         <button onClick={() => handleNavigation('/klassement')} className={navButtonClass}>Klassementen</button>
                     </nav>
@@ -66,9 +66,9 @@ function Header() {
                         <button onClick={() => handleNavigation('/')} className={navButtonClass}>Home</button>
                         <button onClick={() => handleNavigation('/leden')} className={navButtonClass}>Leden</button>
                         <button onClick={() => handleNavigation('/aanwezigheden')} className={navButtonClass}>Aanwezigheden</button>
-                        <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdelingen</button>
+                        <button onClick={() => handleNavigation('/spelverdeling')} className={navButtonClass}>Spelverdeling</button>
                         <button onClick={() => handleNavigation('/scorebladeren')} className={navButtonClass}>Scores</button>
-                        <button onClick={() => handleNavigation('/dagklassement')} className={navButtonClass}>Dagklassementen</button>
+                        <button onClick={() => handleNavigation('/dagklassement')} className={navButtonClass}>Klassementen</button>
                     </div>
                 )}
             </header>

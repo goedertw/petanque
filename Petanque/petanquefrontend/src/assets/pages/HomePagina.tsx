@@ -167,22 +167,16 @@ function HomePagina() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-16 text-gray-800 px-4">
-            <div className="max-w-xl w-full text-center bg-white border border-[#fbd46d] shadow-lg rounded-2xl p-10">
-                <h1 className="text-4xl font-bold text-[#3c444c] mb-6">
-                    Welkom bij de <span className="text-[#fbd46d]">VL@S Petanque</span> App
-                </h1>
-                <p className="text-lg leading-relaxed">
-                    Gebruik het menu hierboven om spellen te starten, scores in te voeren, klassementen te bekijken, aanwezigheden op te nemen en meer.
-                    <br/>Hieronder kan je een nieuwe seizoen en speeldagen aanmaken.
-                </p>
-            </div>
-            <h2 className="text-center text-2xl font-bold text-[#3c444c] mt-8 mb-2">
+            <div className="p-0">
+                <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-6 text-center">
+                    Home
+                </h2>
+            <h2 className="text-2xl font-bold text-[#3c444c] mt-8 mb-2">
                 Seizoen toevoegen:
             </h2>
             <button
                 onClick={() => setShowCreateSeizoenForm(!showCreateSeizoenForm)}
-                className="mt-6 mb-4 bg-[#ccac4c] bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
+                className="mt-0 mb-2 bg-[#ccac4c] bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer"
             >
                 {showCreateSeizoenForm ? "Verberg Seizoen Toevoegen" : "Voeg Seizoen Toe"}
             </button>
@@ -248,7 +242,7 @@ function HomePagina() {
                 </div>
             )}
 
-            <h2 className="text-center text-2xl font-bold text-[#3c444c] mt-8 mb-2">
+            <h2 className="text-2xl font-bold text-[#3c444c] mt-8 mb-2">
                 Speeldagen toevoegen / selecteren:
             </h2>
 
@@ -285,6 +279,16 @@ function HomePagina() {
                     </div>
                 </div>
             )}
+                <div className="max-w-xl w-full text-center bg-white border border-[#fbd46d] shadow-lg rounded-2xl p-10">
+                    <h1 className="text-4xl font-bold text-[#3c444c] mb-6">
+                        Welkom bij de <span className="text-[#fbd46d]">VL@S Petanque</span> App
+                    </h1>
+                    <p className="text-lg leading-relaxed">
+                    Hier kan je een nieuwe seizoenen en speeldagen aanmaken.
+                    <br />
+                    Gebruik het menu helemaal bovenaan om spellen te starten, scores in te voeren, klassementen te bekijken, aanwezigheden op te nemen en meer.
+                    </p>
+                </div>
         </div>
     );
 }

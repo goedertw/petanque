@@ -105,10 +105,10 @@ function Spelverdeling() {
     };
 
     return (
-        <div className="p-4 max-w-3xl mx-auto flex flex-col items-center">
-            <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg mb-6 w-full">
-                Spelverdelingen
-            </h1>
+        <div className="p-0">
+            <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-6 text-center">
+                Spelverdeling
+            </h2>
 
             <Kalender
                 speeldagen={speeldagen}
@@ -118,24 +118,12 @@ function Spelverdeling() {
                 onToggleCalendar={handleToggleCalendar}
             />
 
-            {selectedSpeeldag && (
-                <div className="text-black-800 text-xl font-bold italic mt-1 text-center">
-                    {formatDateToDutch(
-                        speeldagen.find((dag) => dag.speeldagId === selectedSpeeldag.speeldagId)?.datum ?? ""
-                    )}
-                </div>
-            )}
-
             {pdfBlobUrl && selectedSpeeldag && (
-                <div className="mt-6 w-full">
-                    <h2 className="text-lg font-medium mb-2 text-center">
-                        Spelverdeling voor {formatDate(selectedSpeeldag.datum)}
-                    </h2>
-
+                <div className="mt-0 w-full">
                     <iframe
                         src={pdfBlobUrl}
                         width="100%"
-                        height="600px"
+                        height="1000px"
                         title="Spelverdeling PDF"
                         className="border rounded mb-4"
                     ></iframe>

@@ -102,7 +102,7 @@ function Scorebladpagina() {
                     const terreinLabel = entry.spel.terrein.trim();
                     const spelId = entry.spel.spelId;
                     const teamKey = entry.team === "Team A" ? "teamA" : "teamB";
-                    const spelerNaam = `${entry.speler.spelerId} ${entry.speler.voornaam} ${entry.speler.naam}`;
+                    const spelerNaam = `${entry.spelerVolgnr}. ${entry.speler.voornaam} ${entry.speler.naam}`;
 
                     if (!terreinMap[terreinLabel]) {
                         terreinMap[terreinLabel] = {};
@@ -210,17 +210,11 @@ function Scorebladpagina() {
 
 
     return (
-        <div className="p-6 max-w-6xl mx-auto text-sm">
-            <div className="mb-4">
-                <h1 className="text-xl font-bold text-center text-[#f7f7f7] bg-[#3c444c] p-4 rounded-2xl shadow-lg">
-                    VL@S - Scores
-                </h1>
-
-                {selectedSpeeldag !== null && (
-                    <div className="text-black-800 text-xl font-bold italic mt-4 text-center">
-                        {formatDateToDutch(selectedSpeeldag.datum)}
-                    </div>
-                )}
+        <div className="max-w-6xl">
+            <div className="mb-0">
+                <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-6 text-center">
+                    Scores
+                </h2>
 
                 <Kalender
                     speeldagen={speeldagen}
@@ -236,7 +230,7 @@ function Scorebladpagina() {
             </div>
 
             {Object.entries(gamesPerTerrein).map(([terrein, games]) => (
-                <div key={terrein} className="mb-10">
+                <div key={terrein} className="mb-0">
                     <h2 className="text-lg font-bold mb-2 bg-[#fbd46d] text-[#3c444c] px-4 py-2 rounded-lg shadow">
                         {terrein.toUpperCase()}
                     </h2>
@@ -314,7 +308,7 @@ function Scorebladpagina() {
 
             <button
                 onClick={handleSave}
-                className="bg-[#3c444c] text-white px-4 py-2 rounded hover:bg-[#2f373f] transition cursor-pointer mt-6"
+                className="bg-[#3c444c] text-white px-4 py-2 rounded hover:bg-[#2f373f] transition cursor-pointer mt-0"
             >
                 Opslaan
             </button>
