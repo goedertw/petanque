@@ -2,7 +2,7 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $scriptDir
 
 Write-Host ""
-Read-Host -Prompt "Druk op ENTER om de update te starten..."
+Write-Host "De update wordt gestart..."
 Write-Host ""
 
 git pull

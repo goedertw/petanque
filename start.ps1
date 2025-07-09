@@ -13,6 +13,14 @@ Get-Process -Name "dotnet", "node" -ErrorAction SilentlyContinue | Sort-Object -
     #Start-Sleep -Seconds 1
 }
 
+# Dump DB
+Write-Host "De databank wordt gebackupt..."
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+Set-Location $scriptDir
+Set-Location manage-db
+.\backup.ps1 .\mysql.cfg.local
+Set-Location ..
+
 # Start dotnet run in a new PowerShell window
 Write-Host "De 'backend' (dotnet api) wordt gestart..."
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"

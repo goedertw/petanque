@@ -12,6 +12,13 @@ Get-Process -Name "dotnet", "node" -ErrorAction SilentlyContinue | Sort-Object -
     Stop-Process -Id $_.Id -Force
     #Start-Sleep -Seconds 1
 }
+Write-Host "De databank wordt gebackupt..."
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+Set-Location $scriptDir
+Set-Location manage-db
+.\backup.ps1 .\mysql.cfg.local
+Set-Location ..
+
 Write-Host "Klaar!"
 Start-Sleep -Seconds 3
 
