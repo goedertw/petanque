@@ -155,14 +155,14 @@ function SpelerPagina() {
                     {error && <p className="text-red-600 font-semibold mb-4">Error: {error}</p>}
 
                     {/* Spelers lijst */}
-                    <ul className="space-y-4 max-h-96 overflow-y-auto">
+                    <ul className="space-y-4 overflow-y-auto">
                         {filteredSpelers.length === 0 ? (
                             <p className="text-center text-gray-500">Geen spelers gevonden</p>
                         ) : (
                             filteredSpelers.map(speler => (
                                 <li
                                     key={speler.spelerId}
-                                    className="p-4 bg-[#fbd46d] rounded-lg shadow flex justify-between items-center"
+                                    className="py-0 px-3 m-2 bg-[#fbd46d] rounded-lg shadow flex justify-between items-center"
                                 >
                                     <p className="font-semibold text-[#44444c]">
                                         {speler.voornaam} {speler.naam}

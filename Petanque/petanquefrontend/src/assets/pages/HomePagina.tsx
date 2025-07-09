@@ -34,6 +34,14 @@ function HomePagina() {
                 const response = await fetch(`${apiUrl}/speeldagen`);
                 const data = await response.json();
                 setSpeeldagen(data);
+
+                const savedSpeeldagId = localStorage.getItem('speeldagId');
+                if (savedSpeeldagId) {
+                    const foundSpeeldag = data.find((dag) => dag.speeldagId.toString() === savedSpeeldagId);
+                    if (foundSpeeldag) {
+                        setSelectedSpeeldag(foundSpeeldag);
+                    }
+                }
             } catch (error) {
                 console.error("Fout bij ophalen van speeldagen:", error);
             }
@@ -55,6 +63,8 @@ function HomePagina() {
 
     const handleSelectSpeeldag = (speeldag: Speeldag) => {
         setSelectedSpeeldag(speeldag);
+        localStorage.setItem('speeldagId', speeldag.speeldagId.toString());
+        setShowCalendar(false);
     };
 
     const handleToggleCalendar = () => {
@@ -284,9 +294,9 @@ function HomePagina() {
                         Welkom bij de <span className="text-[#fbd46d]">VL@S Petanque</span> App
                     </h1>
                     <p className="text-lg leading-relaxed">
-                    Hier kan je een nieuwe seizoenen en speeldagen aanmaken.
+                    Hier kan je nieuwe seizoenen en speeldagen aanmaken.
                     <br />
-                    Gebruik het menu helemaal bovenaan om spellen te starten, scores in te voeren, klassementen te bekijken, aanwezigheden op te nemen en meer.
+                    Gebruik het menu helemaal bovenaan om leden toe te voegen, aanwezigheden op te nemen, spelverdelingen te maken, scores in te voeren en klassementen te bekijken.
                     </p>
                 </div>
         </div>

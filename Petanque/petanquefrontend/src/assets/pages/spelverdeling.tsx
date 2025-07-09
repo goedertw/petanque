@@ -68,17 +68,24 @@ function Spelverdeling() {
         setSelectedSpeeldag(speeldag);
         localStorage.setItem('speeldagId', speeldag.speeldagId.toString());
         setShowCalendar(false);
+    };
+
+    const maakSpelverdeling = async () => {
+        if (!selectedSpeeldag) {
+            alert("Selecteer eerst een speeldag");
+        }
         setPdfBlobUrl(null); // reset tonen oude PDF
 
         try {
-            const response = await fetch(`${apiUrl}/spelverdelingen/${speeldag.speeldagId}`, {
+            const response = await fetch(`${apiUrl}/spelverdelingen/${selectedSpeeldag.speeldagId}`, {
                 method: "POST",
             });
             if (!response.ok) {
                 const errMsg = await response.text();
                 throw new Error(errMsg);
             }
-            alert("Spelverdeling aangemaakt!");
+            //alert("Spelverdeling aangemaakt!");
+            fetchPdf(selectedSpeeldag.speeldagId);
         } catch (error) {
             console.error("Fout bij aanmaken van spelverdeling:", error.message);
             alert(error.message);
@@ -105,8 +112,8 @@ function Spelverdeling() {
     };
 
     return (
-        <div className="p-0">
-            <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-6 text-center">
+        <div className="grid p-0">
+            <h2 className="text-3xl font-bold text-white bg-[#3c444c] p-2 rounded-2xl shadow mb-4 text-center">
                 Spelverdeling
             </h2>
 
@@ -118,8 +125,15 @@ function Spelverdeling() {
                 onToggleCalendar={handleToggleCalendar}
             />
 
+            <button
+                onClick={maakSpelverdeling}
+                className="bg-[#ccac4c] hover:bg-[#b8953d] text-white font-bold px-6 py-3 rounded-xl transition cursor-pointer mb-2 place-self-center"
+            >
+                (her)genereer Spelverdeling
+            </button>
+
             {pdfBlobUrl && selectedSpeeldag && (
-                <div className="mt-0 w-full">
+                <div className="m-0 p-0">
                     <iframe
                         src={pdfBlobUrl}
                         width="100%"
@@ -127,14 +141,6 @@ function Spelverdeling() {
                         title="Spelverdeling PDF"
                         className="border rounded mb-4"
                     ></iframe>
-
-                    <a
-                        href={pdfBlobUrl}
-                        download={`spelverdeling-speeldag-${selectedSpeeldag.speeldagId}.pdf`}
-                        className="bg-[#fbd46d] text-[#3c444c] font-bold py-2 px-4 rounded hover:bg-[#f7c84c] transition cursor-pointer block mx-auto w-auto"
-                    >
-                        Download PDF
-                    </a>
                 </div>
             )}
         </div>
