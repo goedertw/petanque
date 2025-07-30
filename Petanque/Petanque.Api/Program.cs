@@ -48,4 +48,9 @@ app.UseCors("AllowFrontend");
 app.MapControllers();
 app.UseHttpsRedirection();
 app.UseRouting();
+
+var dbcontext = new Id312896PetanqueContext();
+dbcontext.TestConnection();
+dbcontext.Migration1();
+
 app.Run();
