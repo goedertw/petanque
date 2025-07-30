@@ -18,7 +18,7 @@ public class SeizoensKlassementPDFService : ISeizoensKlassementPDFService
     {
          var klassementen = await _context.Seizoensklassements
                 .Where(sk => sk.SeizoensId == id)
-                .OrderByDescending(sk => sk.Hoofdpunten)
+                .OrderByDescending(sk => sk.Hoofdpunten).ThenByDescending(sk => sk.PlusMinPunten)
                 .ToListAsync();
 
             if (klassementen == null || !klassementen.Any())
