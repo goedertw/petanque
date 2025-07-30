@@ -135,6 +135,22 @@ namespace Petanque.Services.Services
             context.AddRange(entities);
             context.SaveChanges();
 
+            using var transaction = context.Database.BeginTransaction();
+            try
+            {
+                context.Dagklassements
+                    .Where(dk => dk.SpeeldagId == speeldagId)
+                    .ExecuteDelete();
+
+                context.AddRange(entities);
+                context.SaveChanges();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
             return dagKlassementen;
         }
 
