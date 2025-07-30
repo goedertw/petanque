@@ -15,7 +15,5 @@ public partial class Speler
 
     public virtual ICollection<Dagklassement> Dagklassements { get; set; } = new List<Dagklassement>();
 
-    public virtual ICollection<Seizoensklassement> Seizoensklassements { get; set; } = new List<Seizoensklassement>();
-
     public virtual ICollection<Spelverdeling> Spelverdelings { get; set; } = new List<Spelverdeling>();
 }

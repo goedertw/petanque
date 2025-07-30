@@ -73,27 +73,6 @@ CREATE TABLE `Seizoen` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Seizoensklassement`
---
-
-DROP TABLE IF EXISTS `Seizoensklassement`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Seizoensklassement` (
-  `seizoensklassementId` int NOT NULL AUTO_INCREMENT,
-  `spelerId` int DEFAULT NULL,
-  `seizoensId` int DEFAULT NULL,
-  `hoofdpunten` int NOT NULL,
-  `plus_min_punten` int NOT NULL,
-  PRIMARY KEY (`seizoensklassementId`),
-  KEY `spelerId` (`spelerId`),
-  KEY `seizoensId` (`seizoensId`),
-  CONSTRAINT `Seizoensklassement_ibfk_1` FOREIGN KEY (`spelerId`) REFERENCES `Speler` (`spelerId`),
-  CONSTRAINT `Seizoensklassement_ibfk_2` FOREIGN KEY (`seizoensId`) REFERENCES `Seizoen` (`seizoensId`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `Speeldag`
 --
 
@@ -167,6 +146,40 @@ CREATE TABLE `Spelverdeling` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Temporary view structure for view `vSeizoensklassement`
+--
+
+DROP TABLE IF EXISTS `vSeizoensklassement`;
+/*!50001 DROP VIEW IF EXISTS `vSeizoensklassement`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `vSeizoensklassement` AS SELECT
+ 1 AS `seizoensId`,
+ 1 AS `spelerId`,
+ 1 AS `spelerNaam`,
+ 1 AS `spelerVoornaam`,
+ 1 AS `hoofdpunten`,
+ 1 AS `plus_min_punten`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Final view structure for view `vSeizoensklassement`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vSeizoensklassement`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `vSeizoensklassement` AS select `s`.`seizoensId` AS `seizoensId`,`d`.`spelerId` AS `spelerId`,`s2`.`naam` AS `spelerNaam`,`s2`.`voornaam` AS `spelerVoornaam`,sum(`d`.`hoofdpunten`) AS `hoofdpunten`,sum(`d`.`plus_min_punten`) AS `plus_min_punten` from ((`Dagklassement` `d` join `Speeldag` `s` on((`d`.`speeldagId` = `s`.`speeldagId`))) join `Speler` `s2` on((`d`.`spelerId` = `s2`.`spelerId`))) group by `s`.`seizoensId`,`d`.`spelerId` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

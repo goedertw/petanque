@@ -17,7 +17,6 @@ public class SeizoensKlassementPDFService : ISeizoensKlassementPDFService
     public async Task<Stream> GenerateSeizoensKlassementPdfAsync(int id)
     {
          var klassementen = await _context.Seizoensklassements
-                .Include(sk => sk.Speler)
                 .Where(sk => sk.SeizoensId == id)
                 .OrderByDescending(sk => sk.Hoofdpunten)
                 .ToListAsync();
@@ -68,7 +67,7 @@ public class SeizoensKlassementPDFService : ISeizoensKlassementPDFService
                                 string background = isEvenRow ? Colors.Grey.Lighten4 : Colors.White;
 
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{item.Speler.Voornaam} {item.Speler.Naam}");
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{item.SpelerVoornaam} {item.SpelerNaam}");
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(item.Hoofdpunten.ToString());
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(item.PlusMinPunten.ToString());
 

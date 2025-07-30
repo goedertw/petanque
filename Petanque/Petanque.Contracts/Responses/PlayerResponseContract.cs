@@ -17,7 +17,5 @@ namespace Petanque.Contracts.Responses
         public virtual ICollection<AanwezigheidResponseContract> Aanwezigheids { get; set; } = new List<AanwezigheidResponseContract>();
 
         public virtual ICollection<DagKlassementResponseContract> Dagklassements { get; set; } = new List<DagKlassementResponseContract>();
-
-        public virtual ICollection<SeizoensKlassementResponseContract> Seizoensklassements { get; set; } = new List<SeizoensKlassementResponseContract>();
     }
 }
