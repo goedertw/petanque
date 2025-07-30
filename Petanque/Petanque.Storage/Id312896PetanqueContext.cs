@@ -32,9 +32,12 @@ public partial class Id312896PetanqueContext : DbContext
 
     public virtual DbSet<Spelverdeling> Spelverdelings { get; set; }
 
+    protected string _connString = "server=127.0.0.1;port=3306;database=petanque;user=root;password=root";
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=127.0.0.1;port=3306;database=petanque;user=root;password=root", Microsoft.EntityFrameworkCore.ServerVersion.AutoDetect("server=127.0.0.1;port=3306;database=petanque;user=root;password=root"));
+    {
+        optionsBuilder.UseMySql(_connString, Microsoft.EntityFrameworkCore.ServerVersion.AutoDetect(_connString));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -256,4 +259,61 @@ public partial class Id312896PetanqueContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    protected static void ErrorAndExit(string msg1,string msg2)
+    {
+        Console.WriteLine($@"
+*********
+* ERROR *
+*********
+{msg1}
+
+{msg2}
+
+Druk een toets om de backend af te sluiten...
+");
+        Console.ReadKey(true);
+        Environment.Exit(1);
+    }
+    public void TestConnection()
+    {
+        try
+        {
+            this.Database.ExecuteSqlRaw("SHOW DATABASES;");
+        }
+        catch (MySqlConnector.MySqlException ex)
+        {
+            ErrorAndExit(ex.Message, $"Zorg voor een MySQL-database met volgende connectie-details:\n{_connString}");
+        }
+
+        int cnt = this.Database.SqlQuery<string>($"SHOW TABLES").ToList().Count;
+        if (cnt == 0)
+        {
+            ErrorAndExit("Geen enkele tabel gevonden", "Initialiseer de Databank met bvb: cd manage-db; .\\restore.ps1 0-empty-db.sql mysql.cfg.local");
+        }
+        else if (cnt != 8)
+        {
+            ErrorAndExit($"{cnt} i.p.v. 8 tabellen gevonden", "Neem een backup van je Databank en probeer manueel te fixen!");
+        }
+    }
+    public void Migration1()
+    {
+        int cnt = this.Database.SqlQuery<string>($"SHOW FULL TABLES LIKE 'vSeizoensklassement';").ToList().Count;
+        if (cnt == 1) return; // Migration1 already done
+        if (cnt != 0) ErrorAndExit($"Onverwacht aantal voor tabel 'vSeizoensklassement' ({cnt})","Database lijkt corrupt.");
+
+        // Migration: Stap 1: verwijder dubbels uit dagklassement
+        Console.WriteLine("Dubbels worden verwijderd uit 'dagklassement'");
+        this.Database.ExecuteSqlRaw("DELETE FROM dagklassement" +
+            "WHERE dagklassementId NOT IN(SELECT max(dagklassementId) FROM dagklassement GROUP BY speeldagId, spelerId);");
+
+        // Migration: Stap 2: add VIEW vSeizoensklassement
+        Console.WriteLine("VIEW vSeizoensklassement wordt aangemaakt");
+        this.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS `Seizoensklassement`;");
+        this.Database.ExecuteSqlRaw("CREATE OR REPLACE VIEW `vSeizoensklassement` AS " +
+            "SELECT s.seizoensId,d.spelerId,s2.naam AS spelerNaam,s2.voornaam AS spelerVoornaam," +
+            "       sum(d.hoofdpunten) AS hoofdpunten,sum(d.plus_min_punten) AS plus_min_punten " +
+            "FROM dagklassement d JOIN speeldag s ON d.speeldagId=s.speeldagId JOIN speler s2 ON d.spelerId = s2.spelerId " +
+            "GROUP BY s.seizoensId,d.spelerId;");
+    }
 }
