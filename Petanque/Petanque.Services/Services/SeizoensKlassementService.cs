@@ -82,7 +82,6 @@ public class SeizoensKlassementService(Id312896PetanqueContext context) : ISeizo
     {
         return new SeizoensKlassementResponseContract() 
         {
-            SeizoensklassementId = entity.SeizoensklassementId,
             SpelerId = entity.SpelerId,
             SeizoensId = entity.SeizoensId,
             Hoofdpunten = entity.Hoofdpunten,
