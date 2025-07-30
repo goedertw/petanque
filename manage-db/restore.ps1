@@ -17,8 +17,8 @@ function Show-Usage {
 
 function CleanupAndAbort {
     if ($Debug) { Write-Host "exitcode=$exitcode" }
-    if (Test-Path $TmpCfgFile) { Remove-Item $tmpCfgFile -Force }
-    if (Test-Path $TmpErrFile) { Remove-Item $tmpErrFile -Force }
+    if (-not ($Debug) -and (Test-Path $TmpCfgFile)) { Remove-Item $TmpCfgFile -Force }
+    if (-not ($Debug) -and (Test-Path $TmpErrFile)) { Remove-Item $TmpErrFile -Force }
     Write-Host "... Aborting!"
     Write-Host ""
     exit 1
@@ -57,7 +57,7 @@ $exitcode = $LASTEXITCODE
 if (Select-String -Path $TmpErrFile -Pattern "ERROR 1007.*database exists") {
     $ans = Read-Host "WARNING: The database '$DbName' already exists (on $DbHost)! Overwrite? [y/N]"
     if (-not $ans -or $ans.ToUpper() -eq 'N') { CleanupAndAbort }
-    & $PathToMysql --defaults-extra-file=$TmpCfgFile -e "DROP DATABASE $DbName; CREATE DATABASE $dbName"
+    & $PathToMysql --defaults-extra-file=$TmpCfgFile -e "DROP DATABASE $DbName; CREATE DATABASE $dbName" 2> $TmpErrFile
     if ($LASTEXITCODE -ne 0) { CleanupAndAbort }
 }
 elseif ($exitcode -ne 0 -or (Get-Content $TmpErrFile).Length -gt 0) {
@@ -67,9 +67,11 @@ elseif ($exitcode -ne 0 -or (Get-Content $TmpErrFile).Length -gt 0) {
 
 # Restore the SQL file
 Write-Host "Restoring '$SqlFile' to '$DbName' (on $DbHost) ..."
-Get-Content $SqlFile | & $PathToMysql --defaults-extra-file=$TmpCfgFile $DbName
+Get-Content $SqlFile | & $PathToMysql --defaults-extra-file=$TmpCfgFile $DbName 2> $TmpErrFile
 if ($LASTEXITCODE -ne 0) { CleanupAndAbort }
 
+if (-not ($Debug) -and (Test-Path $TmpCfgFile)) { Remove-Item $TmpCfgFile -Force }
+if (-not ($Debug) -and (Test-Path $TmpErrFile)) { Remove-Item $TmpErrFile -Force }
 Write-Host "Done!"
 Write-Host ""
 
