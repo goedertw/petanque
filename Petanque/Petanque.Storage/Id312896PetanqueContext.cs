@@ -124,17 +124,8 @@ public partial class Id312896PetanqueContext : DbContext
 
         modelBuilder.Entity<Seizoensklassement>(entity =>
         {
-            entity.HasKey(e => e.SeizoensklassementId).HasName("PRIMARY");
-
-            entity.ToTable("Seizoensklassement");
-
-            entity.HasIndex(e => e.SeizoensId, "seizoensId");
-
-            entity.HasIndex(e => e.SpelerId, "spelerId");
-
-            entity.Property(e => e.SeizoensklassementId)
-                .HasColumnType("int(11)")
-                .HasColumnName("seizoensklassementId");
+            entity.HasNoKey();
+            entity.ToView("vSeizoensklassement");
             entity.Property(e => e.Hoofdpunten)
                 .HasColumnType("int(11)")
                 .HasColumnName("hoofdpunten");
@@ -147,14 +138,12 @@ public partial class Id312896PetanqueContext : DbContext
             entity.Property(e => e.SpelerId)
                 .HasColumnType("int(11)")
                 .HasColumnName("spelerId");
-
-            entity.HasOne(d => d.Seizoens).WithMany(p => p.Seizoensklassements)
-                .HasForeignKey(d => d.SeizoensId)
-                .HasConstraintName("Seizoensklassement_ibfk_2");
-
-            entity.HasOne(d => d.Speler).WithMany(p => p.Seizoensklassements)
-                .HasForeignKey(d => d.SpelerId)
-                .HasConstraintName("Seizoensklassement_ibfk_1");
+            entity.Property(e => e.SpelerNaam)
+                .HasMaxLength(100)
+                .HasColumnName("spelerNaam");
+            entity.Property(e => e.SpelerVoornaam)
+                .HasMaxLength(100)
+                .HasColumnName("spelerVoornaam");
         });
 
         modelBuilder.Entity<Speeldag>(entity =>

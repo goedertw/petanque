@@ -38,8 +38,6 @@ builder.Services.AddScoped<IScoreService, ScoreService>();
 builder.Services.AddScoped<ISpeeldagService, SpeeldagService>();
 builder.Services.AddScoped<IDagKlassementPDFService, DagKlassementPDFService>();
 builder.Services.AddScoped<ISpelverdelingPDFService, SpelverdelingPDFService>();
-
-builder.Services.AddScoped<ISeizoensKlassementService, SeizoensKlassementService>();
 builder.Services.AddScoped<ISeizoensKlassementPDFService, SeizoensKlassementPDFService>();
 builder.Services.AddScoped<ISeizoensService, SeizoensService>();
 
