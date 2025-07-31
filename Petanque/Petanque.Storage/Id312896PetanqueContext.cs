@@ -303,9 +303,18 @@ Druk een toets om de backend af te sluiten...
         if (cnt != 0) ErrorAndExit($"Onverwacht aantal voor tabel 'vSeizoensklassement' ({cnt})","Database lijkt corrupt.");
 
         // Migration: Stap 1: verwijder dubbels uit dagklassement
-        Console.WriteLine("Dubbels worden verwijderd uit 'dagklassement'");
-        this.Database.ExecuteSqlRaw("DELETE FROM dagklassement" +
-            "WHERE dagklassementId NOT IN(SELECT max(dagklassementId) FROM dagklassement GROUP BY speeldagId, spelerId);");
+        Console.WriteLine("Dubbels in 'dagklassement' worden opgezocht");
+        var badIds = this.Database.SqlQuery<Int32>($"SELECT d1.dagklassementId FROM dagklassement d1 LEFT JOIN (SELECT MAX(dagklassementId) AS maxId FROM dagklassement GROUP BY speeldagId, spelerId) d2 ON d1.dagklassementId = d2.maxId WHERE d2.maxId IS NULL;").ToList();
+        if (badIds.Count != 0)
+        {
+            Console.WriteLine($"Er worden {badIds.Count} dubbels verwijderd");
+            string query = "DELETE FROM dagklassement WHERE dagklassementId IN (" + string.Join(",", badIds) + ");";
+            cnt = this.Database.ExecuteSqlRaw(query);
+            if (cnt != badIds.Count)
+            {
+                ErrorAndExit($"Probleem met '{query}'", $"Er zijn {cnt} ipv {badIds.Count} IDs verwijderd");
+            }
+        }
 
         // Migration: Stap 2: add VIEW vSeizoensklassement
         Console.WriteLine("VIEW vSeizoensklassement wordt aangemaakt");
