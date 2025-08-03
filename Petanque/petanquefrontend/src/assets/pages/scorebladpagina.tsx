@@ -73,7 +73,7 @@ function Scorebladpagina() {
                 setSpeeldagen(data);
 
                 if (data.length > 0) {
-                    const opgeslagenSpeeldagId = localStorage.getItem("selectedSpeeldag");
+                    const opgeslagenSpeeldagId = localStorage.getItem("speeldagId");
                     let gekozenSpeeldagId = opgeslagenSpeeldagId ? parseInt(opgeslagenSpeeldagId) : data[0].speeldagId;
 
                     const speeldagBestaat = data.some((dag) => dag.speeldagId === gekozenSpeeldagId);
@@ -221,7 +221,7 @@ function Scorebladpagina() {
                     selectedSpeeldag={selectedSpeeldag}
                     onSelectSpeeldag={(speeldag) => {
                         setSelectedSpeeldag(speeldag);
-                        localStorage.setItem("selectedSpeeldag", speeldag.speeldagId.toString());
+                        localStorage.setItem("speeldagId", speeldag.speeldagId.toString());
                         setShowCalendar(false);
                     }}
                     showCalendar={showCalendar}

@@ -86,7 +86,7 @@ function Aanwezigheidspagina() {
 
                 setSpeeldagen(processedData);
 
-                const savedSpeeldagId = localStorage.getItem('geselecteerdeSpeeldag');
+                const savedSpeeldagId = localStorage.getItem('speeldagId');
                 if (savedSpeeldagId) {
                     const foundSpeeldag = processedData.find(dag => dag.speeldagId.toString() === savedSpeeldagId);
                     setSelectedSpeeldag(foundSpeeldag || processedData[0]);
@@ -107,7 +107,7 @@ function Aanwezigheidspagina() {
 
     useEffect(() => {
         if (selectedSpeeldag) {
-            localStorage.setItem('geselecteerdeSpeeldag', selectedSpeeldag.speeldagId.toString());
+            localStorage.setItem('speeldagId', selectedSpeeldag.speeldagId.toString());
             loadAanwezigheden();
         }
     }, [selectedSpeeldag]);
@@ -187,7 +187,7 @@ function Aanwezigheidspagina() {
 
     const handleSelectSpeeldag = (speeldag: Speeldag) => {
         setSelectedSpeeldag(speeldag);
-        localStorage.setItem('geselecteerdeSpeeldag', speeldag.speeldagId.toString());
+        localStorage.setItem('speeldagId', speeldag.speeldagId.toString());
         setShowCalendar(false);
     };
 

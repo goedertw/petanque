@@ -21,7 +21,7 @@ function Dagklassementpagina() {
                 const data: Speeldag[] = await response.json();
                 setSpeeldagen(data);
 
-                const savedSpeeldagId = localStorage.getItem('dagklassementSpeeldagId');
+                const savedSpeeldagId = localStorage.getItem('speeldagId');
                 if (savedSpeeldagId) {
                     const foundSpeeldag = data.find((dag) => dag.speeldagId.toString() === savedSpeeldagId);
                     setSelectedSpeeldag(foundSpeeldag || null);
@@ -51,7 +51,7 @@ function Dagklassementpagina() {
             return;
         }
 
-        localStorage.setItem('dagklassementSpeeldagId', selectedSpeeldag.speeldagId.toString());
+        localStorage.setItem('speeldagId', selectedSpeeldag.speeldagId.toString());
 
         // Reset bestaande PDF
         setPdfUrl(null);
@@ -88,7 +88,7 @@ function Dagklassementpagina() {
 
     const handleSelectSpeeldag = (speeldag: Speeldag) => {
         setSelectedSpeeldag(speeldag);
-        localStorage.setItem('dagklassementSpeeldagId', speeldag.speeldagId.toString());
+        localStorage.setItem('speeldagId', speeldag.speeldagId.toString());
         setShowCalendar(false);
     };
 

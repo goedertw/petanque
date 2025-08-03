@@ -117,6 +117,8 @@ function HomePagina() {
 
             setShowCreateSpeeldagDialog(false);
             setPendingDate(null);
+            localStorage.clear();
+            localStorage.setItem('speeldagId', createdSpeeldag.speeldagId.toString());
         } catch (error) {
             console.error("Fout bij aanmaken van speeldag:", error);
             alert("Kon speeldag niet aanmaken.");
