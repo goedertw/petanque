@@ -28,7 +28,7 @@ public class PlayerService(Id312896PetanqueContext context) : IPlayerService
     }
     public IEnumerable<PlayerResponseContract> GetAll()
     {
-        return context.Spelers.Select(a => MapToContract(a)).ToList();
+        return context.Spelers.OrderBy(a => a.Naam).ThenBy(a => a.Voornaam).Select(a => MapToContract(a)).ToList();
     }
 
     public void Delete(int id)
