@@ -94,7 +94,7 @@ namespace Petanque.Services
                                 string background = isEvenRow ? Colors.Grey.Lighten4 : Colors.White;
 
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{speler.Voornaam} {speler.Naam}");
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{speler.Naam} {speler.Voornaam}");
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Hoofdpunten.ToString());
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Score.ToString());
 

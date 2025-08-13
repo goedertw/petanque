@@ -67,7 +67,7 @@ public class SeizoensKlassementPDFService : ISeizoensKlassementPDFService
                                 string background = isEvenRow ? Colors.Grey.Lighten4 : Colors.White;
 
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{item.SpelerVoornaam} {item.SpelerNaam}");
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{item.SpelerNaam} {item.SpelerVoornaam}");
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(item.Hoofdpunten.ToString());
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(item.PlusMinPunten.ToString());
 

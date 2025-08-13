@@ -29,7 +29,7 @@ function Aanwezigheidspagina() {
     const [error, setError] = useState<string | null>(null);
     const [aanwezigheden, setAanwezigheden] = useState<Aanwezigheid[]>([]);
     const [showCalendar, setShowCalendar] = useState(false);
-    const [sortField, setSortField] = useState<'voornaam' | 'naam'>('voornaam');
+    const [sortField, setSortField] = useState<'voornaam' | 'naam'>('naam');
 
     const sortedSpelers = [...spelers].sort((a, b) => {
         if (sortField === 'voornaam') {
@@ -226,21 +226,21 @@ function Aanwezigheidspagina() {
             <div className="overflow-x-auto overflow-y-auto border rounded-2xl shadow-md w-fit place-self-center">
                 <table className="text-left text-xl">
                     <thead className="bg-[#3c444c] text-white sticky top-0">
-                    <tr>
-                        <th
-                            className="cursor-pointer px-6 py-1 my-0"
-                            onClick={() => setSortField('voornaam')}
-                        >
-                            Voornaam {sortField === 'voornaam' ? '▲' : ''}
-                        </th>
-                        <th
-                            className="cursor-pointer px-6 py-1"
-                            onClick={() => setSortField('naam')}
-                        >
-                            Achternaam {sortField === 'naam' ? '▲' : ''}
-                        </th>
-                        <th className="px-6 py-1">Aanwezig?</th>
-                    </tr>
+                        <tr>
+                            <th
+                                className="cursor-pointer px-6 py-1"
+                                onClick={() => setSortField('naam')}
+                            >
+                                Naam {sortField === 'naam' ? '▲' : ''}
+                            </th>
+                            <th
+                                className="cursor-pointer px-6 py-1 my-0"
+                                onClick={() => setSortField('voornaam')}
+                            >
+                                Voornaam {sortField === 'voornaam' ? '▲' : ''}
+                            </th>
+                            <th className="px-6 py-1">Aanwezig?</th>
+                        </tr>
                     </thead>
                     <tbody>
                     {sortedSpelers.map((speler) => {
@@ -259,8 +259,8 @@ function Aanwezigheidspagina() {
                                         : 'bg-red-200 border-t-2 border-b-2 border-black'
                                 }
                             >
-                                <td className="px-6 py-1 border-b border-gray-200">{speler.voornaam}</td>
                                 <td className="px-6 py-1 border-b border-gray-200">{speler.naam}</td>
+                                <td className="px-6 py-1 border-b border-gray-200">{speler.voornaam}</td>
                                 <td className="px-6 py-1 border-b border-gray-200 text-center">
                                     <div className="flex items-center justify-center space-x-2">
                                         <input

@@ -91,7 +91,7 @@ namespace Petanque.Services.Services
                                             foreach (var speler in teamA)
                                             {
                                                 var naam = speler.Speler != null
-                                                    ? $"{speler.SpelerVolgnr}. {speler.Speler.Voornaam} {speler.Speler.Naam}"
+                                                    ? $"{speler.SpelerVolgnr}. {speler.Speler.Naam} {speler.Speler.Voornaam}"
                                                     : $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
                                                 teamCol.Item().Text(naam);
                                             }
@@ -124,7 +124,7 @@ namespace Petanque.Services.Services
                                             foreach (var speler in teamB)
                                             {
                                                 var naam = speler.Speler != null
-                                                    ? $"{speler.SpelerVolgnr}. {speler.Speler.Voornaam} {speler.Speler.Naam}"
+                                                    ? $"{speler.SpelerVolgnr}. {speler.Speler.Naam} {speler.Speler.Voornaam}"
                                                     : $"Onbekende speler (volgnr {speler.SpelerVolgnr})";
                                                 teamCol.Item().Text(naam);
                                             }
