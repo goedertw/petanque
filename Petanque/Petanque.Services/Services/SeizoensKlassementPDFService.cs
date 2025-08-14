@@ -61,17 +61,24 @@ public class SeizoensKlassementPDFService : ISeizoensKlassementPDFService
                             });
 
                             int rang = 1;
+                            int prevHoofdpunten = 0;
+                            int prevPlusMinPunten = 0;
                             foreach (var item in klassementen)
                             {
                                 bool isEvenRow = rang % 2 == 0;
                                 string background = isEvenRow ? Colors.Grey.Lighten4 : Colors.White;
 
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{item.SpelerVoornaam} {item.SpelerNaam}");
+                                if ((item.Hoofdpunten == prevHoofdpunten) && (item.PlusMinPunten == prevPlusMinPunten))
+                                    table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(' ');
+                                else
+                                    table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{item.SpelerNaam} {item.SpelerVoornaam}");
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(item.Hoofdpunten.ToString());
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(item.PlusMinPunten.ToString());
 
                                 rang++;
+                                prevHoofdpunten = item.Hoofdpunten;
+                                prevPlusMinPunten = item.PlusMinPunten;
                             }
                         });
                     });

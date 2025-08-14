@@ -118,16 +118,16 @@ function SpelerPagina() {
                         <div className="flex flex-col sm:flex-row gap-2 mb-2">
                             <input
                                 type="text"
-                                placeholder="Voornaam"
-                                value={newVoornaam}
-                                onChange={(e) => setNewVoornaam(e.target.value)}
+                                placeholder="Naam"
+                                value={newNaam}
+                                onChange={(e) => setNewNaam(e.target.value)}
                                 className="border border-[#74747c] p-2 rounded max-w-sm"
                             />
                             <input
                                 type="text"
-                                placeholder="Naam"
-                                value={newNaam}
-                                onChange={(e) => setNewNaam(e.target.value)}
+                                placeholder="Voornaam"
+                                value={newVoornaam}
+                                onChange={(e) => setNewVoornaam(e.target.value)}
                                 className="border border-[#74747c] p-2 rounded max-w-sm"
                             />
                         </div>
@@ -165,7 +165,7 @@ function SpelerPagina() {
                                     className="py-0 px-3 m-2 bg-[#fbd46d] rounded-lg shadow flex justify-between items-center"
                                 >
                                     <p className="font-semibold text-[#44444c] text-xl">
-                                        {speler.voornaam} {speler.naam}
+                                        {speler.naam} {speler.voornaam}
                                     </p>
                                     <button
                                         onClick={() => confirmDeletePlayer(speler)}
@@ -186,7 +186,7 @@ function SpelerPagina() {
                                 {aanwezigheidsCheck.aanwezig ? (
                                     <>
                                         <h2 className="text-xl font-bold mb-4 text-[#44444c]">
-                                            Kan <span className="text-red-600">{spelerToDelete.voornaam} {spelerToDelete.naam}</span> niet verwijderen.<br />
+                                            Kan <span className="text-red-600">{spelerToDelete.naam} {spelerToDelete.voornaam}</span> niet verwijderen.<br />
                                             De speler staat nog aanwezig op:
                                         </h2>
                                         <ul className="text-[#44444c] mb-4">
@@ -213,7 +213,7 @@ function SpelerPagina() {
                                     <>
                                         <h2 className="text-xl font-bold mb-4 text-[#44444c]">
                                             Weet je zeker dat je <br />
-                                            <span className="text-red-600">{spelerToDelete.voornaam} {spelerToDelete.naam}</span> wilt verwijderen?
+                                            <span className="text-red-600">{spelerToDelete.naam} {spelerToDelete.voornaam}</span> wilt verwijderen?
                                         </h2>
                                         <div className="flex justify-center gap-4 mt-6">
                                             <button

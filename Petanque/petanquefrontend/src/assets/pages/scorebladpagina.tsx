@@ -73,7 +73,7 @@ function Scorebladpagina() {
                 setSpeeldagen(data);
 
                 if (data.length > 0) {
-                    const opgeslagenSpeeldagId = localStorage.getItem("selectedSpeeldag");
+                    const opgeslagenSpeeldagId = localStorage.getItem("speeldagId");
                     let gekozenSpeeldagId = opgeslagenSpeeldagId ? parseInt(opgeslagenSpeeldagId) : data[0].speeldagId;
 
                     const speeldagBestaat = data.some((dag) => dag.speeldagId === gekozenSpeeldagId);
@@ -102,7 +102,7 @@ function Scorebladpagina() {
                     const terreinLabel = entry.spel.terrein.trim();
                     const spelId = entry.spel.spelId;
                     const teamKey = entry.team === "Team A" ? "teamA" : "teamB";
-                    const spelerNaam = `${entry.spelerVolgnr}. ${entry.speler.voornaam} ${entry.speler.naam}`;
+                    const spelerNaam = `${entry.spelerVolgnr}. ${entry.speler.naam} ${entry.speler.voornaam}`;
 
                     if (!terreinMap[terreinLabel]) {
                         terreinMap[terreinLabel] = {};
@@ -221,7 +221,7 @@ function Scorebladpagina() {
                     selectedSpeeldag={selectedSpeeldag}
                     onSelectSpeeldag={(speeldag) => {
                         setSelectedSpeeldag(speeldag);
-                        localStorage.setItem("selectedSpeeldag", speeldag.speeldagId.toString());
+                        localStorage.setItem("speeldagId", speeldag.speeldagId.toString());
                         setShowCalendar(false);
                     }}
                     showCalendar={showCalendar}
@@ -231,27 +231,23 @@ function Scorebladpagina() {
 
             {Object.entries(gamesPerTerrein).map(([terrein, games]) => (
                 <div key={terrein} className="mb-0">
-                    <h2 className="text-lg font-bold mb-2 bg-[#fbd46d] text-[#3c444c] px-4 py-2 rounded-lg shadow">
-                        {terrein.toUpperCase()}
-                    </h2>
-
                     {games.map((game, gameIndex) => (
-                        <div key={gameIndex} className="border rounded-xl p-6 mb-6 bg-white shadow-lg space-y-4">
-                            <h3 className="text-md font-semibold bg-[#ccac4c] text-white inline-block px-3 py-1 rounded-full">
-                                SPEL {gameIndex + 1}
+                        <div key={gameIndex} className="border rounded-xl p-3 mb-3 bg-white">
+                            <h3 className="text-md font-semibold bg-[#fbd46d] text-[#3c444c] inline-block px-3 py-1 rounded-full">
+                                {terrein.toUpperCase()}&nbsp;&nbsp;-&nbsp;&nbsp;SPEL {gameIndex + 1}
                             </h3>
                             <div className="flex justify-between items-center space-x-6">
                                 <div className="w-full flex flex-col items-start">
-                                    <h4 className="font-medium text-lg text-left text-[#3c444c]">Team A</h4>
-                                    <div className="space-y-2 w-full">
+                                    <h4 className="font-medium text-lg text-left text-[#3c444c] mt-2"><b><u>Team A</u></b></h4>
+                                    <div className="space-y-0 w-full">
                                         {game.teamA.players.map((name, i) => (
-                                            <p key={i} className="border-b w-full px-2 py-1 mb-2 rounded-lg border-[#74747c]">
+                                            <p key={i} className="w-full m-0">
                                                 {name}
                                             </p>
                                         ))}
                                     </div>
-                                    <div className="mt-4">
-                                        <label className="block text-sm mb-1 text-[#44444c]">Aantal punten:</label>
+                                    <div className="mt-3">
+                                        <label className="text-sm mb-0 text-[#44444c]">Aantal punten: </label>
                                         <input
                                             type="number"
                                             value={game.teamA.points}
@@ -260,29 +256,26 @@ function Scorebladpagina() {
                                             onChange={(e) => handlePointsChange(terrein, gameIndex, "teamA", e.target.value)}
                                             className="border px-2 py-1 w-24 rounded-lg border-[#74747c]"
                                         />
-                                        <div className="mt-2 text-sm font-medium text-[#44444c]">
-                                            Aantal: <span className="font-bold">{game.teamA.points}</span>
-                                            <span className="ml-4">
-                                                {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
-                                                {game.teamA.points - game.teamB.points}
-                                            </span>
-                                        </div>
+                                        <span className="ml-4 text-sm text-[#44444c]">(
+                                            {game.teamA.points - game.teamB.points >= 0 ? "+" : ""}
+                                            {game.teamA.points - game.teamB.points})
+                                        </span>
                                     </div>
                                 </div>
 
-                                <div className="w-1 bg-gray-300 h-48 my-auto"></div>
+                                <div className="w-1 bg-gray-500 h-30 my-auto"></div>
 
-                                <div className="w-full flex flex-col items-end">
-                                    <h4 className="font-medium text-lg text-right text-[#3c444c]">Team B</h4>
-                                    <div className="space-y-2 w-full">
+                                <div className="w-full flex flex-col items-start">
+                                    <h4 className="font-medium text-lg text-left text-[#3c444c]"><b><u>Team B</u></b></h4>
+                                    <div className="space-y-0 w-full">
                                         {game.teamB.players.map((name, i) => (
-                                            <p key={i} className="border-b w-full px-2 py-1 mb-2 rounded-lg border-[#74747c]">
+                                            <p key={i} className="w-full m-0">
                                                 {name}
                                             </p>
                                         ))}
                                     </div>
                                     <div className="mt-4">
-                                        <label className="block text-sm mb-1 text-[#44444c]">Aantal punten:</label>
+                                        <label className="text-sm mb-1 text-[#44444c]">Aantal punten: </label>
                                         <input
                                             type="number"
                                             value={game.teamB.points}
@@ -291,13 +284,10 @@ function Scorebladpagina() {
                                             onChange={(e) => handlePointsChange(terrein, gameIndex, "teamB", e.target.value)}
                                             className="border px-2 py-1 w-24 rounded-lg border-[#74747c]"
                                         />
-                                        <div className="mt-2 text-sm font-medium text-[#44444c]">
-                                            Aantal: <span className="font-bold">{game.teamB.points}</span>
-                                            <span className="ml-4">
-                                                {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
-                                                {game.teamB.points - game.teamA.points}
-                                            </span>
-                                        </div>
+                                        <span className="ml-4 text-sm text-[#44444c]">(
+                                            {game.teamB.points - game.teamA.points >= 0 ? "+" : ""}
+                                            {game.teamB.points - game.teamA.points})
+                                        </span>
                                     </div>
                                 </div>
                             </div>

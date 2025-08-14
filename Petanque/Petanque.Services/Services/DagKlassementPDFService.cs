@@ -88,17 +88,24 @@ namespace Petanque.Services
                             });
 
                             int rang = 1;
+                            int prevHoofdpunten = 0;
+                            int prevScore = 0;
                             foreach (var speler in spelersMetScores)
                             {
                                 bool isEvenRow = rang % 2 == 0;
                                 string background = isEvenRow ? Colors.Grey.Lighten4 : Colors.White;
 
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
-                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{speler.Voornaam} {speler.Naam}");
+                                if ((speler.Hoofdpunten == prevHoofdpunten) && (speler.Score == prevScore))
+                                    table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(' ');
+                                else
+                                    table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text(rang.ToString());
+                                table.Cell().Element(e => e.Background(background).PaddingVertical(2)).Text($"{speler.Naam} {speler.Voornaam}");
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Hoofdpunten.ToString());
                                 table.Cell().Element(e => e.Background(background).PaddingVertical(2)).AlignCenter().Text(speler.Score.ToString());
 
                                 rang++;
+                                prevHoofdpunten = speler.Hoofdpunten;
+                                prevScore = speler.Score;
                             }
                         });
                     });
