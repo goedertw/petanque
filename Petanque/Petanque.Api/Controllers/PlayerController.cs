@@ -29,7 +29,21 @@ public class PlayerController(IPlayerService service) : Controller
         {
             return Ok(service.GetAll());
         }
-        
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] PlayerRequestContract request)
+        {
+            try
+            {
+                service.Update(id, request.Voornaam, request.Naam);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
