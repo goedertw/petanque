@@ -79,11 +79,14 @@ function HomePagina() {
     const handleCreateSpeeldag = async () => {
         if (!pendingDate) return;
 
+        const year = pendingDate.getFullYear();
+        const month = (pendingDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = pendingDate.getDate().toString().padStart(2, '0');
+        const pendingDateFormatted = `${year}-${month}-${day}`;
+
         try {
             const passendeSeizoen = seizoenen.find((s) => {
-                const start = new Date(s.startdatum);
-                const eind = new Date(s.einddatum);
-                return pendingDate >= start && pendingDate <= eind;
+                return pendingDateFormatted >= s.startdatum && pendingDateFormatted <= s.einddatum;
             });
 
             if (!passendeSeizoen) {
@@ -91,12 +94,8 @@ function HomePagina() {
                 return;
             }
 
-            const year = pendingDate.getFullYear();
-            const month = (pendingDate.getMonth() + 1).toString().padStart(2, '0');
-            const day = pendingDate.getDate().toString().padStart(2, '0');
-
             const request = {
-                datum: `${year}-${month}-${day}`,
+                datum: pendingDateFormatted,
                 seizoensId: passendeSeizoen.seizoensId
             };
 
